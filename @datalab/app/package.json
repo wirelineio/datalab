@@ -1,0 +1,47 @@
+{
+  "name": "@datalab/app",
+  "version": "1.0.0",
+  "description": "DataLab demo",
+  "main": "index.js",
+  "repository": "git@github.com:wirelineio/datalab.git",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "lint": "eslint ./src",
+    "build": "webpack",
+    "start": "webpack-dev-server --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.2.0",
+    "@material-ui/icons": "^3.0.1",
+    "apollo-cache-inmemory": "^1.3.5",
+    "apollo-client": "^2.4.2",
+    "apollo-link": "^1.2.3",
+    "apollo-link-error": "^1.1.1",
+    "apollo-link-http": "^1.5.5",
+    "classnames": "^2.2.6",
+    "graphql": "^14.0.2",
+    "graphql-tag": "^2.10.0",
+    "react": "^16.5.2",
+    "react-apollo": "^2.2.4",
+    "react-beautiful-dnd": "^9.0.2",
+    "react-dom": "^16.5.2",
+    "react-router-dom": "^4.3.1",
+    "typeface-roboto": "^0.0.54"
+  }
+}
