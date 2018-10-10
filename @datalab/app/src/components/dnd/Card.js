@@ -69,9 +69,14 @@ class Card extends Component {
 
     return (
       <Draggable draggableId={id} index={index}>
-        {provided => (
+        {(provided, snapshot) => (
           <RootRef rootRef={provided.innerRef}>
-            <MuiCard className={classes.card} {...provided.draggableProps} {...provided.dragHandleProps}>
+            <MuiCard
+              className={classes.card}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              raised={snapshot.isDragging}
+            >
               <CardHeader
                 action={
                   <IconButton>

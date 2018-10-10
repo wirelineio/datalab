@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import produce from 'immer';
 
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
@@ -20,20 +21,30 @@ class Main extends Component {
       return;
     }
 
-    const column = this.state.columns.find(c => c.id === destination.droppableId);
-    const card = column.cards.find(c => c.id === draggableId);
-    const newCards = [...column.cards];
-    newCards.splice(source.index, 1);
-    newCards.splice(destination.index, 0, card);
+    const newState = produce(draft => {
+      const sourceColumn = draft.columns.find(c => c.id === source.droppableId);
+      const destinationColumn = draft.columns.find(c => c.id === destination.droppableId);
+      const card = sourceColumn.cards.find(c => c.id === draggableId);
 
-    const newColumn = {
-      ...column,
-      cards: newCards
-    };
+      sourceColumn.cards.splice(source.index, 1);
+      destinationColumn.cards.splice(destination.index, 0, card);
 
-    const columns = [...this.state.columns];
-    columns[columns.findIndex(c => c.id === newColumn.id)] = newColumn;
-    this.setState({ columns });
+      sourceColumn.cards = sourceColumn.cards.map((card, index) => {
+        card.index = index;
+        return card;
+      });
+
+      if (source.droppableId === destination.droppableId) {
+        return;
+      }
+
+      destinationColumn.cards = destinationColumn.cards.map((card, index) => {
+        card.index = index;
+        return card;
+      });
+    });
+
+    this.setState(newState);
   };
 
   render() {

@@ -55,5 +55,9 @@ export default {
       ]
     }
   ],
-  columnOrder: ['column-1']
+  services: [
+    { id: 'service-1', type: 'messaging', name: 'Google Mail', enabled: false },
+    { id: 'service-2', type: 'tasks', name: 'Asana', enabled: true },
+    { id: 'service-3', type: 'contacts', name: 'LinkedIn', enabled: false }
+  ]
 };
