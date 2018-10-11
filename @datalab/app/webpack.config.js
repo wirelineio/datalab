@@ -4,6 +4,7 @@ const env = process.env.NODE_ENV || 'development';
 
 module.exports = {
   mode: env,
+  devtool: 'eval-source-map',
   devServer: {
     historyApiFallback: true
   },

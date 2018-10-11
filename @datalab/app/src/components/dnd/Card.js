@@ -3,6 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 
 import { withStyles } from '@material-ui/core/styles';
 import { default as MuiCard } from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +14,9 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import RootRef from '@material-ui/core/RootRef';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Messaging from '../service-types/Messaging';
 
 const styles = theme => ({
   card: {
@@ -50,14 +54,14 @@ const Services = ({ classes }) => (
       </ExpansionPanelDetails>
     </ExpansionPanel>
     <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} component={Grid} container justify="space-between">
         <Typography className={classes.heading}>Messages</Typography>
+        <IconButton aria-label="New">
+          <AddCircleIcon />
+        </IconButton>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-          lobortis eget.
-        </Typography>
+        <Messaging messages={[{ from: 'tincho', content: 'holaa' }, { from: 'juan', content: 'holiiiiiss' }]} />
       </ExpansionPanelDetails>
     </ExpansionPanel>
   </Fragment>
