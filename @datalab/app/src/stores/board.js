@@ -84,6 +84,7 @@ export const GET_SERVICES = gql`
       name
       description
       enabled
+      url
     }
   }
 `;

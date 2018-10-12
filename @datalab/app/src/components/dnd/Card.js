@@ -40,7 +40,7 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes }) => (
+const Services = ({ classes, messages }) => (
   <Fragment>
     <ExpansionPanel className={classes.expansionPanel}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -53,23 +53,22 @@ const Services = ({ classes }) => (
         </Typography>
       </ExpansionPanelDetails>
     </ExpansionPanel>
-    <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} component={Grid} container justify="space-between">
-        <Typography className={classes.heading}>Messages</Typography>
-        <IconButton aria-label="New">
-          <AddCircleIcon />
-        </IconButton>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Messaging messages={[{ from: 'tincho', content: 'holaa' }, { from: 'juan', content: 'holiiiiiss' }]} />
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+    {messages && (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.heading}>Messages</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Messaging messages={messages} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )}
   </Fragment>
 );
 
 class Card extends Component {
   render() {
-    const { classes, id, title, index, subheader } = this.props;
+    const { classes, id, title, index, subheader, messages } = this.props;
 
     return (
       <Draggable draggableId={id} index={index}>
@@ -92,7 +91,7 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'body2' }}
               />
               <CardContent className={classes.cardContent}>
-                <Services classes={classes} />
+                <Services classes={classes} messages={messages} />
               </CardContent>
             </MuiCard>
           </RootRef>
