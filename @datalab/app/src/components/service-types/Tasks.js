@@ -19,8 +19,9 @@ class Tasks extends React.Component {
     tasks: []
   };
 
-  handleToggle = value => {
-    console.log(value);
+  handleToggle = task => {
+    const { toggleTask } = this.props;
+    toggleTask(task);
   };
 
   render() {

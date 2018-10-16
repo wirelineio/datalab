@@ -3,7 +3,7 @@ import { compose, graphql, withApollo } from 'react-apollo';
 
 import { GET_COLUMNS, UPDATE_CARD_ORDER, GET_SERVICES } from '../stores/board';
 import { GET_MESSAGES } from '../stores/messaging';
-import { GET_TASKS } from '../stores/tasks';
+import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
@@ -17,7 +17,7 @@ class Main extends Component {
   };
 
   render() {
-    const { columns, messages = null, tasks = null } = this.props;
+    const { columns, messages = null, tasks = null, toggleTask } = this.props;
 
     return (
       <GridColumn list={columns} onDragEnd={this.handleOrder}>
@@ -27,7 +27,16 @@ class Main extends Component {
               {({ item: card, key }) => {
                 const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
                 const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
-                return <Card id={card.id} title={card.title} index={key} messages={cardMessages} tasks={cardTasks} />;
+                return (
+                  <Card
+                    id={card.id}
+                    title={card.title}
+                    index={key}
+                    messages={cardMessages}
+                    tasks={cardTasks}
+                    toggleTask={toggleTask}
+                  />
+                );
               }}
             </Column>
           );
@@ -93,6 +102,23 @@ export default compose(
     props({ data: { tasks = [] } }) {
       return {
         tasks
+      };
+    }
+  }),
+  graphql(TOGGLE_TASK, {
+    props({ mutate }) {
+      return {
+        toggleTask: ({ id, serviceId }) => {
+          return mutate({
+            variables: {
+              id
+            },
+            context: {
+              serviceType: 'tasks',
+              serviceId
+            }
+          });
+        }
       };
     }
   })

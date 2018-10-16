@@ -9,6 +9,16 @@ export const GET_TASKS = gql`
       to
       createdAt
       done
+      serviceId
+    }
+  }
+`;
+
+export const TOGGLE_TASK = gql`
+  mutation ToggleTask($id: ID!) {
+    toggleTask(id: $id) {
+      id
+      done
     }
   }
 `;

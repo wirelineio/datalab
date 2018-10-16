@@ -41,7 +41,7 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes, messages, tasks }) => (
+const Services = ({ classes, messages, tasks, toggleTask }) => (
   <Fragment>
     {tasks && (
       <ExpansionPanel className={classes.expansionPanel}>
@@ -49,7 +49,7 @@ const Services = ({ classes, messages, tasks }) => (
           <Typography className={classes.heading}>Tasks</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Tasks tasks={tasks} />
+          <Tasks tasks={tasks} toggleTask={toggleTask} />
         </ExpansionPanelDetails>
       </ExpansionPanel>
     )}
@@ -68,7 +68,7 @@ const Services = ({ classes, messages, tasks }) => (
 
 class Card extends Component {
   render() {
-    const { classes, id, title, index, subheader, messages, tasks } = this.props;
+    const { classes, id, title, index, subheader, messages, tasks, toggleTask } = this.props;
 
     return (
       <Draggable draggableId={id} index={index}>
@@ -91,7 +91,7 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'body2' }}
               />
               <CardContent className={classes.cardContent}>
-                <Services classes={classes} messages={messages} tasks={tasks} />
+                <Services classes={classes} messages={messages} tasks={tasks} toggleTask={toggleTask} />
               </CardContent>
             </MuiCard>
           </RootRef>
