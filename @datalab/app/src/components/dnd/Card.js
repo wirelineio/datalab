@@ -17,6 +17,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Messaging from '../service-types/Messaging';
+import Tasks from '../service-types/Tasks';
 
 const styles = theme => ({
   card: {
@@ -40,19 +41,18 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes, messages }) => (
+const Services = ({ classes, messages, tasks }) => (
   <Fragment>
-    <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={classes.heading}>Tasks</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-          lobortis eget.
-        </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+    {tasks && (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.heading}>Tasks</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Tasks tasks={tasks} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )}
     {messages && (
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -68,7 +68,7 @@ const Services = ({ classes, messages }) => (
 
 class Card extends Component {
   render() {
-    const { classes, id, title, index, subheader, messages } = this.props;
+    const { classes, id, title, index, subheader, messages, tasks } = this.props;
 
     return (
       <Draggable draggableId={id} index={index}>
@@ -91,7 +91,7 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'body2' }}
               />
               <CardContent className={classes.cardContent}>
-                <Services classes={classes} messages={messages} />
+                <Services classes={classes} messages={messages} tasks={tasks} />
               </CardContent>
             </MuiCard>
           </RootRef>

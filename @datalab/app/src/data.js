@@ -74,7 +74,7 @@ export default {
       type: 'messaging',
       name: 'Google Mail',
       description: 'Service to send messages through Google Mail.',
-      enabled: false,
+      enabled: true,
       url: 'https://09fxpdbua5.execute-api.us-east-1.amazonaws.com/dev/gql'
     },
     {
@@ -83,7 +83,7 @@ export default {
       type: 'tasks',
       name: 'Asana',
       description: 'Create tasks connected to Asana.',
-      enabled: true,
+      enabled: false,
       url: 'https://ayfgdg9orh.execute-api.us-east-1.amazonaws.com/dev/gql'
     },
     {
@@ -94,6 +94,15 @@ export default {
       description: 'Check your contacts from LinkedIn.',
       enabled: false,
       url: null
+    },
+    {
+      id: 'service-4',
+      __typename: 'Service',
+      type: 'messaging',
+      name: 'Hotmail Mail',
+      description: 'Service to send messages through Hotmail.',
+      enabled: true,
+      url: 'https://r0zpvjmdck.execute-api.us-east-1.amazonaws.com/dev/gql'
     }
   ]
 };

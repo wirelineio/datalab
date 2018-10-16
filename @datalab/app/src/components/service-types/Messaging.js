@@ -56,10 +56,7 @@ class Message extends Component {
           }
         />
         <CardContent className={classes.messageContent}>
-          <Typography component="p">
-            This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup
-            of frozen peas along with the mussels, if you like.
-          </Typography>
+          <Typography component="p">{message.content}</Typography>
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
           <IconButton aria-label="Edit">
@@ -75,8 +72,12 @@ class Message extends Component {
 }
 
 class Messaging extends Component {
+  static defaultProps = {
+    messages: []
+  };
+
   render() {
-    const { messages = [], classes } = this.props;
+    const { messages, classes } = this.props;
 
     return (
       <Grid container direction="column">

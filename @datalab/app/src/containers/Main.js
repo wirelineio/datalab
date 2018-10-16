@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { compose, graphql } from 'react-apollo';
+import { compose, graphql, withApollo } from 'react-apollo';
 
 import { GET_COLUMNS, UPDATE_CARD_ORDER, GET_SERVICES } from '../stores/board';
 import { GET_MESSAGES } from '../stores/messaging';
+import { GET_TASKS } from '../stores/tasks';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
@@ -16,7 +17,7 @@ class Main extends Component {
   };
 
   render() {
-    const { columns, messages = null } = this.props;
+    const { columns, messages = null, tasks = null } = this.props;
 
     return (
       <GridColumn list={columns} onDragEnd={this.handleOrder}>
@@ -25,7 +26,8 @@ class Main extends Component {
             <Column id={column.id} title={column.title} list={column.cards}>
               {({ item: card, key }) => {
                 const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
-                return <Card id={card.id} title={card.title} index={key} messages={cardMessages} />;
+                const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
+                return <Card id={card.id} title={card.title} index={key} messages={cardMessages} tasks={cardTasks} />;
               }}
             </Column>
           );
@@ -36,6 +38,7 @@ class Main extends Component {
 }
 
 export default compose(
+  withApollo,
   graphql(GET_COLUMNS, {
     props({ data: { columns } }) {
       return { columns };
@@ -57,8 +60,9 @@ export default compose(
     }
   }),
   graphql(GET_SERVICES, {
-    props({ data: { services } }) {
+    props({ data: { services }, ownProps: { client } }) {
       // return for now only the enabled services
+      client.updateServices(services);
       return { services: services.filter(s => s.enabled) };
     }
   }),
@@ -74,6 +78,21 @@ export default compose(
     props({ data: { messages = [] } }) {
       return {
         messages
+      };
+    }
+  }),
+  graphql(GET_TASKS, {
+    skip({ services }) {
+      return !services.find(s => s.type === 'tasks');
+    },
+    options: {
+      context: {
+        serviceType: 'tasks'
+      }
+    },
+    props({ data: { tasks = [] } }) {
+      return {
+        tasks
       };
     }
   })

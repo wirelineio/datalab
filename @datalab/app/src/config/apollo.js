@@ -6,7 +6,7 @@ import { HttpLink } from 'apollo-link-http';
 import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 
-import { MatchLink } from './apollo-link-match';
+import { ServiceLink, extendClient } from './apollo-link-service';
 
 // stores
 import stores from '../stores';
@@ -15,7 +15,7 @@ const cache = new InMemoryCache();
 
 const fakerLink = new HttpLink({ uri: 'https://fakerql.com/graphql' });
 
-const matchLink = new MatchLink({
+const serviceLink = new ServiceLink({
   rootLinks: [{ type: 'faker', fakerLink }],
   fallback: fakerLink
 });
@@ -34,22 +34,12 @@ const stateLink = withClientState({
 });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, stateLink, matchLink]),
+  link: ApolloLink.from([errorLink, stateLink, serviceLink]),
   cache
 });
 
+extendClient(client, serviceLink);
+
 client.onResetStore(stateLink.writeDefaults);
-
-const serviceObservable = client.watchQuery({
-  query: require('../stores/board').GET_SERVICES
-});
-
-serviceObservable.forEach(({ data: { services } }) => {
-  matchLink.updateUserLinks(
-    services.filter(s => s.enabled && s.url).map(s => {
-      return { type: s.type, link: new HttpLink({ uri: s.url }) };
-    })
-  );
-});
 
 export default client;
