@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-// Typeface
-import 'typeface-roboto';
-
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
@@ -31,7 +28,8 @@ const routes = [
 class App extends Component {
   render() {
     return (
-      <BrowserRouter>
+      // TODO: fix this!
+      <BrowserRouter basename="/dev">
         <Layout routes={routes}>
           <Switch>
             {routes.map((rProps, key) => (

@@ -1,14 +1,7 @@
 {
-  "presets": [
-    [
-      "@babel/env",
-      {
-        "targets": "last 10 Chrome versions"
-      }
-    ],
-    "@babel/preset-react"
-  ],
+  "presets": [["env", { "targets": { "node": "6.10.0" } }], "stage-0", "react"],
   "plugins": [
-    "@babel/proposal-class-properties"
+    "add-module-exports",
+    "transform-runtime"
   ]
 }

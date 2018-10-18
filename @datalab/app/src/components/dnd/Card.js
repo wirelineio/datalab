@@ -3,6 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 
 import { withStyles } from '@material-ui/core/styles';
 import { default as MuiCard } from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +14,10 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import RootRef from '@material-ui/core/RootRef';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Messaging from '../service-types/Messaging';
+import Tasks from '../service-types/Tasks';
 
 const styles = theme => ({
   card: {
@@ -36,42 +41,45 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes }) => (
+const Services = ({ classes, messages, tasks, toggleTask }) => (
   <Fragment>
-    <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={classes.heading}>Tasks</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-          lobortis eget.
-        </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-    <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={classes.heading}>Messages</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-          lobortis eget.
-        </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+    {tasks && (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.heading}>Tasks</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Tasks tasks={tasks} toggleTask={toggleTask} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )}
+    {messages && (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.heading}>Messages</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Messaging messages={messages} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )}
   </Fragment>
 );
 
 class Card extends Component {
   render() {
-    const { classes, id, title, index, subheader } = this.props;
+    const { classes, id, title, index, subheader, messages, tasks, toggleTask } = this.props;
 
     return (
       <Draggable draggableId={id} index={index}>
-        {provided => (
+        {(provided, snapshot) => (
           <RootRef rootRef={provided.innerRef}>
-            <MuiCard className={classes.card} {...provided.draggableProps} {...provided.dragHandleProps}>
+            <MuiCard
+              className={classes.card}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              raised={snapshot.isDragging}
+            >
               <CardHeader
                 action={
                   <IconButton>
@@ -83,7 +91,7 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'body2' }}
               />
               <CardContent className={classes.cardContent}>
-                <Services classes={classes} />
+                <Services classes={classes} messages={messages} tasks={tasks} toggleTask={toggleTask} />
               </CardContent>
             </MuiCard>
           </RootRef>

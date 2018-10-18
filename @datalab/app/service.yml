@@ -1,0 +1,27 @@
+name: datalab
+platform: nodejs
+buildTool: yarn
+version: 0.0.1
+staticAssets:
+  folder: dist/assets
+functions:
+  index:
+    handler: handler.index
+    description: Index page.
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true
+  proxy:
+    handler: handler.proxy
+    description: Static assets proxy.
+    events:
+      - http:
+          path: favicon.ico
+          method: get
+          cors: true
+      - http:
+          path: 'assets/{path}'
+          method: get
+          cors: true
