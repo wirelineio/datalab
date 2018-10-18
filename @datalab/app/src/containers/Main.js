@@ -82,7 +82,8 @@ export default compose(
     options: {
       context: {
         serviceType: 'messaging'
-      }
+      },
+      fetchPolicy: 'cache-and-network'
     },
     props({ data: { messages = [] } }) {
       return {
@@ -97,7 +98,8 @@ export default compose(
     options: {
       context: {
         serviceType: 'tasks'
-      }
+      },
+      fetchPolicy: 'cache-and-network'
     },
     props({ data: { tasks = [] } }) {
       return {

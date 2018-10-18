@@ -16,9 +16,7 @@ const styles = theme => ({
     },
     '.dragging &:hover .column-title': {
       color: '#fff'
-    },
-    display: 'flex',
-    flexDirection: 'column'
+    }
   },
   cards: {
     flex: 1,

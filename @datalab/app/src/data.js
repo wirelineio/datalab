@@ -74,7 +74,7 @@ export default {
       type: 'messaging',
       name: 'Google Mail',
       description: 'Service to send messages through Google Mail.',
-      enabled: true,
+      enabled: false,
       url: 'https://09fxpdbua5.execute-api.us-east-1.amazonaws.com/dev/gql'
     },
     {
@@ -101,7 +101,7 @@ export default {
       type: 'messaging',
       name: 'Hotmail Mail',
       description: 'Service to send messages through Hotmail.',
-      enabled: true,
+      enabled: false,
       url: 'https://r0zpvjmdck.execute-api.us-east-1.amazonaws.com/dev/gql'
     }
   ]
