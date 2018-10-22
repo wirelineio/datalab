@@ -13,7 +13,7 @@ module.exports = {
   stats: 'errors-only',
 
   entry: {
-    handler: ['babel-polyfill', path.resolve('./handler.js')]
+    handler: [path.resolve('./handler.js')]
   },
 
   output: {
@@ -49,6 +49,11 @@ module.exports = {
             cacheDirectory: './dist/babel-cache/'
           }
         }
+      },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
       }
     ]
   }

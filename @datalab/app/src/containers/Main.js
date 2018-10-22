@@ -49,7 +49,7 @@ class Main extends Component {
 export default compose(
   withApollo,
   graphql(GET_COLUMNS, {
-    props({ data: { columns } }) {
+    props({ data: { columns = [] } }) {
       return { columns };
     }
   }),
@@ -69,14 +69,14 @@ export default compose(
     }
   }),
   graphql(GET_SERVICES, {
-    props({ data: { services }, ownProps: { client } }) {
+    props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
       client.updateServices(services);
       return { services: services.filter(s => s.enabled) };
     }
   }),
   graphql(GET_MESSAGES, {
-    skip({ services }) {
+    skip({ services = [] }) {
       return !services.find(s => s.type === 'messaging');
     },
     options: {
@@ -92,7 +92,7 @@ export default compose(
     }
   }),
   graphql(GET_TASKS, {
-    skip({ services }) {
+    skip({ services = [] }) {
       return !services.find(s => s.type === 'tasks');
     },
     options: {

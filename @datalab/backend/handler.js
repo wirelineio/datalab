@@ -30,9 +30,43 @@ const schema = makeExecutableSchema({
       }
     },
     Mutation: {
-      //addTask(obj, { content, to }) {
+      updateCardOrder(obj, { source, destination, cardId }) {
+        if (!destination) {
+          return [];
+        }
 
-      //},
+        if (destination.droppableId === source.droppableId && destination.index === source.index) {
+          return [];
+        }
+
+        const sourceColumn = columns.find(c => c.id === source.droppableId);
+        const destinationColumn = columns.find(c => c.id === destination.droppableId);
+        const card = sourceColumn.cards.find(c => c.id === cardId);
+        sourceColumn.cards.splice(source.index, 1);
+        destinationColumn.cards.splice(destination.index, 0, card);
+        sourceColumn.cards = sourceColumn.cards.map((card, index) => {
+          card.index = index;
+          return card;
+        });
+
+        if (source.droppableId === destination.droppableId) {
+          // order cards in same column
+          return columns;
+        }
+
+        // order cards in different columns
+        destinationColumn.cards = destinationColumn.cards.map((card, index) => {
+          card.index = index;
+          return card;
+        });
+
+        return columns;
+      },
+      switchService(obj, { id }) {
+        const service = services.find(s => s.id === id);
+        service.enabled = !service.enabled;
+        return service;
+      }
     },
     Date: new GraphQLScalarType({
       name: 'Date',
