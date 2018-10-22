@@ -28,8 +28,7 @@ const routes = [
 class App extends Component {
   render() {
     return (
-      // TODO: fix this!
-      <BrowserRouter basename="/dev">
+      <BrowserRouter basename={window.config.PUBLIC_PATH}>
         <Layout routes={routes}>
           <Switch>
             {routes.map((rProps, key) => (

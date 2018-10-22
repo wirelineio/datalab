@@ -10,7 +10,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -18,7 +17,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 
 const drawerWidth = 240;
 
@@ -112,9 +110,9 @@ class Layout extends React.Component {
   getRoute() {
     const {
       routes,
-      location: { pathname }
+      match: { path }
     } = this.props;
-    return routes.find(r => r.path === pathname);
+    return routes.find(r => r.path === path);
   }
 
   renderSidebar() {
@@ -171,9 +169,7 @@ class Layout extends React.Component {
             <Divider />
             {this.renderSidebar()}
           </Drawer>
-          <main className={classes.content}>
-            {children}
-          </main>
+          <main className={classes.content}>{children}</main>
         </div>
       </MuiThemeProvider>
     );
@@ -181,6 +177,6 @@ class Layout extends React.Component {
 }
 
 export default compose(
-  withStyles(styles),
-  withRouter
+  withRouter,
+  withStyles(styles)
 )(Layout);

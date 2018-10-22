@@ -39,7 +39,10 @@ module.exports = {
       path: '../',
       filename: 'webpack.zip'
     }),
-
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '')
+    }),
     // Issue with got https://github.com/sindresorhus/got/issues/345.
     new webpack.IgnorePlugin(/^electron$/),
     // The pg-native bindings are not needed.

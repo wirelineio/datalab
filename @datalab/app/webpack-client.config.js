@@ -44,7 +44,7 @@ module.exports = {
 
   // https://www.npmjs.com/package/html-webpack-plugin
   plugins: [
-    //new CopyWebpackPlugin(['assets']),
+    new CopyWebpackPlugin(['assets']),
 
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
@@ -87,6 +87,7 @@ module.exports = {
             }
           }
         ]
-      }    ]
+      }
+    ]
   }
 };

@@ -7,7 +7,8 @@ import Wireline from '@wirelineio/sdk';
 
 export const index = Wireline.exec(async (event, context, response) => {
   const localConfig = {
-    rootId: 'ux-root'
+    rootId: 'ux-root',
+    PUBLIC_PATH: process.env.PUBLIC_PATH
   };
 
   response.set('Content-Type', 'text/html');
@@ -21,13 +22,13 @@ export const index = Wireline.exec(async (event, context, response) => {
         content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
       />
       <title>Wireline Github App</title>
-      <link rel="shortcut icon" href="./favicon.ico">
+      <link rel="shortcut icon" href="${process.env.PUBLIC_PATH}/favicon.ico">
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     </head>
     <body>
       <div id="${localConfig.rootId}"></div>
       <script>window.config = ${JSON.stringify(localConfig)};</script>
-      <script src="/dev/assets/app.js"></script>
+      <script src="${process.env.PUBLIC_PATH}/assets/app.js"></script>
     </body>
     </html>
   `;

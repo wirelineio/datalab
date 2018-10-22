@@ -53,7 +53,7 @@
   "scripts": {
     "build:server": "webpack",
     "build:client": "webpack --config=webpack-client.config.js",
-    "build": "npm run build:server && npm run build:client",
+    "build": "PUBLIC_PATH=/dev npm run build:server && npm run build:client",
     "dev": "wire dev"
   }
 }
