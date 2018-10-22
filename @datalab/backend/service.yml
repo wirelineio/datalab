@@ -1,0 +1,13 @@
+name: asana-service
+platform: nodejs
+buildTool: yarn
+version: 0.0.1
+functions:
+  gql:
+    handler: handler.gql
+    description: GraphQL Endpoint
+    events:
+      - http:
+          path: gql
+          method: post
+          cors: true

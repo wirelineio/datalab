@@ -1,0 +1,63 @@
+#
+# Types
+#
+scalar Date
+
+type Card {
+  id: ID!
+  index: Int!
+  title: String!
+}
+
+type Column {
+  id: ID!
+  index: Int!
+  title: String!
+  cards: [Card!]
+}
+
+type Service {
+  id: ID!
+  type: String!
+  name: String!
+  description: String!
+  enabled: Boolean!
+  url: String!
+}
+
+type DragDrop {
+  droppableId: ID!
+  index: Int!
+}
+
+#
+# Root Query
+#
+
+type Query {
+
+  getAllColumns: [Column]!
+
+  getAllServices: [Service]!
+
+}
+
+#
+# Root Mutation
+#
+
+type Mutation {
+
+  #updateCardOrder(source: DragDrop!, destination: DragDrop, cardId: ID!): [Column!]
+
+  #switchService(id: ID!): Service!
+
+}
+
+#
+# Schema
+#
+schema {
+  query: Query
+  mutation: Mutation
+}
