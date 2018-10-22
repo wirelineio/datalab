@@ -1,0 +1,11 @@
+name: asana-stack
+domain: tinchoz49
+stage: dev
+provider:
+  name: aws
+  region: us-east-1
+stack:
+  gql-asana:
+    deployment:
+      image: 'wrn::asana-service'
+      version: 0.0.1

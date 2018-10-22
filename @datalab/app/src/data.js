@@ -75,7 +75,7 @@ export default {
       name: 'Google Mail',
       description: 'Service to send messages through Google Mail.',
       enabled: false,
-      url: 'https://09fxpdbua5.execute-api.us-east-1.amazonaws.com/dev/gql'
+      url: 'https://6jl9mysuhl.execute-api.us-east-1.amazonaws.com/dev/gql'
     },
     {
       id: 'service-2',
@@ -84,7 +84,7 @@ export default {
       name: 'Asana',
       description: 'Create tasks connected to Asana.',
       enabled: false,
-      url: 'https://ayfgdg9orh.execute-api.us-east-1.amazonaws.com/dev/gql'
+      url: 'https://3fkxqlidl0.execute-api.us-east-1.amazonaws.com/dev/gql'
     },
     {
       id: 'service-3',
@@ -102,7 +102,7 @@ export default {
       name: 'Hotmail Mail',
       description: 'Service to send messages through Hotmail.',
       enabled: false,
-      url: 'https://r0zpvjmdck.execute-api.us-east-1.amazonaws.com/dev/gql'
+      url: 'https://tzd6hneuuk.execute-api.us-east-1.amazonaws.com/dev/gql'
     }
   ]
 };

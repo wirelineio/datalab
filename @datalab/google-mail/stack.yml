@@ -1,0 +1,11 @@
+name: google-mail-stack
+domain: tinchoz49
+stage: dev
+provider:
+  name: aws
+  region: us-east-1
+stack:
+  gql-google-mail:
+    deployment:
+      image: 'wrn::google-mail-service'
+      version: 0.0.1
