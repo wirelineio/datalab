@@ -1,4 +1,4 @@
-name: hotmail-service
+name: dl-tasks-asana-service
 platform: nodejs
 buildTool: yarn
 version: 0.0.1

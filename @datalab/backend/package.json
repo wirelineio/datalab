@@ -32,6 +32,6 @@
   },
   "scripts": {
     "build": "webpack",
-    "dev": "wire dev"
+    "dev": "wire dev --port 4000"
   }
 }

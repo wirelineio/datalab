@@ -1,4 +1,4 @@
-name: asana-service
+name: dl-messaging-google-mail-service
 platform: nodejs
 buildTool: yarn
 version: 0.0.1

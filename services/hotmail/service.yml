@@ -1,4 +1,4 @@
-name: google-mail-service
+name: dl-messaging-hotmail-service
 platform: nodejs
 buildTool: yarn
 version: 0.0.1

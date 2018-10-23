@@ -7,6 +7,7 @@ import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
+import sort from '../components/dnd/sort';
 
 class Main extends Component {
   handleOrder = result => {
@@ -24,14 +25,14 @@ class Main extends Component {
         {({ item: column }) => {
           return (
             <Column id={column.id} title={column.title} list={column.cards}>
-              {({ item: card, key }) => {
+              {({ item: card }) => {
                 const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
                 const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
                 return (
                   <Card
                     id={card.id}
                     title={card.title}
-                    index={key}
+                    index={card.index}
                     messages={cardMessages}
                     tasks={cardTasks}
                     toggleTask={toggleTask}
@@ -54,7 +55,7 @@ export default compose(
     }
   }),
   graphql(UPDATE_CARD_ORDER, {
-    props({ mutate }) {
+    props({ mutate, ownProps: { columns } }) {
       return {
         updateCardOrder: (source, destination, cardId) => {
           return mutate({
@@ -62,6 +63,9 @@ export default compose(
               source,
               destination,
               cardId
+            },
+            optimisticResponse: {
+              columns: sort(columns, source, destination, cardId)
             }
           });
         }

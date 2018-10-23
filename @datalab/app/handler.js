@@ -8,7 +8,8 @@ import Wireline from '@wirelineio/sdk';
 export const index = Wireline.exec(async (event, context, response) => {
   const localConfig = {
     rootId: 'ux-root',
-    PUBLIC_PATH: process.env.PUBLIC_PATH
+    PUBLIC_PATH: process.env.PUBLIC_PATH,
+    BACKEND_SERVICE: context.wireline.services.backend
   };
 
   response.set('Content-Type', 'text/html');
