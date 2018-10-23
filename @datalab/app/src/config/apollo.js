@@ -8,14 +8,14 @@ import { onError } from 'apollo-link-error';
 
 import { ServiceLink, extendClient } from './apollo-link-service';
 
-const { BACKEND_SERVICE } = window.config;
+const { BACKEND_ENDPOINT } = window.config;
 
 // stores
 //import stores from '../stores';
 
 const cache = new InMemoryCache();
 
-const backendLink = new HttpLink({ uri: BACKEND_SERVICE.endpoint });
+const backendLink = new HttpLink({ uri: `${BACKEND_ENDPOINT}/gql` });
 
 const serviceLink = new ServiceLink({
   fallback: backendLink
