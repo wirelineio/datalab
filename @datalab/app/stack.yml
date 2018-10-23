@@ -1,11 +1,15 @@
-name: datalab
+name: datalab-stack
 domain: tinchoz49
 stage: dev
 provider:
   name: aws
   region: us-east-1
 stack:
-  my-deployment:
+  web:
     deployment:
-      image: 'wrn::datalab'
+      image: 'wrn::datalab-app'
+      version: 0.0.1
+  backend:
+    deployment:
+      image: 'wrn::datalab-backend'
       version: 0.0.1

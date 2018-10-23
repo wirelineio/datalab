@@ -8,16 +8,17 @@ import { onError } from 'apollo-link-error';
 
 import { ServiceLink, extendClient } from './apollo-link-service';
 
+const { BACKEND_SERVICE } = window.config;
+
 // stores
-import stores from '../stores';
+//import stores from '../stores';
 
 const cache = new InMemoryCache();
 
-const fakerLink = new HttpLink({ uri: 'https://fakerql.com/graphql' });
+const backendLink = new HttpLink({ uri: BACKEND_SERVICE.endpoint });
 
 const serviceLink = new ServiceLink({
-  rootLinks: [{ type: 'faker', fakerLink }],
-  fallback: fakerLink
+  fallback: backendLink
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -28,18 +29,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
-const stateLink = withClientState({
-  ...merge(...stores),
-  cache
-});
+//const stateLink = withClientState({
+  //...merge(...stores),
+  //cache
+//});
 
 const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, stateLink, serviceLink]),
+  link: ApolloLink.from([errorLink, serviceLink]),
   cache
 });
 
 extendClient(client, serviceLink);
 
-client.onResetStore(stateLink.writeDefaults);
+//client.onResetStore(stateLink.writeDefaults);
 
 export default client;

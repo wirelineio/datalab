@@ -24,7 +24,7 @@ class Services extends Component {
 
 export default compose(
   graphql(GET_SERVICES, {
-    props({ data: { services } }) {
+    props({ data: { services = [] } }) {
       return { services };
     }
   }),

@@ -7,6 +7,7 @@ import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
+import sort from '../components/dnd/sort';
 
 class Main extends Component {
   handleOrder = result => {
@@ -24,14 +25,14 @@ class Main extends Component {
         {({ item: column }) => {
           return (
             <Column id={column.id} title={column.title} list={column.cards}>
-              {({ item: card, key }) => {
+              {({ item: card }) => {
                 const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
                 const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
                 return (
                   <Card
                     id={card.id}
                     title={card.title}
-                    index={key}
+                    index={card.index}
                     messages={cardMessages}
                     tasks={cardTasks}
                     toggleTask={toggleTask}
@@ -49,12 +50,12 @@ class Main extends Component {
 export default compose(
   withApollo,
   graphql(GET_COLUMNS, {
-    props({ data: { columns } }) {
+    props({ data: { columns = [] } }) {
       return { columns };
     }
   }),
   graphql(UPDATE_CARD_ORDER, {
-    props({ mutate }) {
+    props({ mutate, ownProps: { columns } }) {
       return {
         updateCardOrder: (source, destination, cardId) => {
           return mutate({
@@ -62,6 +63,9 @@ export default compose(
               source,
               destination,
               cardId
+            },
+            optimisticResponse: {
+              columns: sort(columns, source, destination, cardId)
             }
           });
         }
@@ -69,14 +73,14 @@ export default compose(
     }
   }),
   graphql(GET_SERVICES, {
-    props({ data: { services }, ownProps: { client } }) {
+    props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
       client.updateServices(services);
       return { services: services.filter(s => s.enabled) };
     }
   }),
   graphql(GET_MESSAGES, {
-    skip({ services }) {
+    skip({ services = [] }) {
       return !services.find(s => s.type === 'messaging');
     },
     options: {
@@ -92,7 +96,7 @@ export default compose(
     }
   }),
   graphql(GET_TASKS, {
-    skip({ services }) {
+    skip({ services = [] }) {
       return !services.find(s => s.type === 'tasks');
     },
     options: {
