@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "app.datalab",
+      "program": "${workspaceFolder}/node_modules/.bin/wire",
+      "args": [
+        "dev",
+        "-p",
+        "3000"
+      ],
+      "cwd": "${workspaceFolder}/@datalab/app"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "backend.datalab",
+      "program": "${workspaceFolder}/node_modules/.bin/wire",
+      "args": [
+        "dev",
+        "-p",
+        "4000"
+      ],
+      "cwd": "${workspaceFolder}/@datalab/backend",
+      "env": {
+        "WRL_STACK": "FAKE_STACK",
+        "WRL_DOMAIN": "FAKE_DOMAIN",
+        "WRL_DEPLOYMENT": "FAKE_DEPLOYMENT",
+        "WRL_STAGE": "DEV",
+        "WRL_VERSION": "0.0.1"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "@datalab",
+      "configurations": ["app.datalab", "backend.datalab"]
+    }
+  ]
+}
