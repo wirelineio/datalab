@@ -1,5 +1,5 @@
 name: dl-messaging-hotmail-stack
-domain: tinchoz49
+domain: example.com
 stage: dev
 provider:
   name: aws

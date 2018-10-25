@@ -1,5 +1,5 @@
 name: datalab-stack
-domain: tinchoz49
+domain: example.com
 stage: dev
 provider:
   name: aws
@@ -16,3 +16,6 @@ stack:
   wireline.io/store:
     reference:
       endpointUrl: wrn::wireline.io/wireline/store
+  wireline.io/registry:
+    reference:
+      endpointUrl: wrn::wireline.io/wireline/registry
