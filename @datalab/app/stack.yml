@@ -13,3 +13,6 @@ stack:
     deployment:
       image: 'wrn::datalab-backend'
       version: 0.0.1
+  wireline.io/store:
+    reference:
+      endpointUrl: wrn::wireline.io/wireline/store

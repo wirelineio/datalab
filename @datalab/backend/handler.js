@@ -7,12 +7,13 @@
 import 'source-map-support/register';
 
 import Wireline from '@wirelineio/sdk';
+import Store from '@wirelineio/store-client';
+
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
 import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 
 import SourceSchema from './schema.graphql';
-
 import { columns, services } from './data';
 
 const schema = makeExecutableSchema({
@@ -22,15 +23,17 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      getAllColumns() {
+      async getAllColumns(obj, args, { store }) {
+        const { columns = [] } = await store.get('columns');
         return columns;
       },
-      getAllServices() {
+      async getAllServices(obj, args, { store }) {
+        const { services = [] } = await store.get('services');
         return services;
       }
     },
     Mutation: {
-      updateCardOrder(obj, { source, destination, cardId }) {
+      async updateCardOrder(obj, { source, destination, cardId }, { store }) {
         if (!destination) {
           return [];
         }
@@ -39,6 +42,7 @@ const schema = makeExecutableSchema({
           return [];
         }
 
+        const { columns = [] } = await store.get('columns');
         const sourceColumn = columns.find(c => c.id === source.droppableId);
         const destinationColumn = columns.find(c => c.id === destination.droppableId);
         const card = sourceColumn.cards.find(c => c.id === cardId);
@@ -60,11 +64,18 @@ const schema = makeExecutableSchema({
           return card;
         });
 
+        await store.set('columns', columns);
+
         return columns;
       },
-      switchService(obj, { id }) {
+      async switchService(obj, { id }, { store }) {
+        const { services = [] } = await store.get('services');
+
         const service = services.find(s => s.id === id);
         service.enabled = !service.enabled;
+
+        await store.set('services', services);
+
         return service;
       }
     },
@@ -87,12 +98,27 @@ const schema = makeExecutableSchema({
   }
 });
 
+let init = false;
+
 module.exports = {
   gql: Wireline.exec(async (event, context, response) => {
     const { body } = event;
     const { query, variables } = typeof body === 'string' ? JSON.parse(body) : body;
     let queryRoot = {};
-    let queryContext = {};
+
+    const store = new Store(context);
+    let queryContext = {
+      store
+    };
+
+    if (!init) {
+      const { seeded } = await store.get('seeded');
+      if (!seeded) {
+        await Promise.all([store.set('columns', columns), store.set('services', services)]);
+      }
+      await store.set('seeded', true);
+      init = true;
+    }
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });

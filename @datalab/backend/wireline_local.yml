@@ -1,0 +1,2 @@
+services:
+  'wireline.io/store': 'wrn::wireline.io/wireline/store'
