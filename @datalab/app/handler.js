@@ -14,7 +14,7 @@ export const index = Wireline.exec(async (event, context, response) => {
   };
 
   response.set('Content-Type', 'text/html');
-  // TODO: why I have to define /dev/assets/app.js ?
+
   return `<!DOCTYPE>
     <html>
     <head>
