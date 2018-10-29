@@ -16,6 +16,3 @@ stack:
   wireline.io/store:
     reference:
       endpointUrl: wrn::wireline.io/wireline/store
-  wireline.io/registry:
-    reference:
-      endpointUrl: wrn::wireline.io/wireline/registry
