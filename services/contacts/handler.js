@@ -59,9 +59,9 @@ const schema = makeExecutableSchema({
       }
     },
     Mutation: {
-      async addContact(obj, args, { store }) {
+      async createContact(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
-        const contact = Object.assing({ id: uuid() }, args);
+        const contact = Object.assign({ id: uuid() }, args);
         contacts.push(contact);
         await store.set('contacts', contacts);
         return contact;
@@ -97,14 +97,14 @@ const schema = makeExecutableSchema({
         await store.set('contacts', contacts.filter(c => c.id !== id));
         return contact;
       },
-      async addCompany(obj, { name }, { store }) {
+      async createCompany(obj, { name }, { store }) {
         const { companies = [] } = await store.get('companies');
         const company = { id: uuid(), name };
         companies.push(company);
         await store.set('companies', companies);
         return company;
       },
-      async addArea(obj, { name }, { store }) {
+      async createArea(obj, { name }, { store }) {
         const { areas = [] } = await store.get('areas');
         const area = { id: uuid(), name };
         areas.push(area);
