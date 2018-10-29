@@ -31,6 +31,10 @@ type Query {
   getAllContacts: [Contact]!
 
   getContact(id: ID!): Contact
+
+  getAllCompanies: [Company]!
+
+  getAllAreas: [Area]!
 }
 
 #
@@ -38,11 +42,15 @@ type Query {
 #
 
 type Mutation {
-  addContact(name: String!, email: String!, phone: String!, companyId: ID!, areaId: ID!): Contact
+  addContact(name: String!, email: String!, phone: String!, companyId: ID!, areaId: ID!): Contact!
 
-  updateContact(name: String, email: String, phone: String, companyId: ID, areaId: ID): Contact
+  updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, areaId: ID): Contact
 
   deleteContact(id: ID!): Contact
+
+  addCompany(name: String!): Company!
+
+  addArea(name: String!): Area!
 }
 
 #
