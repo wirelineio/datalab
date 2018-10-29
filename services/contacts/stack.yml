@@ -1,0 +1,14 @@
+name: dl-contacts-stack
+domain: example.com
+stage: dev
+provider:
+  name: aws
+  region: us-east-1
+stack:
+  gql:
+    deployment:
+      image: 'wrn::dl-contacts-service'
+      version: 0.0.1
+  wireline.io/store:
+    reference:
+      endpointUrl: wrn::wireline.io/wireline/store

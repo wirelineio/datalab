@@ -1,0 +1,54 @@
+#
+# Types
+#
+scalar Date
+
+type Area {
+  id: ID!
+  name: String!
+}
+
+type Company {
+  id: ID!
+  name: String!
+}
+
+type Contact {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  company: Company!
+  area: Area!
+  createdAt: Date!
+}
+
+#
+# Root Query
+#
+
+type Query {
+  getAllContacts: [Contact]!
+
+  getContact(id: ID!): Contact
+}
+
+#
+# Root Mutation
+#
+
+type Mutation {
+  addContact(name: String!, email: String!, phone: String!, companyId: ID!, areaId: ID!): Contact
+
+  updateContact(name: String, email: String, phone: String, companyId: ID, areaId: ID): Contact
+
+  deleteContact(id: ID!): Contact
+}
+
+#
+# Schema
+#
+schema {
+  query: Query
+  mutation: Mutation
+}

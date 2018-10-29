@@ -7,7 +7,8 @@
   "license": "UNLICENSED",
   "private": true,
   "workspaces": [
-    "@datalab/*"
+    "@datalab/*",
+    "services/*"
   ],
   "lint-staged": {
     "*.js": "eslint --ignore-path .eslintignore"
