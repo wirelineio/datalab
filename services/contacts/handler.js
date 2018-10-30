@@ -86,6 +86,32 @@ const schema = makeExecutableSchema({
         await store.set('contacts', contacts);
         return contact;
       },
+      async updateMultipleContacts(obj, args, { store }) {
+        const { ids } = args;
+
+        const [{ contacts = [] }, { companies = [] }, { areas = [] }] = await Promise.all([
+          store.get('contacts'),
+          store.get('companies'),
+          store.get('areas')
+        ]);
+
+        contacts.filter(c => ids.includes(c.id)).forEach(contact => {
+          Object.keys(args).forEach(prop => {
+            if (prop !== 'ids') {
+              contact[prop] = args[prop];
+            }
+          });
+        });
+
+        await store.set('contacts', contacts);
+
+        contacts.sort((a, b) => a.createdAt - b.createdAt);
+        return contacts.map(c => {
+          c.company = companies.find(comp => comp.id === c.companyId);
+          c.area = areas.find(a => a.id === c.areaId);
+          return c;
+        });
+      },
       async deleteContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         const contact = contacts.find(c => c.id === id);

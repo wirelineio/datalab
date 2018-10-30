@@ -58,10 +58,10 @@ export const updateBoard = ({
   groupsTitle = 'name',
 
   items,
-  columnsBy,
-  columnsTitle,
-  cardsBy,
-  cardsTitle,
+  columnsBy = 'area.id',
+  columnsTitle = 'area.name',
+  cardsBy = 'company.id',
+  cardsTitle = 'company.name',
   contactsId = 'id',
   contactsTitle = 'name'
 }) => {

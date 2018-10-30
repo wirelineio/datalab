@@ -46,6 +46,8 @@ type Mutation {
 
   updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, areaId: ID): Contact
 
+  updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, areaId: ID): [Contact]
+
   deleteContact(id: ID!): Contact
 
   createCompany(name: String!): Company!

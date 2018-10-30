@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
-import { GET_COLUMNS, UPDATE_CARD_ORDER, GET_SERVICES, getType, updateBoard } from '../stores/board';
+import { UPDATE_CARD_ORDER, GET_SERVICES, getType, updateBoard } from '../stores/board';
 import { GET_MESSAGES } from '../stores/messaging';
 import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
-import { GET_CONTACTS } from '../stores/contacts';
+import { GET_CONTACTS, UPDATE_MULTIPLE_CONTACTS, optimisticUpdateMultipleContacts } from '../stores/contacts';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
@@ -13,9 +13,25 @@ import sort from '../components/dnd/sort';
 class Main extends Component {
   handleOrder = result => {
     const { source, destination, draggableId } = result;
-    const { updateCardOrder } = this.props;
+    const { updateCardOrder, updateMultipleContacts, columns = [] } = this.props;
+    if (!destination) {
+      return null;
+    }
 
-    //return updateCardOrder(source, destination, draggableId);
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return null;
+    }
+
+    if (destination.droppableId === source.droppableId) {
+      //return updateCardOrder(source, destination, draggableId);
+    } else {
+      const ids = columns
+        .find(c => c.id === source.droppableId)
+        .cards.find(c => c.id === draggableId)
+        .contacts.map(c => c.id);
+
+      return updateMultipleContacts({ ids, areaId: destination.droppableId });
+    }
   };
 
   render() {
@@ -55,29 +71,6 @@ class Main extends Component {
 
 export default compose(
   withApollo,
-  //graphql(GET_COLUMNS, {
-  //props({ data: { columns = [] } }) {
-  //return { columns };
-  //}
-  //}),
-  //graphql(UPDATE_CARD_ORDER, {
-  //props({ mutate, ownProps: { columns } }) {
-  //return {
-  //updateCardOrder: (source, destination, cardId) => {
-  //return mutate({
-  //variables: {
-  //source,
-  //destination,
-  //cardId
-  //},
-  //optimisticResponse: {
-  //columns: sort(columns, source, destination, cardId)
-  //}
-  //});
-  //}
-  //};
-  //}
-  //}),
   graphql(GET_SERVICES, {
     props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
@@ -101,12 +94,45 @@ export default compose(
       return {
         columns: updateBoard({
           groups: areas,
-          items: contacts,
-          columnsBy: 'area.id',
-          columnsTitle: 'area.name',
-          cardsBy: 'company.id',
-          cardsTitle: 'company.name'
-        })
+          items: contacts
+        }),
+        contacts,
+        areas
+      };
+    }
+  }),
+  graphql(UPDATE_CARD_ORDER, {
+    props({ mutate, ownProps: { columns } }) {
+      return {
+        updateCardOrder: (source, destination, cardId) => {
+          return mutate({
+            variables: {
+              source,
+              destination,
+              cardId
+            },
+            optimisticResponse: {
+              columns: sort(columns, source, destination, cardId)
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_MULTIPLE_CONTACTS, {
+    props({ mutate, ownProps: { contacts, areas } }) {
+      return {
+        updateMultipleContacts: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            optimisticResponse: {
+              contacts: optimisticUpdateMultipleContacts({ contacts, areas }, variables)
+            }
+          });
+        }
       };
     }
   }),

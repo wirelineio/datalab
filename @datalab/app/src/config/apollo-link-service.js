@@ -69,9 +69,13 @@ export class ServiceLink extends ApolloLink {
   runMutation(context, operation) {
     const { serviceType, serviceId } = context;
 
-    let service = this.rootLinks.find(service => service.type === serviceType && service.id === serviceId);
+    let service = this.rootLinks.find(
+      service => service.type === serviceType && (!serviceId || service.id === serviceId)
+    );
     if (!service) {
-      service = this.userLinks.find(service => service.type === serviceType && service.id === serviceId);
+      service = this.userLinks.find(
+        service => service.type === serviceType && (!serviceId || service.id === serviceId)
+      );
     }
 
     if (!service) {
