@@ -27,9 +27,20 @@ const schema = makeExecutableSchema({
         const { columns = [] } = await store.get('columns');
         return columns;
       },
-      async getAllServices(obj, args, { store }) {
+      async getAllServices(obj, args, { store, localServices }) {
         const { services = [] } = await store.get('services');
-        return services;
+
+        if (!localServices) {
+          return services;
+        }
+
+        return services.map(s => {
+          if (localServices[s.id]) {
+            s.url = localServices[s.id];
+          }
+
+          return s;
+        });
       }
     },
     Mutation: {
@@ -68,13 +79,21 @@ const schema = makeExecutableSchema({
 
         return columns;
       },
-      async switchService(obj, { id }, { store }) {
+      async switchService(obj, { id }, { store, localServices }) {
         const { services = [] } = await store.get('services');
 
         const service = services.find(s => s.id === id);
         service.enabled = !service.enabled;
 
         await store.set('services', services);
+
+        if (!localServices) {
+          return service;
+        }
+
+        if (localServices[service.id]) {
+          service.url = localServices[service.id];
+        }
 
         return service;
       }
@@ -108,14 +127,15 @@ module.exports = {
 
     const store = new Store(context);
     let queryContext = {
+      localServices: context.wireline.config.local_services,
       store
     };
 
     if (!init) {
       const { seeded } = await store.get('seeded');
-      if (!seeded) {
-        await Promise.all([store.set('columns', columns), store.set('services', services)]);
-      }
+      //if (!seeded) {
+      await Promise.all([store.set('columns', columns), store.set('services', services)]);
+      //}
       await store.set('seeded', true);
       init = true;
     }

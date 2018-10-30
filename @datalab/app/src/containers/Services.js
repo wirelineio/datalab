@@ -3,7 +3,7 @@ import { compose, graphql } from 'react-apollo';
 
 import Grid from '@material-ui/core/Grid';
 
-import { GET_SERVICES, SWITCH_SERVICE } from '../stores/board';
+import { GET_SERVICES, SWITCH_SERVICE, getType } from '../stores/board';
 import ServiceCard from '../components/ServiceCard';
 
 class Services extends Component {
@@ -25,7 +25,12 @@ class Services extends Component {
 export default compose(
   graphql(GET_SERVICES, {
     props({ data: { services = [] } }) {
-      return { services };
+      return {
+        services: services.map(s => ({
+          ...s,
+          type: getType(s)
+        }))
+      };
     }
   }),
   graphql(SWITCH_SERVICE, {
