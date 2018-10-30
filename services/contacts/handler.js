@@ -61,7 +61,7 @@ const schema = makeExecutableSchema({
     Mutation: {
       async createContact(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
-        const contact = Object.assign({ id: uuid() }, args);
+        const contact = Object.assign({}, args, { id: uuid() });
         contacts.push(contact);
         await store.set('contacts', contacts);
         return contact;

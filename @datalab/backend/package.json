@@ -33,7 +33,7 @@
   },
   "scripts": {
     "build": "NODE_ENV=production webpack",
-    "dev": "npm run clean && wire dev --port 4000",
+    "dev": "npm run clean && wire dev --port 3001",
     "clean": "rm -rf dist"
   }
 }

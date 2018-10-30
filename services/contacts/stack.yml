@@ -1,4 +1,4 @@
-name: dl-contacts-stack
+name: dl-orgs-contacts-stack
 domain: example.com
 stage: dev
 provider:
@@ -7,7 +7,7 @@ provider:
 stack:
   gql:
     deployment:
-      image: 'wrn::dl-contacts-service'
+      image: 'wrn::dl-orgs-contacts-service'
       version: 0.0.1
   wireline.io/store:
     reference:

@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
 import { withStyles } from '@material-ui/core/styles';
 import { default as MuiCard } from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,9 +14,9 @@ import RootRef from '@material-ui/core/RootRef';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Messaging from '../service-types/Messaging';
 import Tasks from '../service-types/Tasks';
+import Orgs from '../service-types/Orgs';
 
 const styles = theme => ({
   card: {
@@ -41,8 +40,18 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes, messages, tasks, toggleTask }) => (
+const Services = ({ classes, contacts, messages, tasks, toggleTask }) => (
   <Fragment>
+    {contacts && (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={classes.heading}>Contacts</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Orgs contacts={contacts} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )}
     {tasks && (
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -66,39 +75,41 @@ const Services = ({ classes, messages, tasks, toggleTask }) => (
   </Fragment>
 );
 
-class Card extends Component {
-  render() {
-    const { classes, id, title, index, subheader, messages, tasks, toggleTask } = this.props;
-
-    return (
-      <Draggable draggableId={id} index={index}>
-        {(provided, snapshot) => (
-          <RootRef rootRef={provided.innerRef}>
-            <MuiCard
-              className={classes.card}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              raised={snapshot.isDragging}
-            >
-              <CardHeader
-                action={
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                title={title}
-                subheader={subheader}
-                titleTypographyProps={{ variant: 'body2' }}
+const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks, toggleTask }) => {
+  return (
+    <Draggable draggableId={id} index={index}>
+      {(provided, snapshot) => (
+        <RootRef rootRef={provided.innerRef}>
+          <MuiCard
+            className={classes.card}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            raised={snapshot.isDragging}
+          >
+            <CardHeader
+              action={
+                <IconButton>
+                  <MoreVertIcon />
+                </IconButton>
+              }
+              title={title}
+              subheader={subheader}
+              titleTypographyProps={{ variant: 'body2' }}
+            />
+            <CardContent className={classes.cardContent}>
+              <Services
+                classes={classes}
+                contacts={contacts}
+                messages={messages}
+                tasks={tasks}
+                toggleTask={toggleTask}
               />
-              <CardContent className={classes.cardContent}>
-                <Services classes={classes} messages={messages} tasks={tasks} toggleTask={toggleTask} />
-              </CardContent>
-            </MuiCard>
-          </RootRef>
-        )}
-      </Draggable>
-    );
-  }
-}
+            </CardContent>
+          </MuiCard>
+        </RootRef>
+      )}
+    </Draggable>
+  );
+};
 
 export default withStyles(styles)(Card);

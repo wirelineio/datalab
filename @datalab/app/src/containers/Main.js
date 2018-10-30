@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
-import { GET_COLUMNS, UPDATE_CARD_ORDER, GET_SERVICES } from '../stores/board';
+import { GET_COLUMNS, UPDATE_CARD_ORDER, GET_SERVICES, getType, updateBoard } from '../stores/board';
 import { GET_MESSAGES } from '../stores/messaging';
 import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
+import { GET_CONTACTS } from '../stores/contacts';
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
@@ -14,11 +15,15 @@ class Main extends Component {
     const { source, destination, draggableId } = result;
     const { updateCardOrder } = this.props;
 
-    return updateCardOrder(source, destination, draggableId);
+    //return updateCardOrder(source, destination, draggableId);
   };
 
   render() {
-    const { columns, messages = null, tasks = null, toggleTask } = this.props;
+    const { columns = [], messages = null, tasks = null, toggleTask } = this.props;
+
+    if (columns.length === 0) {
+      return null;
+    }
 
     return (
       <GridColumn list={columns} onDragEnd={this.handleOrder}>
@@ -33,6 +38,7 @@ class Main extends Component {
                     id={card.id}
                     title={card.title}
                     index={card.index}
+                    contacts={card.contacts}
                     messages={cardMessages}
                     tasks={cardTasks}
                     toggleTask={toggleTask}
@@ -49,34 +55,59 @@ class Main extends Component {
 
 export default compose(
   withApollo,
-  graphql(GET_COLUMNS, {
-    props({ data: { columns = [] } }) {
-      return { columns };
-    }
-  }),
-  graphql(UPDATE_CARD_ORDER, {
-    props({ mutate, ownProps: { columns } }) {
-      return {
-        updateCardOrder: (source, destination, cardId) => {
-          return mutate({
-            variables: {
-              source,
-              destination,
-              cardId
-            },
-            optimisticResponse: {
-              columns: sort(columns, source, destination, cardId)
-            }
-          });
-        }
-      };
-    }
-  }),
+  //graphql(GET_COLUMNS, {
+  //props({ data: { columns = [] } }) {
+  //return { columns };
+  //}
+  //}),
+  //graphql(UPDATE_CARD_ORDER, {
+  //props({ mutate, ownProps: { columns } }) {
+  //return {
+  //updateCardOrder: (source, destination, cardId) => {
+  //return mutate({
+  //variables: {
+  //source,
+  //destination,
+  //cardId
+  //},
+  //optimisticResponse: {
+  //columns: sort(columns, source, destination, cardId)
+  //}
+  //});
+  //}
+  //};
+  //}
+  //}),
   graphql(GET_SERVICES, {
     props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
+      services = services.map(s => ({ ...s, type: getType(s) }));
+
       client.updateServices(services);
       return { services: services.filter(s => s.enabled) };
+    }
+  }),
+  graphql(GET_CONTACTS, {
+    skip({ services = [] }) {
+      return !services.find(s => s.type === 'orgs');
+    },
+    options: {
+      context: {
+        serviceType: 'orgs'
+      },
+      fetchPolicy: 'cache-and-network'
+    },
+    props({ data: { contacts = [], areas = [] } }) {
+      return {
+        columns: updateBoard({
+          groups: areas,
+          items: contacts,
+          columnsBy: 'area.id',
+          columnsTitle: 'area.name',
+          cardsBy: 'company.id',
+          cardsTitle: 'company.name'
+        })
+      };
     }
   }),
   graphql(GET_MESSAGES, {

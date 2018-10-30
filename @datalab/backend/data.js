@@ -69,27 +69,31 @@ export const columns = [
 
 export const services = [
   {
-    id: 'service-1',
-    type: 'messaging',
+    id: 'dl-messaging-google-mail-service',
     name: 'Google Mail',
     description: 'Service to send messages through Google Mail.',
     enabled: false,
     url: 'https://6jl9mysuhl.execute-api.us-east-1.amazonaws.com/dev/gql'
   },
   {
-    id: 'service-2',
-    type: 'tasks',
+    id: 'dl-tasks-asana-service',
     name: 'Asana',
     description: 'Create tasks connected to Asana.',
     enabled: false,
     url: 'https://3fkxqlidl0.execute-api.us-east-1.amazonaws.com/dev/gql'
   },
   {
-    id: 'service-3',
-    type: 'messaging',
+    id: 'dl-messaging-hotmail-service',
     name: 'Hotmail Mail',
     description: 'Service to send messages through Hotmail.',
     enabled: false,
+    url: 'https://tzd6hneuuk.execute-api.us-east-1.amazonaws.com/dev/gql'
+  },
+  {
+    id: 'dl-orgs-contacts-service',
+    name: 'Contacts',
+    description: 'Service to connect a contact list in your kanban.',
+    enabled: true,
     url: 'https://tzd6hneuuk.execute-api.us-east-1.amazonaws.com/dev/gql'
   }
 ];
