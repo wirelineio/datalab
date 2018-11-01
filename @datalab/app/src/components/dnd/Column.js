@@ -33,10 +33,17 @@ const styles = () => ({
   }
 });
 
-const Column = ({ id, title, list, classes, children, onDelete, onAdd }) => {
+const Column = ({ id, title, list, classes, children, onDelete, onAddCard }) => {
   return (
     <Card className={classes.root} elevation={0}>
-      <CardHeader title={title} />
+      <CardHeader
+        title={title}
+        action={
+          <IconButton aria-label="Delete" onClick={onDelete}>
+            <IconDelete />
+          </IconButton>
+        }
+      />
       <CardContent>
         <Droppable droppableId={id}>
           {provided => (
@@ -54,10 +61,7 @@ const Column = ({ id, title, list, classes, children, onDelete, onAdd }) => {
         </Droppable>
       </CardContent>
       <CardActions className={classes.actions} disableActionSpacing>
-        <IconButton aria-label="Delete" onClick={onDelete}>
-          <IconDelete />
-        </IconButton>
-        <IconButton aria-label="Delete" onClick={onAdd}>
+        <IconButton aria-label="Add" onClick={onAddCard}>
           <IconAdd />
         </IconButton>
       </CardActions>

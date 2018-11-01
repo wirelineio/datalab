@@ -11,6 +11,8 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import RootRef from '@material-ui/core/RootRef';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -40,18 +42,8 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes, contacts, messages, tasks, toggleTask }) => (
+const Services = ({ classes, messages, tasks, toggleTask }) => (
   <Fragment>
-    {contacts && (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Contacts</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Orgs contacts={contacts} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    )}
     {tasks && (
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -94,8 +86,13 @@ const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks,
               }
               title={title}
               subheader={subheader}
-              titleTypographyProps={{ variant: 'body2' }}
+              className={classes.header}
+              titleTypographyProps={{ variant: 'subtitle2' }}
             />
+            <Divider />
+            <CardContent>
+              <Orgs contacts={contacts} />
+            </CardContent>
             <CardContent className={classes.cardContent}>
               <Services
                 classes={classes}

@@ -21,6 +21,7 @@ import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
 import sort from '../components/dnd/sort';
 import FormStage from '../components/modal/FormStage';
+import ContactForm from '../components/modal/ContactForm';
 
 const styles = () => ({
   addCardButton: {
@@ -32,7 +33,9 @@ const styles = () => ({
 
 class Main extends Component {
   state = {
-    openFormStage: false
+    openFormStage: false,
+    openContactForm: false,
+    stageId: null
   };
 
   handleOrder = result => {
@@ -75,9 +78,27 @@ class Main extends Component {
     deleteStage({ id });
   };
 
+  handleCreateContact = id => {
+    this.setState({ openContactForm: true, stageId: id });
+  };
+
+  handleContactFormResult = async result => {
+    console.log(result);
+    this.setState({ openContactForm: false, stageId: null });
+  };
+
   render() {
-    const { columns = [], loading, messages = null, tasks = null, toggleTask, classes } = this.props;
-    const { openFormStage } = this.state;
+    const {
+      columns = [],
+      loading,
+      messages = null,
+      tasks = null,
+      toggleTask,
+      classes,
+      companies = [],
+      contacts = []
+    } = this.props;
+    const { openFormStage, openContactForm, stageId } = this.state;
 
     return (
       <Fragment>
@@ -92,6 +113,7 @@ class Main extends Component {
                   title={column.title}
                   list={column.cards}
                   onDelete={this.handleDeleteStage.bind(this, column.id)}
+                  onAddCard={this.handleCreateContact.bind(this, column.id)}
                 >
                   {({ item: card }) => {
                     const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
@@ -123,6 +145,13 @@ class Main extends Component {
           <AddIcon />
         </Button>
         <FormStage open={openFormStage} onClose={this.handleFormStageResult} />
+        <ContactForm
+          open={openContactForm}
+          stageId={stageId}
+          onClose={this.handleContactFormResult}
+          companies={companies}
+          contacts={contacts}
+        />
       </Fragment>
     );
   }
@@ -149,7 +178,7 @@ export default compose(
       },
       fetchPolicy: 'cache-and-network'
     },
-    props({ data: { contacts = [], stages = [], loading } }) {
+    props({ data: { contacts = [], stages = [], companies = [], loading } }) {
       return {
         columns: updateBoard({
           groups: stages,
@@ -157,6 +186,7 @@ export default compose(
         }),
         contacts,
         stages,
+        companies,
         loading
       };
     }

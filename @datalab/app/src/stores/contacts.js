@@ -21,6 +21,10 @@ export const GET_CONTACTS = gql`
       id
       name
     }
+    companies: getAllCompanies {
+      id
+      name
+    }
   }
 `;
 
