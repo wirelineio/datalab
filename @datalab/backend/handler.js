@@ -16,6 +16,32 @@ import { Kind } from 'graphql/language';
 import SourceSchema from './schema.graphql';
 import { columns, services } from './data';
 
+const mapServiceUrl = wrnServices => services => {
+  const serviceIds = Object.keys(wrnServices);
+  let onlyFirst = false;
+
+  if (!Array.isArray(services)) {
+    services = [services];
+    onlyFirst = true;
+  }
+
+  const result = services.map(s => {
+    const id = serviceIds.find(id => id.includes(s.id));
+
+    if (id) {
+      s.url = wrnServices[id].endpoint;
+    }
+
+    return s;
+  });
+
+  if (onlyFirst) {
+    return result[0];
+  }
+
+  return result;
+};
+
 const schema = makeExecutableSchema({
   // Schema types.
   typeDefs: concatenateTypeDefs([SourceSchema]),
@@ -27,20 +53,10 @@ const schema = makeExecutableSchema({
         const { columns = [] } = await store.get('columns');
         return columns;
       },
-      async getAllServices(obj, args, { store, localServices }) {
+      async getAllServices(obj, args, { store, mapServiceUrl }) {
         const { services = [] } = await store.get('services');
 
-        if (!localServices) {
-          return services;
-        }
-
-        return services.map(s => {
-          if (localServices[s.id]) {
-            s.url = localServices[s.id];
-          }
-
-          return s;
-        });
+        return mapServiceUrl(services);
       }
     },
     Mutation: {
@@ -79,7 +95,7 @@ const schema = makeExecutableSchema({
 
         return columns;
       },
-      async switchService(obj, { id }, { store, localServices }) {
+      async switchService(obj, { id }, { store, mapServiceUrl }) {
         const { services = [] } = await store.get('services');
 
         const service = services.find(s => s.id === id);
@@ -87,15 +103,7 @@ const schema = makeExecutableSchema({
 
         await store.set('services', services);
 
-        if (!localServices) {
-          return service;
-        }
-
-        if (localServices[service.id]) {
-          service.url = localServices[service.id];
-        }
-
-        return service;
+        return mapServiceUrl(service);
       }
     },
     Date: new GraphQLScalarType({
@@ -127,7 +135,7 @@ module.exports = {
 
     const store = new Store(context);
     let queryContext = {
-      localServices: context.wireline.config.local_services,
+      mapServiceUrl: mapServiceUrl(context.wireline.services),
       store
     };
 
