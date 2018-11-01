@@ -12,12 +12,12 @@ export const GET_CONTACTS = gql`
         id
         name
       }
-      area {
+      stage {
         id
         name
       }
     }
-    areas: getAllAreas {
+    stages: getAllStages {
       id
       name
     }
@@ -31,7 +31,7 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
     $email: String
     $phone: String
     $companyId: ID
-    $areaId: ID
+    $stageId: ID
   ) {
     contacts: updateMultipleContacts(
       ids: $ids
@@ -39,7 +39,7 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
       email: $email
       phone: $phone
       companyId: $companyId
-      areaId: $areaId
+      stageId: $stageId
     ) {
       id
       name
@@ -49,7 +49,7 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
         id
         name
       }
-      area {
+      stage {
         id
         name
       }
@@ -57,15 +57,30 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
   }
 `;
 
-export const optimisticUpdateMultipleContacts = ({ contacts, areas }, variables) => {
+export const CREATE_STAGE = gql`
+  mutation CreateStage($name: String!) {
+    stage: createStage(name: $name) {
+      id
+      name
+    }
+  }
+`;
+
+export const DELETE_STAGE = gql`
+  mutation DeleteStage($id: ID!) {
+    deleteStage(id: $id)
+  }
+`;
+
+export const optimisticUpdateMultipleContacts = ({ contacts, stages }, variables) => {
   const { ids, ...args } = variables;
 
   const mutate = produce(contacts => {
     contacts.filter(c => ids.includes(c.id)).forEach(contact => {
       Object.keys(args).forEach(prop => {
-        if (prop === 'areaId') {
-          const area = areas.find(a => a.id === args[prop]);
-          contact.area = area;
+        if (prop === 'stageId') {
+          const stage = stages.find(a => a.id === args[prop]);
+          contact.stage = stage;
         } else {
           contact[prop] = args[prop];
         }

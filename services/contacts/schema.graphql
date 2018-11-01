@@ -3,7 +3,7 @@
 #
 scalar Date
 
-type Area {
+type Stage {
   id: ID!
   name: String!
 }
@@ -18,8 +18,8 @@ type Contact {
   name: String!
   email: String!
   phone: String!
-  company: Company!
-  area: Area!
+  company: Company
+  stage: Stage
   createdAt: Date!
 }
 
@@ -34,7 +34,7 @@ type Query {
 
   getAllCompanies: [Company]!
 
-  getAllAreas: [Area]!
+  getAllStages: [Stage]!
 }
 
 #
@@ -42,17 +42,19 @@ type Query {
 #
 
 type Mutation {
-  createContact(name: String!, email: String!, phone: String!, companyId: ID!, areaId: ID!): Contact!
+  createContact(name: String!, email: String!, phone: String!, companyId: ID!, stageId: ID!): Contact!
 
-  updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, areaId: ID): Contact
+  updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, stageId: ID): Contact
 
-  updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, areaId: ID): [Contact]
+  updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, stageId: ID): [Contact]
 
-  deleteContact(id: ID!): Contact
+  deleteContact(id: ID!): ID
 
   createCompany(name: String!): Company!
 
-  createArea(name: String!): Area!
+  createStage(name: String!): Stage!
+
+  deleteStage(id: ID!): ID
 }
 
 #

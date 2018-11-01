@@ -54,19 +54,24 @@ export const getType = service => service.id.split('-')[1];
 
 export const updateBoard = ({
   groups,
-  groupsBy = 'id',
-  groupsTitle = 'name',
+  groupsBy = 'id', // how to get the id of a empty column
+  groupsTitle = 'name', // how to get the title of an empty column
 
   items,
-  columnsBy = 'area.id',
-  columnsTitle = 'area.name',
-  cardsBy = 'company.id',
-  cardsTitle = 'company.name',
-  contactsId = 'id',
-  contactsTitle = 'name'
+  columnsBy = 'stage.id', // how to get the id of a column from items
+  columnsTitle = 'stage.name', // how to get the title of a column
+  cardsBy = 'company.id', // how to get the id of a card
+  cardsTitle = 'company.name', // how to get the title of a card
+  contactsId = 'id', // how to get the id of a contact
+  contactsTitle = 'name' // how to get the title of a contact
 }) => {
   let columns = items.reduce((result, next) => {
     const id = get(next, columnsBy);
+
+    if (!id) {
+      return result;
+    }
+
     const title = get(next, columnsTitle);
 
     let column = result.find(c => c.id === id);
@@ -87,7 +92,13 @@ export const updateBoard = ({
   // inner group
   columns.map(column => {
     column.cards = column.cards.reduce((result, next) => {
-      const id = `${column.id}--${get(next, cardsBy)}`;
+      const cardId = get(next, cardsBy);
+
+      if (!cardId) {
+        return result;
+      }
+
+      const id = `${column.id}--${cardId}`;
       const title = get(next, cardsTitle);
 
       let card = result.find(c => c.id === id);

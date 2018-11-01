@@ -1,19 +1,43 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
+
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 
 import { UPDATE_CARD_ORDER, GET_SERVICES, getType, updateBoard } from '../stores/board';
 import { GET_MESSAGES } from '../stores/messaging';
 import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
-import { GET_CONTACTS, UPDATE_MULTIPLE_CONTACTS, optimisticUpdateMultipleContacts } from '../stores/contacts';
+import {
+  GET_CONTACTS,
+  UPDATE_MULTIPLE_CONTACTS,
+  CREATE_STAGE,
+  DELETE_STAGE,
+  optimisticUpdateMultipleContacts
+} from '../stores/contacts';
+
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
 import sort from '../components/dnd/sort';
+import FormStage from '../components/modal/FormStage';
+
+const styles = () => ({
+  addCardButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%'
+  }
+});
 
 class Main extends Component {
+  state = {
+    openFormStage: false
+  };
+
   handleOrder = result => {
     const { source, destination, draggableId } = result;
-    const { updateCardOrder, updateMultipleContacts, columns = [] } = this.props;
+    const { updateMultipleContacts, columns = [] } = this.props;
     if (!destination) {
       return null;
     }
@@ -30,41 +54,76 @@ class Main extends Component {
         .cards.find(c => c.id === draggableId)
         .contacts.map(c => c.id);
 
-      return updateMultipleContacts({ ids, areaId: destination.droppableId });
+      return updateMultipleContacts({ ids, stageId: destination.droppableId });
     }
   };
 
-  render() {
-    const { columns = [], messages = null, tasks = null, toggleTask } = this.props;
+  handleOpenFormStage = () => {
+    this.setState({ openFormStage: true });
+  };
 
-    if (columns.length === 0) {
-      return null;
+  handleFormStageResult = async result => {
+    const { createStage } = this.props;
+    if (result) {
+      await createStage({ name: result });
     }
+    this.setState({ openFormStage: false });
+  };
+
+  handleDeleteStage = id => {
+    const { deleteStage } = this.props;
+    deleteStage({ id });
+  };
+
+  render() {
+    const { columns = [], loading, messages = null, tasks = null, toggleTask, classes } = this.props;
+    const { openFormStage } = this.state;
 
     return (
-      <GridColumn list={columns} onDragEnd={this.handleOrder}>
-        {({ item: column }) => {
-          return (
-            <Column id={column.id} title={column.title} list={column.cards}>
-              {({ item: card }) => {
-                const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
-                const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
-                return (
-                  <Card
-                    id={card.id}
-                    title={card.title}
-                    index={card.index}
-                    contacts={card.contacts}
-                    messages={cardMessages}
-                    tasks={cardTasks}
-                    toggleTask={toggleTask}
-                  />
-                );
-              }}
-            </Column>
-          );
-        }}
-      </GridColumn>
+      <Fragment>
+        {loading ? (
+          'loading'
+        ) : (
+          <GridColumn list={columns} onDragEnd={this.handleOrder}>
+            {({ item: column }) => {
+              return (
+                <Column
+                  id={column.id}
+                  title={column.title}
+                  list={column.cards}
+                  onDelete={this.handleDeleteStage.bind(this, column.id)}
+                >
+                  {({ item: card }) => {
+                    const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
+                    const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
+                    return (
+                      <Card
+                        id={card.id}
+                        title={card.title}
+                        index={card.index}
+                        contacts={card.contacts}
+                        messages={cardMessages}
+                        tasks={cardTasks}
+                        toggleTask={toggleTask}
+                      />
+                    );
+                  }}
+                </Column>
+              );
+            }}
+          </GridColumn>
+        )}
+        <Button
+          variant="fab"
+          color="primary"
+          aria-label="Add"
+          className={classes.addCardButton}
+          onClick={this.handleOpenFormStage}
+        >
+          <AddIcon />
+        </Button>
+        <FormStage open={openFormStage} onClose={this.handleFormStageResult} />
+      </Fragment>
     );
   }
 }
@@ -90,14 +149,82 @@ export default compose(
       },
       fetchPolicy: 'cache-and-network'
     },
-    props({ data: { contacts = [], areas = [] } }) {
+    props({ data: { contacts = [], stages = [], loading } }) {
       return {
         columns: updateBoard({
-          groups: areas,
+          groups: stages,
           items: contacts
         }),
         contacts,
-        areas
+        stages,
+        loading
+      };
+    }
+  }),
+  graphql(UPDATE_MULTIPLE_CONTACTS, {
+    props({ mutate, ownProps: { contacts, stages } }) {
+      return {
+        updateMultipleContacts: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            optimisticResponse: {
+              contacts: optimisticUpdateMultipleContacts({ contacts, stages }, variables)
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(CREATE_STAGE, {
+    props({ mutate }) {
+      return {
+        createStage: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            update(
+              cache,
+              {
+                data: { stage }
+              }
+            ) {
+              const { stages, ...data } = cache.readQuery({ query: GET_CONTACTS });
+              cache.writeQuery({
+                query: GET_CONTACTS,
+                data: { ...data, stages: stages.concat([stage]) }
+              });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(DELETE_STAGE, {
+    options: {
+      refetchQueries: [
+        {
+          query: GET_CONTACTS,
+          context: {
+            serviceType: 'orgs'
+          }
+        }
+      ]
+    },
+    props({ mutate }) {
+      return {
+        deleteStage: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            }
+          });
+        }
       };
     }
   }),
@@ -113,23 +240,6 @@ export default compose(
             },
             optimisticResponse: {
               columns: sort(columns, source, destination, cardId)
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(UPDATE_MULTIPLE_CONTACTS, {
-    props({ mutate, ownProps: { contacts, areas } }) {
-      return {
-        updateMultipleContacts: variables => {
-          return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            },
-            optimisticResponse: {
-              contacts: optimisticUpdateMultipleContacts({ contacts, areas }, variables)
             }
           });
         }
@@ -184,5 +294,6 @@ export default compose(
         }
       };
     }
-  })
+  }),
+  withStyles(styles)
 )(Main);

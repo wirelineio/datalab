@@ -16,7 +16,24 @@ import hyperid from 'hyperid';
 
 import SourceSchema from './schema.graphql';
 
-const uuid = hyperid();
+const uuid = hyperid({
+  fixedLength: true,
+  urlSafe: true
+});
+
+const addRelationData = store => async contacts => {
+  const [{ companies = [] }, { stages = [] }] = await Promise.all([store.get('companies'), store.get('stages')]);
+  if (Array.isArray(contacts)) {
+    return contacts.map(c => {
+      c.company = companies.find(comp => comp.id === c.companyId);
+      c.stage = stages.find(stage => stage.id === c.stageId);
+      return c;
+    });
+  }
+  contacts.company = companies.find(comp => comp.id === contacts.companyId);
+  contacts.stage = stages.find(stage => stage.id === contacts.stageId);
+  return contacts;
+};
 
 const schema = makeExecutableSchema({
   // Schema types.
@@ -25,92 +42,64 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      async getAllContacts(obj, args, { store }) {
-        const [{ contacts = [] }, { companies = [] }, { areas = [] }] = await Promise.all([
-          store.get('contacts'),
-          store.get('companies'),
-          store.get('areas')
-        ]);
+      async getAllContacts(obj, args, { store, addRelationData }) {
+        const { contacts = [] } = await store.get('contacts');
         contacts.sort((a, b) => a.createdAt - b.createdAt);
-        return contacts.map(c => {
-          c.company = companies.find(comp => comp.id === c.companyId);
-          c.area = areas.find(a => a.id === c.areaId);
-          return c;
-        });
+        return addRelationData(contacts);
       },
-      async getContact(obj, { id }, { store }) {
-        const [{ contacts = [] }, { companies = [] }, { areas = [] }] = await Promise.all([
-          store.get('contacts'),
-          store.get('companies'),
-          store.get('areas')
-        ]);
+      async getContact(obj, { id }, { store, addRelationData }) {
+        const { contacts = [] } = await store.get('contacts');
         const contact = contacts.find(c => c.id === id);
-        contact.company = companies.find(comp => comp.id === contact.companyId);
-        contact.area = areas.find(a => a.id === contact.areaId);
-        return contact;
+        return addRelationData(contact);
       },
       async getAllCompanies(obj, args, { store }) {
         const { companies = [] } = await store.get('companies');
         return companies;
       },
-      async getAllAreas(obj, args, { store }) {
-        const { areas = [] } = await store.get('areas');
-        return areas;
+      async getAllStages(obj, args, { store }) {
+        const { stages = [] } = await store.get('stages');
+        return stages;
       }
     },
     Mutation: {
-      async createContact(obj, args, { store }) {
+      async createContact(obj, args, { store, addRelationData }) {
         const { contacts = [] } = await store.get('contacts');
-        const contact = Object.assign({}, args, { id: uuid() });
+        const contact = Object.assign({}, args, { id: uuid(), createdAt: new Date() });
         contacts.push(contact);
         await store.set('contacts', contacts);
-        return contact;
+        return addRelationData(contact);
       },
       async updateContact(obj, args, { store }) {
+        const { contacts = [] } = await store.get('contacts');
         const { id } = args;
 
-        const { contacts = [] } = await store.get('contacts');
-        const idx = contacts.findIndex(c => c.id === id);
-        const contact = contacts[idx];
+        const contact = contacts.find(c => c.id === id);
 
         if (!contact) {
           return null;
         }
 
         Object.keys(args).forEach(prop => {
-          if (prop !== 'id') {
-            contact[prop] = args[prop];
-          }
+          contact[prop] = args[prop];
         });
 
         await store.set('contacts', contacts);
-        return contact;
+        return addRelationData(contact);
       },
-      async updateMultipleContacts(obj, args, { store }) {
+      async updateMultipleContacts(obj, args, { store, addRelationData }) {
+        const { contacts = [] } = await store.get('contacts');
         const { ids } = args;
 
-        const [{ contacts = [] }, { companies = [] }, { areas = [] }] = await Promise.all([
-          store.get('contacts'),
-          store.get('companies'),
-          store.get('areas')
-        ]);
-
-        contacts.filter(c => ids.includes(c.id)).forEach(contact => {
+        const result = contacts.filter(c => ids.includes(c.id)).map(contact => {
           Object.keys(args).forEach(prop => {
-            if (prop !== 'ids') {
-              contact[prop] = args[prop];
-            }
+            contact[prop] = args[prop];
           });
+          return contact;
         });
 
         await store.set('contacts', contacts);
 
-        contacts.sort((a, b) => a.createdAt - b.createdAt);
-        return contacts.map(c => {
-          c.company = companies.find(comp => comp.id === c.companyId);
-          c.area = areas.find(a => a.id === c.areaId);
-          return c;
-        });
+        return addRelationData(result);
       },
       async deleteContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
@@ -121,7 +110,7 @@ const schema = makeExecutableSchema({
         }
 
         await store.set('contacts', contacts.filter(c => c.id !== id));
-        return contact;
+        return id;
       },
       async createCompany(obj, { name }, { store }) {
         const { companies = [] } = await store.get('companies');
@@ -130,12 +119,28 @@ const schema = makeExecutableSchema({
         await store.set('companies', companies);
         return company;
       },
-      async createArea(obj, { name }, { store }) {
-        const { areas = [] } = await store.get('areas');
-        const area = { id: uuid(), name };
-        areas.push(area);
-        await store.set('areas', areas);
-        return area;
+      async createStage(obj, { name }, { store }) {
+        const { stages = [] } = await store.get('stages');
+        const stage = { id: uuid(), name };
+        stages.push(stage);
+        await store.set('stages', stages);
+        return stage;
+      },
+      async deleteStage(obj, { id }, { store }) {
+        let [{ contacts = [] }, { stages = [] }] = await Promise.all([store.get('contacts'), store.get('stages')]);
+
+        stages = stages.filter(s => s.id !== id);
+
+        contacts = contacts.map(contact => {
+          if (contact.stageId === id) {
+            contact.stageId = null;
+          }
+          return contact;
+        });
+
+        await Promise.all([store.set('contacts', contacts), store.set('stages', stages)]);
+
+        return id;
       }
     },
     Date: new GraphQLScalarType({
@@ -165,7 +170,8 @@ module.exports = {
 
     const store = new Store(context, { bucket: 'dl-contacts' });
     let queryContext = {
-      store
+      store,
+      addRelationData: addRelationData(store)
     };
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
