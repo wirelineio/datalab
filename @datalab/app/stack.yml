@@ -13,18 +13,6 @@ stack:
     deployment:
       image: 'wrn::datalab-backend'
       version: 0.0.1
-  dl-messaging-google-mail-service:
-    deployment:
-      image: 'wrn::dl-messaging-google-mail-service'
-      version: 0.0.1
-  dl-tasks-asana-service:
-    deployment:
-      image: 'wrn::dl-tasks-asana-service'
-      version: 0.0.1
-  dl-messaging-hotmail-service:
-    deployment:
-      image: 'wrn::dl-messaging-hotmail-service'
-      version: 0.0.1
   dl-orgs-contacts-service:
     deployment:
       image: 'wrn::dl-orgs-contacts-service'

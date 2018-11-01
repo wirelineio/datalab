@@ -50,6 +50,8 @@ type Mutation {
 
   deleteContact(id: ID!): ID
 
+  deleteAllContacts: Boolean,
+
   createCompany(name: String!): Company!
 
   createStage(name: String!): Stage!

@@ -112,6 +112,10 @@ const schema = makeExecutableSchema({
         await store.set('contacts', contacts.filter(c => c.id !== id));
         return id;
       },
+      async deleteAllContacts(obj, args, { store }) {
+        await store.set('contacts', []);
+        return true;
+      },
       async createCompany(obj, { name }, { store }) {
         const { companies = [] } = await store.get('companies');
         const company = { id: uuid(), name };
