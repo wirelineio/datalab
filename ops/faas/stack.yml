@@ -1,0 +1,22 @@
+name: datalab-stack
+domain: example.com
+stage: dev
+provider:
+  name: openfaas
+  region: us-east-1
+stack:
+  web:
+    deployment:
+      image: 'wrn::datalab-app'
+      version: 0.0.1
+  backend:
+    deployment:
+      image: 'wrn::datalab-backend'
+      version: 0.0.1
+  dl-orgs-contacts-service:
+    deployment:
+      image: 'wrn::dl-orgs-contacts-service'
+      version: 0.0.1
+  wireline.io/store:
+    reference:
+      endpointUrl: wrn::wireline.io/wireline/store

@@ -1,6 +1,6 @@
 name: datalab-stack
 domain: example.com
-stage: dev
+stage: prod
 provider:
   name: aws
   region: us-east-1
@@ -9,6 +9,8 @@ stack:
     deployment:
       image: 'wrn::datalab-app'
       version: 0.0.1
+      environment:
+        WRL_PUBLIC_PATH: /prod
   backend:
     deployment:
       image: 'wrn::datalab-backend'
