@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
 import Select from 'react-select';
+import Creatable from 'react-select/lib/Creatable';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -136,7 +137,7 @@ function MultiValue(props) {
       className={classNames(props.selectProps.classes.chip, {
         [props.selectProps.classes.chipFocused]: props.isFocused
       })}
-      onDelete={props.removeProps.onClick}
+      onDelete={props.selectProps.isClearable || props.data.deleteable ? props.removeProps.onClick : null}
       deleteIcon={<CancelIcon {...props.removeProps} />}
     />
   );
@@ -163,7 +164,11 @@ const components = {
 
 class Autocomplete extends Component {
   handleChange = value => {
-    const { field, form, onAfterChange } = this.props;
+    const { field, form, onBeforeChange, onAfterChange } = this.props;
+
+    if (onBeforeChange) {
+      value = onBeforeChange(value, { field, form });
+    }
 
     form.setFieldValue(field.name, value);
 
@@ -189,6 +194,7 @@ class Autocomplete extends Component {
       theme,
       styles,
       textFieldProps = {},
+      isCreatable,
       ...props
     } = this.props;
 
@@ -205,12 +211,40 @@ class Autocomplete extends Component {
 
     const hasError = !!(touched[field.name] && errors[field.name]);
 
+    let helperText;
+    if (hasError) {
+      const errorList = errors[field.name];
+      if (typeof errorList === 'string') {
+        helperText = errorList;
+      } else {
+        helperText = Object.keys(errorList)
+          .map(key => errorList[key])
+          .join('\n');
+      }
+    }
+
     const _textFieldProps = {
       ...textFieldProps,
       error: hasError,
-      helperText: touched[field.name] && errors[field.name],
+      helperText,
       loading
     };
+
+    if (isCreatable) {
+      return (
+        <Creatable
+          disabled={isSubmitting}
+          classes={classes}
+          styles={selectStyles}
+          components={components}
+          textFieldProps={_textFieldProps}
+          value={field.value}
+          {...props}
+          onChange={this.handleChange}
+          onBlur={this.handleBlur}
+        />
+      );
+    }
 
     return (
       <Select

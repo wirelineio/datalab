@@ -11,8 +11,10 @@ import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
 import {
   GET_CONTACTS,
   UPDATE_MULTIPLE_CONTACTS,
+  UPDATE_OR_CREATE_CONTACTS,
   CREATE_STAGE,
   DELETE_STAGE,
+  CREATE_COMPANY,
   optimisticUpdateMultipleContacts
 } from '../stores/contacts';
 
@@ -83,7 +85,31 @@ class Main extends Component {
   };
 
   handleContactFormResult = async result => {
-    console.log(result);
+    const { updateOrCreateContacts, createCompany } = this.props;
+
+    if (!result) {
+      this.setState({ openContactForm: false, stageId: null });
+      return;
+    }
+
+    try {
+      let { contacts, company } = result;
+
+      if (company.__isNew__) {
+        const {
+          data: { company: newCompany }
+        } = await createCompany({ name: company.label });
+        contacts = contacts.map(c => {
+          c.companyId = newCompany.id;
+          return c;
+        });
+      }
+
+      await updateOrCreateContacts({ contacts });
+    } catch (err) {
+      console.error(err);
+    }
+
     this.setState({ openContactForm: false, stageId: null });
   };
 
@@ -208,6 +234,40 @@ export default compose(
       };
     }
   }),
+  graphql(UPDATE_OR_CREATE_CONTACTS, {
+    props({ mutate }) {
+      return {
+        updateOrCreateContacts: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            update(
+              cache,
+              {
+                data: { contacts }
+              }
+            ) {
+              const { contacts: oldContacts, ...data } = cache.readQuery({ query: GET_CONTACTS });
+
+              const newContacts = [];
+              contacts.forEach(c => {
+                if (!oldContacts.find(oc => oc.id === c.id)) {
+                  newContacts.push(c);
+                }
+              });
+
+              cache.writeQuery({
+                query: GET_CONTACTS,
+                data: { ...data, contacts: oldContacts.concat(newContacts) }
+              });
+            }
+          });
+        }
+      };
+    }
+  }),
   graphql(CREATE_STAGE, {
     props({ mutate }) {
       return {
@@ -252,6 +312,32 @@ export default compose(
             variables,
             context: {
               serviceType: 'orgs'
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(CREATE_COMPANY, {
+    props({ mutate }) {
+      return {
+        createCompany: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            update(
+              cache,
+              {
+                data: { company }
+              }
+            ) {
+              const { companies, ...data } = cache.readQuery({ query: GET_CONTACTS });
+              cache.writeQuery({
+                query: GET_CONTACTS,
+                data: { ...data, companies: companies.concat([company]) }
+              });
             }
           });
         }

@@ -101,6 +101,29 @@ const schema = makeExecutableSchema({
 
         return addRelationData(result);
       },
+      async updateOrCreateContacts(obj, { contacts: newContacts = [] }, { store, addRelationData }) {
+        const { contacts = [] } = await store.get('contacts');
+        let toUpdate = newContacts.filter(c => c.id);
+        let toCreate = newContacts.filter(c => !c.id);
+
+        toUpdate = toUpdate.map(data => {
+          const contact = contacts.find(c => c.id === data.id);
+          Object.keys(data).forEach(prop => {
+            contact[prop] = data[prop];
+          });
+          return contact;
+        });
+
+        toCreate = toCreate.map(data => {
+          const contact = Object.assign({}, data, { id: uuid(), createdAt: new Date() });
+          contacts.push(contact);
+          return contact;
+        });
+
+        await store.set('contacts', contacts);
+
+        return addRelationData([...toUpdate, ...toCreate]);
+      },
       async deleteContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         const contact = contacts.find(c => c.id === id);

@@ -61,6 +61,25 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
   }
 `;
 
+export const UPDATE_OR_CREATE_CONTACTS = gql`
+  mutation UpdateOrCreateContacts($contacts: [ContactInput!]!) {
+    contacts: updateOrCreateContacts(contacts: $contacts) {
+      id
+      name
+      email
+      phone
+      company {
+        id
+        name
+      }
+      stage {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const CREATE_STAGE = gql`
   mutation CreateStage($name: String!) {
     stage: createStage(name: $name) {
@@ -73,6 +92,15 @@ export const CREATE_STAGE = gql`
 export const DELETE_STAGE = gql`
   mutation DeleteStage($id: ID!) {
     deleteStage(id: $id)
+  }
+`;
+
+export const CREATE_COMPANY = gql`
+  mutation CreateCompany($name: String!) {
+    company: createCompany(name: $name) {
+      id
+      name
+    }
   }
 `;
 

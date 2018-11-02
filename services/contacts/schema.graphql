@@ -23,6 +23,15 @@ type Contact {
   createdAt: Date!
 }
 
+input ContactInput {
+  id: ID
+  name: String
+  email: String
+  phone: String
+  companyId: ID
+  stageId: ID
+}
+
 #
 # Root Query
 #
@@ -47,6 +56,8 @@ type Mutation {
   updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, stageId: ID): Contact
 
   updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, stageId: ID): [Contact]
+
+  updateOrCreateContacts(contacts: [ContactInput!]!): [Contact]
 
   deleteContact(id: ID!): ID
 

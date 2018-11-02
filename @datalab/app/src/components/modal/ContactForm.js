@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,7 +19,7 @@ const initialValues = {
   name: '',
   email: '',
   phone: '',
-  company: null
+  company: undefined
 };
 
 const toValueLabel = c => ({
@@ -48,14 +48,15 @@ const validationSchema = Yup.object().shape({
   phone: onlyForNew(Yup.string().required('Phone is required.')),
   company: Yup.object()
     .shape({
-      label: Yup.string().required(),
-      value: Yup.string().required()
-    })
-    .required('Company is required.'),
+      label: Yup.string(),
+      value: Yup.string().required('The partner is required.'),
+      __isNew__: Yup.bool()
+    }),
   contacts: Yup.array().of(
     Yup.object().shape({
       label: Yup.string().required(),
-      value: Yup.string().required()
+      value: Yup.string().required(),
+      deleteable: Yup.bool()
     })
   )
 });
@@ -70,7 +71,8 @@ const styles = theme => ({
   },
   dialogContent: {
     paddingTop: '0 !important',
-    minWidth: 200
+    minWidth: 200,
+    overflow: 'auto'
   },
   autocomplete: {
     marginTop: theme.spacing.unit
@@ -83,7 +85,7 @@ class ContactForm extends Component {
   updateContacts = ({ value }, { form }) => {
     const { contacts, stageId } = this.props;
 
-    const allContacts = contacts.filter(c => !c.company || c.company.id === value);
+    const allContacts = contacts.filter(c => c.company && c.company.id === value);
 
     this.setState(
       {
@@ -95,6 +97,14 @@ class ContactForm extends Component {
     );
   };
 
+  allowDeleteNewOnes = (value, { field }) => {
+    const newOne = value.findIndex(l => !field.value.find(r => l.value === r.value));
+    if (newOne !== -1) {
+      value[newOne].deleteable = true;
+    }
+    return value;
+  };
+
   handleClose = () => {
     const { onClose } = this.props;
     this.setState(initialState, () => {
@@ -104,9 +114,11 @@ class ContactForm extends Component {
 
   handleAccept = async (values, actions) => {
     const { onClose, stageId } = this.props;
-    const { selectedContacts } = this.state;
 
-    const result = selectedContacts;
+    const result = values.contacts.map(d => ({
+      id: d.value,
+      stageId
+    }));
 
     if (values.isNew) {
       result.push({
@@ -118,7 +130,7 @@ class ContactForm extends Component {
       });
     }
 
-    await onClose(result);
+    await onClose({ contacts: result, company: values.company });
 
     this.setState(initialState, () => {
       actions.setSubmitting(false);
@@ -141,62 +153,68 @@ class ContactForm extends Component {
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => (
-            <form onSubmit={props.handleSubmit}>
+            <Fragment>
               <DialogContent className={classes.dialogContent}>
-                <Field
-                  name="company"
-                  component={Autocomplete}
-                  className={classes.autocomplete}
-                  options={options}
-                  placeholder="Partner..."
-                  textFieldProps={{ margin: 'dense' }}
-                  onAfterChange={this.updateContacts}
-                />
-                <Field
-                  name="contacts"
-                  isMulti
-                  component={Autocomplete}
-                  className={classes.autocomplete}
-                  options={allContacts}
-                  placeholder="Contacts..."
-                  textFieldProps={{ margin: 'dense' }}
-                />
-                <Checkbox name="isNew" label="Add new contact" />
-                <Field
-                  component={TextField}
-                  disabled={!props.values.isNew}
-                  className={classes.textField}
-                  margin="dense"
-                  name="name"
-                  label="Name"
-                />
-                <Field
-                  component={TextField}
-                  disabled={!props.values.isNew}
-                  className={classes.textField}
-                  margin="dense"
-                  type="email"
-                  name="email"
-                  label="Email"
-                />
-                <Field
-                  component={TextField}
-                  disabled={!props.values.isNew}
-                  className={classes.textField}
-                  margin="dense"
-                  name="phone"
-                  label="Phone"
-                />
+                <form onSubmit={props.handleSubmit}>
+                  <Field
+                    name="company"
+                    isCreatable
+                    component={Autocomplete}
+                    className={classes.autocomplete}
+                    options={options}
+                    placeholder="Partner..."
+                    textFieldProps={{ margin: 'dense' }}
+                    onAfterChange={this.updateContacts}
+                  />
+                  <Field
+                    name="contacts"
+                    isMulti
+                    isClearable={false}
+                    backspaceRemovesValue={false}
+                    component={Autocomplete}
+                    className={classes.autocomplete}
+                    options={allContacts}
+                    placeholder="Contacts..."
+                    textFieldProps={{ margin: 'dense' }}
+                    onBeforeChange={this.allowDeleteNewOnes}
+                  />
+                  <Checkbox name="isNew" label="Add new contact" />
+                  <Field
+                    component={TextField}
+                    disabled={!props.values.isNew}
+                    className={classes.textField}
+                    margin="dense"
+                    name="name"
+                    label="Name"
+                  />
+                  <Field
+                    component={TextField}
+                    disabled={!props.values.isNew}
+                    className={classes.textField}
+                    margin="dense"
+                    type="email"
+                    name="email"
+                    label="Email"
+                  />
+                  <Field
+                    component={TextField}
+                    disabled={!props.values.isNew}
+                    className={classes.textField}
+                    margin="dense"
+                    name="phone"
+                    label="Phone"
+                  />
+                </form>
               </DialogContent>
               <DialogActions>
                 <Button onClick={this.handleClose} color="primary">
                   Cancel
                 </Button>
-                <Button type="submit" color="primary">
+                <Button onClick={props.submitForm} color="primary">
                   Save
                 </Button>
               </DialogActions>
-            </form>
+            </Fragment>
           )}
         />
       </Dialog>
