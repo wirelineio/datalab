@@ -2,7 +2,6 @@
   "name": "datalab",
   "version": "1.0.0",
   "description": "DataLab demo",
-  "main": "index.js",
   "repository": "git@github.com:wirelineio/datalab.git",
   "license": "UNLICENSED",
   "private": true,
@@ -26,6 +25,7 @@
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
+    "lerna": "^3.4.3",
     "prettier": "^1.14.3"
   }
 }
