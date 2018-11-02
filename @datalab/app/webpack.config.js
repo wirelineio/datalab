@@ -34,14 +34,13 @@ module.exports = {
   },
 
   plugins: [
-    new CopyWebpackPlugin(['wireline.yml']),
+    new CopyWebpackPlugin(['wireline.yml', 'service.yml']),
     new ZipPlugin({
       path: '../',
       filename: 'webpack.zip'
     }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     }),
     // Issue with got https://github.com/sindresorhus/got/issues/345.
     new webpack.IgnorePlugin(/^electron$/),

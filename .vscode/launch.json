@@ -24,22 +24,42 @@
       "args": [
         "dev",
         "-p",
-        "4000"
+        "3001"
       ],
       "cwd": "${workspaceFolder}/@datalab/backend",
       "env": {
-        "WRL_STACK": "FAKE_STACK",
-        "WRL_DOMAIN": "FAKE_DOMAIN",
-        "WRL_DEPLOYMENT": "FAKE_DEPLOYMENT",
-        "WRL_STAGE": "DEV",
+        "WRL_STACK": "FAKE_BACKEND_STACK",
+        "WRL_DOMAIN": "example.com",
+        "WRL_DEPLOYMENT": "FAKE_BACKEND_DEPLOYMENT",
+        "WRL_STAGE": "dev",
         "WRL_VERSION": "0.0.1"
       }
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "svc.contacts",
+      "program": "${workspaceFolder}/node_modules/.bin/wire",
+      "args": [
+        "dev",
+        "-p",
+        "4004"
+      ],
+      "cwd": "${workspaceFolder}/services/contacts",
+      "env": {
+        "WRL_STACK": "FAKE_CONTACTS_STACK",
+        "WRL_DOMAIN": "example.com",
+        "WRL_DEPLOYMENT": "FAKE_CONTACTS_DEPLOYMENT",
+        "WRL_STAGE": "dev",
+        "WRL_VERSION": "0.0.1"
+      }      
+    },
+
   ],
   "compounds": [
     {
       "name": "@datalab",
-      "configurations": ["app.datalab", "backend.datalab"]
+      "configurations": ["app.datalab", "backend.datalab", "svc.contacts"]
     }
   ]
 }
