@@ -57,7 +57,7 @@
   "scripts": {
     "build:server": "webpack",
     "build:client": "webpack --config=webpack-client.config.js",
-    "build": "npm run clean && PUBLIC_PATH=/dev NODE_ENV=production npm run build:server && npm run build:client",
+    "build": "npm run clean && NODE_ENV=production npm run build:server && npm run build:client",
     "dev": "npm run clean && wire dev",
     "clean": "rm -rf dist"
   }

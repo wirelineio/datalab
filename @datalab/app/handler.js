@@ -6,9 +6,10 @@ import 'source-map-support/register';
 import Wireline from '@wirelineio/sdk';
 
 export const index = Wireline.exec(async (event, context, response) => {
+  const PUBLIC_PATH = process.env.WRL_PUBLIC_PATH || '';
   const localConfig = {
     rootId: 'ux-root',
-    PUBLIC_PATH: process.env.PUBLIC_PATH,
+    PUBLIC_PATH,
     BACKEND_ENDPOINT: context.wireline.services.backend.endpoint,
     NODE_ENV: process.env.NODE_ENV || 'development'
   };
@@ -24,13 +25,13 @@ export const index = Wireline.exec(async (event, context, response) => {
         content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
       />
       <title>DataLab</title>
-      <link rel="shortcut icon" href="${process.env.PUBLIC_PATH}/favicon.ico">
+      <link rel="shortcut icon" href="${PUBLIC_PATH}/favicon.ico">
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     </head>
     <body>
       <div id="${localConfig.rootId}"></div>
       <script>window.config = ${JSON.stringify(localConfig)};</script>
-      <script src="${process.env.PUBLIC_PATH}/assets/app.js"></script>
+      <script src="${PUBLIC_PATH}/assets/app.js"></script>
     </body>
     </html>
   `;
