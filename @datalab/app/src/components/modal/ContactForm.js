@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
@@ -13,44 +12,65 @@ import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
 import Autocomplete from '../form/Autocomplete';
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(3, 'Name must be at least 3 characters long.')
-    .required('Name is required.'),
-  email: Yup.string()
-    .email()
-    .required('Email is required.'),
-  phone: Yup.string().required('Phone is required.'),
-  company: Yup.object()
-    .shape({
-      label: Yup.string().required(),
-      value: Yup.string().required()
-    })
-    .required('Company is required.')
-});
+import Checkbox from '../form/Checkbox';
 
 const initialValues = {
+  isNew: false,
   name: '',
   email: '',
   phone: '',
   company: null
 };
 
+const toValueLabel = c => ({
+  value: c.id,
+  label: c.name
+});
+
+const onlyForNew = then =>
+  Yup.mixed().when('isNew', {
+    is: true,
+    then
+  });
+
+const validationSchema = Yup.object().shape({
+  isNew: Yup.bool(),
+  name: onlyForNew(
+    Yup.string()
+      .min(3, 'Name must be at least 3 characters long.')
+      .required('Name is required.')
+  ),
+  email: onlyForNew(
+    Yup.string()
+      .email()
+      .required('Email is required.')
+  ),
+  phone: onlyForNew(Yup.string().required('Phone is required.')),
+  company: Yup.object()
+    .shape({
+      label: Yup.string().required(),
+      value: Yup.string().required()
+    })
+    .required('Company is required.'),
+  contacts: Yup.array().of(
+    Yup.object().shape({
+      label: Yup.string().required(),
+      value: Yup.string().required()
+    })
+  )
+});
+
 const initialState = {
-  companySelected: null,
-  contactsToCard: []
+  allContacts: []
 };
 
 const styles = theme => ({
-  root: {
-    minWidth: 200
-  },
   textField: {
     width: '100%'
   },
   dialogContent: {
-    paddingTop: '0 !important'
+    paddingTop: '0 !important',
+    minWidth: 200
   },
   autocomplete: {
     marginTop: theme.spacing.unit
@@ -60,8 +80,19 @@ const styles = theme => ({
 class ContactForm extends Component {
   state = initialState;
 
-  handleChange = event => {
-    this.setState({ value: event.target.value });
+  updateContacts = ({ value }, { form }) => {
+    const { contacts, stageId } = this.props;
+
+    const allContacts = contacts.filter(c => !c.company || c.company.id === value);
+
+    this.setState(
+      {
+        allContacts
+      },
+      () => {
+        form.setFieldValue('contacts', allContacts.filter(c => c.stage && c.stage.id === stageId).map(toValueLabel));
+      }
+    );
   };
 
   handleClose = () => {
@@ -71,21 +102,35 @@ class ContactForm extends Component {
     });
   };
 
-  handleAccept = () => {
-    const { onClose } = this.props;
-    const { companySelected, contacts } = this.state;
+  handleAccept = async (values, actions) => {
+    const { onClose, stageId } = this.props;
+    const { selectedContacts } = this.state;
+
+    const result = selectedContacts;
+
+    if (values.isNew) {
+      result.push({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        companyId: values.company.value,
+        stageId
+      });
+    }
+
+    await onClose(result);
+
     this.setState(initialState, () => {
-      onClose(companySelected && contacts.length ? { companySelected, contacts } : null);
+      actions.setSubmitting(false);
     });
   };
 
   render() {
-    const { open, companies = [], contacts = [], stageId, classes } = this.props;
+    const { open, companies = [], classes } = this.props;
+    let { allContacts } = this.state;
 
-    const options = companies.map(c => ({
-      value: c.id,
-      label: c.name
-    }));
+    const options = companies.map(toValueLabel);
+    allContacts = allContacts.map(toValueLabel);
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" className={classes.root}>
@@ -94,12 +139,7 @@ class ContactForm extends Component {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values, actions) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              actions.setSubmitting(false);
-            }, 1000);
-          }}
+          onSubmit={this.handleAccept}
           render={props => (
             <form onSubmit={props.handleSubmit}>
               <DialogContent className={classes.dialogContent}>
@@ -110,17 +150,43 @@ class ContactForm extends Component {
                   options={options}
                   placeholder="Partner..."
                   textFieldProps={{ margin: 'dense' }}
+                  onAfterChange={this.updateContacts}
                 />
-                <Field component={TextField} className={classes.textField} margin="dense" name="name" label="Name" />
+                <Field
+                  name="contacts"
+                  isMulti
+                  component={Autocomplete}
+                  className={classes.autocomplete}
+                  options={allContacts}
+                  placeholder="Contacts..."
+                  textFieldProps={{ margin: 'dense' }}
+                />
+                <Checkbox name="isNew" label="Add new contact" />
                 <Field
                   component={TextField}
+                  disabled={!props.values.isNew}
+                  className={classes.textField}
+                  margin="dense"
+                  name="name"
+                  label="Name"
+                />
+                <Field
+                  component={TextField}
+                  disabled={!props.values.isNew}
                   className={classes.textField}
                   margin="dense"
                   type="email"
                   name="email"
                   label="Email"
                 />
-                <Field component={TextField} className={classes.textField} margin="dense" name="phone" label="Phone" />
+                <Field
+                  component={TextField}
+                  disabled={!props.values.isNew}
+                  className={classes.textField}
+                  margin="dense"
+                  name="phone"
+                  label="Phone"
+                />
               </DialogContent>
               <DialogActions>
                 <Button onClick={this.handleClose} color="primary">

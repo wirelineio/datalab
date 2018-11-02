@@ -163,11 +163,13 @@ const components = {
 
 class Autocomplete extends Component {
   handleChange = value => {
-    const {
-      field: { name },
-      form: { setFieldValue }
-    } = this.props;
-    setFieldValue(name, value);
+    const { field, form, onAfterChange } = this.props;
+
+    form.setFieldValue(field.name, value);
+
+    if (onAfterChange) {
+      onAfterChange(value, { field, form });
+    }
   };
 
   handleBlur = () => {
