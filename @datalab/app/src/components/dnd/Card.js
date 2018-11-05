@@ -66,7 +66,19 @@ const Services = ({ classes, messages, tasks, toggleTask }) => (
   </Fragment>
 );
 
-const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks, toggleTask, onDeleteContact }) => {
+const Card = ({
+  classes,
+  id,
+  title,
+  contacts,
+  index,
+  subheader,
+  messages,
+  tasks,
+  toggleTask,
+  onEditContact,
+  onDeleteContact
+}) => {
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
@@ -90,7 +102,7 @@ const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks,
             />
             <Divider />
             <CardContent>
-              <Orgs contacts={contacts} onDelete={onDeleteContact} />
+              <Orgs contacts={contacts} onEdit={onEditContact} onDelete={onDeleteContact} />
             </CardContent>
             <CardContent className={classes.cardContent}>
               <Services

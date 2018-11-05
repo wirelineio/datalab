@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
+import produce from 'immer';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -38,7 +39,8 @@ class Main extends Component {
   state = {
     openFormStage: false,
     openContactForm: false,
-    stageId: null
+    stageId: null,
+    editContact: null
   };
 
   handleOrder = result => {
@@ -85,11 +87,15 @@ class Main extends Component {
     this.setState({ openContactForm: true, stageId: id });
   };
 
+  handleEditContact = contact => {
+    this.setState({ openContactForm: true, stageId: contact.stageId, editContact: contact });
+  };
+
   handleContactFormResult = async result => {
     const { updateOrCreateContacts, createCompany } = this.props;
 
     if (!result) {
-      this.setState({ openContactForm: false, stageId: null });
+      this.setState({ openContactForm: false, stageId: null, editContact: null });
       return;
     }
 
@@ -111,10 +117,10 @@ class Main extends Component {
       console.error(err);
     }
 
-    this.setState({ openContactForm: false, stageId: null });
+    this.setState({ openContactForm: false, stageId: null, editContact: null });
   };
 
-  handleDeleteContact = id => {
+  handleDeleteContact = ({ id }) => {
     const { updateContact } = this.props;
     updateContact({ id, stageId: null });
   };
@@ -130,7 +136,7 @@ class Main extends Component {
       companies = [],
       contacts = []
     } = this.props;
-    const { openFormStage, openContactForm, stageId } = this.state;
+    const { openFormStage, openContactForm, stageId, editContact } = this.state;
 
     return (
       <Fragment>
@@ -159,6 +165,7 @@ class Main extends Component {
                         messages={cardMessages}
                         tasks={cardTasks}
                         toggleTask={toggleTask}
+                        onEditContact={this.handleEditContact}
                         onDeleteContact={this.handleDeleteContact}
                       />
                     );
@@ -181,6 +188,7 @@ class Main extends Component {
         <ContactForm
           open={openContactForm}
           stageId={stageId}
+          contact={editContact}
           onClose={this.handleContactFormResult}
           companies={companies}
           contacts={contacts}
@@ -272,16 +280,23 @@ export default compose(
             ) {
               const { contacts: oldContacts, ...data } = cache.readQuery({ query: GET_CONTACTS });
 
-              const newContacts = [];
-              contacts.forEach(c => {
-                if (!oldContacts.find(oc => oc.id === c.id)) {
-                  newContacts.push(c);
-                }
+              const mutate = produce(oldContacts => {
+                contacts.forEach(c => {
+                  const idx = oldContacts.findIndex(oc => oc.id === c.id);
+
+                  if (idx !== -1) {
+                    oldContacts[idx] = c;
+                  } else {
+                    oldContacts.push(c);
+                  }
+                });
+
+                return oldContacts;
               });
 
               cache.writeQuery({
                 query: GET_CONTACTS,
-                data: { ...data, contacts: oldContacts.concat(newContacts) }
+                data: { ...data, contacts: mutate(oldContacts) }
               });
             }
           });
