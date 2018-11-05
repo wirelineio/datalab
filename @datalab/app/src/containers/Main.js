@@ -11,6 +11,7 @@ import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
 import {
   GET_CONTACTS,
   UPDATE_MULTIPLE_CONTACTS,
+  UPDATE_CONTACT,
   UPDATE_OR_CREATE_CONTACTS,
   CREATE_STAGE,
   DELETE_STAGE,
@@ -113,6 +114,11 @@ class Main extends Component {
     this.setState({ openContactForm: false, stageId: null });
   };
 
+  handleDeleteContact = id => {
+    const { updateContact } = this.props;
+    updateContact({ id, stageId: null });
+  };
+
   render() {
     const {
       columns = [],
@@ -153,6 +159,7 @@ class Main extends Component {
                         messages={cardMessages}
                         tasks={cardTasks}
                         toggleTask={toggleTask}
+                        onDeleteContact={this.handleDeleteContact}
                       />
                     );
                   }}
@@ -228,6 +235,20 @@ export default compose(
             },
             optimisticResponse: {
               contacts: optimisticUpdateMultipleContacts({ contacts, stages }, variables)
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_CONTACT, {
+    props({ mutate }) {
+      return {
+        updateContact: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
             }
           });
         }

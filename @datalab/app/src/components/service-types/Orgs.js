@@ -18,10 +18,11 @@ const firstLetters = name =>
   name
     .toUpperCase()
     .split(' ')
+    .slice(0, 2)
     .map(word => word[0])
     .join('');
 
-const Orgs = ({ classes, contacts = [] }) => {
+const Orgs = ({ classes, onDelete, contacts = [] }) => {
   return (
     <div className={classes.root}>
       {contacts.map(contact => (
@@ -29,6 +30,7 @@ const Orgs = ({ classes, contacts = [] }) => {
           key={contact.id}
           avatar={<Avatar>{firstLetters(contact.title)}</Avatar>}
           label={contact.title}
+          onDelete={onDelete.bind(null, contact.id)}
           className={classes.chip}
         />
       ))}

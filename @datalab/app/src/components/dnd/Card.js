@@ -12,7 +12,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import RootRef from '@material-ui/core/RootRef';
 import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -67,7 +66,7 @@ const Services = ({ classes, messages, tasks, toggleTask }) => (
   </Fragment>
 );
 
-const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks, toggleTask }) => {
+const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks, toggleTask, onDeleteContact }) => {
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
@@ -91,7 +90,7 @@ const Card = ({ classes, id, title, contacts, index, subheader, messages, tasks,
             />
             <Divider />
             <CardContent>
-              <Orgs contacts={contacts} />
+              <Orgs contacts={contacts} onDelete={onDeleteContact} />
             </CardContent>
             <CardContent className={classes.cardContent}>
               <Services

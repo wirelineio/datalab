@@ -61,6 +61,32 @@ export const UPDATE_MULTIPLE_CONTACTS = gql`
   }
 `;
 
+export const UPDATE_CONTACT = gql`
+  mutation UpdateContact($id: ID!, $name: String, $email: String, $phone: String, $companyId: ID, $stageId: ID) {
+    contact: updateContact(
+      id: $id
+      name: $name
+      email: $email
+      phone: $phone
+      companyId: $companyId
+      stageId: $stageId
+    ) {
+      id
+      name
+      email
+      phone
+      company {
+        id
+        name
+      }
+      stage {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const UPDATE_OR_CREATE_CONTACTS = gql`
   mutation UpdateOrCreateContacts($contacts: [ContactInput!]!) {
     contacts: updateOrCreateContacts(contacts: $contacts) {

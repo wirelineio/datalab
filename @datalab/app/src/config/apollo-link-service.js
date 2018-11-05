@@ -5,18 +5,15 @@ import Observable from 'zen-observable';
 import { toPromise } from 'apollo-link/lib/linkUtils';
 import merge from 'deepmerge';
 
-// links = [ { type: 'gmail', link: somehttplink } ]
-
 export class ServiceLink extends ApolloLink {
-  constructor({ rootLinks = [], fallback = null }) {
+  constructor({ links = [], fallback = null }) {
     super();
-    this.rootLinks = rootLinks;
-    this.userLinks = [];
+    this.links = links;
     this.fallback = fallback;
   }
 
   updateServices(services = []) {
-    this.userLinks = services.filter(s => s.enabled && s.url).map(s => {
+    this.links = services.filter(s => s.enabled && s.url).map(s => {
       return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
     });
   }
@@ -40,14 +37,16 @@ export class ServiceLink extends ApolloLink {
   }
 
   runQuery(context, operation) {
-    // services to concat data
-    let services = [
-      ...this.rootLinks.filter(service => service.type === context.serviceType),
-      ...this.userLinks.filter(service => service.type === context.serviceType)
-    ];
+    const { serviceType } = context;
+
+    if (!serviceType) {
+      return this.fallback.request(operation) || Observable.of();
+    }
+
+    let services = this.links.filter(service => service.type === serviceType);
 
     if (services.length === 0) {
-      return this.fallback.request(operation) || Observable.of();
+      throw new Error(`Link service not found for the type: ${serviceType}`);
     }
 
     return new Observable(async observer => {
@@ -69,17 +68,16 @@ export class ServiceLink extends ApolloLink {
   runMutation(context, operation) {
     const { serviceType, serviceId } = context;
 
-    let service = this.rootLinks.find(
-      service => service.type === serviceType && (!serviceId || service.id === serviceId)
-    );
-    if (!service) {
-      service = this.userLinks.find(
-        service => service.type === serviceType && (!serviceId || service.id === serviceId)
-      );
+    if (!serviceType) {
+      return this.fallback.request(operation) || Observable.of();
     }
 
+    const service = this.links.find(
+      service => service.type === serviceType && (!serviceId || service.id === serviceId)
+    );
+
     if (!service) {
-      return this.fallback.request(operation) || Observable.of();
+      throw new Error(`Link service ${serviceId ? '"' + serviceId + '" ' : ''}not found for the type: ${serviceType}`);
     }
 
     const { link } = service;

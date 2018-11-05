@@ -69,7 +69,7 @@ const schema = makeExecutableSchema({
         await store.set('contacts', contacts);
         return addRelationData(contact);
       },
-      async updateContact(obj, args, { store }) {
+      async updateContact(obj, args, { store, addRelationData }) {
         const { contacts = [] } = await store.get('contacts');
         const { id } = args;
 
@@ -78,7 +78,6 @@ const schema = makeExecutableSchema({
         if (!contact) {
           return null;
         }
-
         Object.keys(args).forEach(prop => {
           contact[prop] = args[prop];
         });

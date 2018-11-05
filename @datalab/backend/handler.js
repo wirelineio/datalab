@@ -55,7 +55,6 @@ const schema = makeExecutableSchema({
       },
       async getAllServices(obj, args, { store, mapServiceUrl }) {
         const { services = [] } = await store.get('services');
-
         return mapServiceUrl(services);
       }
     },
