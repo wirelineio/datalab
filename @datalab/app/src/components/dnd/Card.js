@@ -101,9 +101,9 @@ const Card = ({
               titleTypographyProps={{ variant: 'subtitle2' }}
             />
             <Divider />
-            <CardContent>
+            {/*<CardContent>
               <Orgs contacts={contacts} onEdit={onEditContact} onDelete={onDeleteContact} />
-            </CardContent>
+            </CardContent>*/}
             <CardContent className={classes.cardContent}>
               <Services
                 classes={classes}

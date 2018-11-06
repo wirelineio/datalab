@@ -8,40 +8,42 @@ type Stage {
   name: String!
 }
 
-type Company {
+type Partner {
   id: ID!
   name: String!
-}
-
-type Contact {
-  id: ID!
-  name: String!
-  email: String!
-  phone: String!
-  company: Company
+  url: String
+  goals: String
   stage: Stage
-  createdAt: Date!
 }
 
-input ContactInput {
-  id: ID
-  name: String
-  email: String
-  phone: String
-  companyId: ID
-  stageId: ID
-}
+#type Contact {
+  #id: ID!
+  #name: String!
+  #email: String!
+  #phone: String!
+  #company: Partner
+  #createdAt: Date!
+#}
+
+#input ContactInput {
+  #id: ID
+  #name: String
+  #email: String
+  #phone: String
+  #companyId: ID
+  #stageId: ID
+#}
 
 #
 # Root Query
 #
 
 type Query {
-  getAllContacts: [Contact]!
+  #getAllContacts: [Contact]!
 
-  getContact(id: ID!): Contact
+  #getContact(id: ID!): Contact
 
-  getAllCompanies: [Company]!
+  getAllPartners: [Partner]!
 
   getAllStages: [Stage]!
 }
@@ -51,19 +53,23 @@ type Query {
 #
 
 type Mutation {
-  createContact(name: String!, email: String!, phone: String!, companyId: ID!, stageId: ID!): Contact!
+  #createContact(name: String!, email: String!, phone: String!, companyId: ID!, stageId: ID!): Contact!
 
-  updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, stageId: ID): Contact
+  #updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, stageId: ID): Contact
 
-  updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, stageId: ID): [Contact]
+  #updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, stageId: ID): [Contact]
 
-  updateOrCreateContacts(contacts: [ContactInput!]!): [Contact]
+  #updateOrCreateContacts(contacts: [ContactInput!]!): [Contact]
 
-  deleteContact(id: ID!): ID
+  #deleteContact(id: ID!): ID
 
-  deleteAllContacts: Boolean,
+  #deleteAllContacts: Boolean,
 
-  createCompany(name: String!): Company!
+  createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
+
+  updatePartner(id: ID!, url: String, goals: String, stageId: ID): Partner
+
+  deletePartner(id: ID!): ID
 
   createStage(name: String!): Stage!
 
