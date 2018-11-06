@@ -1,6 +1,5 @@
 import gql from 'graphql-tag';
 import get from 'lodash.get';
-import produce from 'immer';
 
 export const GET_ALL_PARTNERS = gql`
   query GetAllPartners {
@@ -73,23 +72,25 @@ export const DELETE_STAGE = gql`
 `;
 
 export const updatePartnerOptimistic = ({ partners, stages }, variables) => {
-  const { id, ...args } = variables;
+  const { id, stageId, ...args } = variables;
 
-  const mutate = produce(partners => {
-    const partner = partners.filter(p => p.id === id);
+  const partner = partners.find(p => p.id === id);
 
-    Object.keys(args).forEach(prop => {
-      if (prop === 'stageId') {
-        const stage = stages.find(a => a.id === args[prop]);
-        partner.stage = stage;
-      } else {
-        partner[prop] = args[prop];
-      }
-    });
-  });
+  const newPartner = {
+    stage: null,
+    ...args
+  };
+
+  if (stageId) {
+    const stage = stages.find(a => a.id === stageId);
+    newPartner.stage = stage ? stage : null;
+  }
 
   return {
-    partners: mutate(partners)
+    partner: {
+      ...partner,
+      ...newPartner
+    }
   };
 };
 
@@ -104,8 +105,7 @@ export const updateKanban = ({ partners, stages }) => {
         result[id] = {
           id,
           title,
-          cards: [],
-          index: Object.keys(result).length
+          cards: []
         };
       }
 
@@ -126,16 +126,15 @@ export const updateKanban = ({ partners, stages }) => {
   );
 
   columns = stages.reduce((result, next) => {
-    const id = get(next, 'stage.id', 'uncategorized');
+    const id = get(next, 'id', 'uncategorized');
 
     if (!result[id]) {
-      const title = get(next, 'stage.name');
+      const title = get(next, 'name');
 
       result[id] = {
         id,
         title,
-        cards: [],
-        index: Object.keys(result).length
+        cards: []
       };
     }
 
@@ -143,6 +142,15 @@ export const updateKanban = ({ partners, stages }) => {
   }, columns);
 
   columns = Object.keys(columns).map(key => columns[key]);
-  columns.sort((a, b) => a.index - b.index);
-  return columns;
+  columns.sort((a, b) => {
+    a = a.title.toLowerCase();
+    b = b.title.toLowerCase();
+
+    return a > b ? -1 : b > a ? 1 : 0;
+  });
+
+  const first = columns.filter(c => c.id === 'uncategorized');
+  const second = columns.filter(c => c.id !== 'uncategorized');
+
+  return [...first, ...second];
 };

@@ -39,9 +39,11 @@ const Column = ({ id, title, list, classes, children, onDelete, onAddCard }) => 
       <CardHeader
         title={title}
         action={
-          <IconButton aria-label="Delete" onClick={onDelete}>
-            <IconDelete />
-          </IconButton>
+          id !== 'uncategorized' && (
+            <IconButton aria-label="Delete" onClick={onDelete}>
+              <IconDelete />
+            </IconButton>
+          )
         }
       />
       <CardContent>

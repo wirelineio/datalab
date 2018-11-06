@@ -67,7 +67,7 @@ type Mutation {
 
   createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
 
-  updatePartner(id: ID!, url: String, goals: String, stageId: ID): Partner
+  updatePartner(id: ID!, name: String, url: String, goals: String, stageId: ID): Partner
 
   deletePartner(id: ID!): ID
 
