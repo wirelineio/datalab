@@ -81,10 +81,6 @@ class Column extends Component {
     const { id } = this.props;
     const { anchorEl } = this.state;
 
-    if (id === 'uncategorized') {
-      return null;
-    }
-
     const menuId = `${id}-action-menu`;
 
     return (
@@ -94,8 +90,8 @@ class Column extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleAddCard}>Add record</MenuItem>
-          <MenuItem onClick={this.handleEditColumn}>Edit stage</MenuItem>
-          <MenuItem onClick={this.handleDeleteColumn}>Delete stage</MenuItem>
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleEditColumn}>Edit stage</MenuItem>}
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleDeleteColumn}>Delete stage</MenuItem>}
         </Menu>
       </Fragment>
     );
