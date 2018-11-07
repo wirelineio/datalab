@@ -27,12 +27,6 @@ module.exports = {
   // https://webpack.js.org/configuration/devtool/
   devtool: 'source-map',
 
-  devServer: {
-    compress: true,
-    publicPath: '/assets/',
-    port: 8080
-  },
-
   plugins: [
     new CopyWebpackPlugin(['wireline.yml', 'service.yml']),
     new ZipPlugin({
