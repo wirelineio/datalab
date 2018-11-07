@@ -87,6 +87,19 @@ const schema = makeExecutableSchema({
         await store.set('stages', stages);
         return stage;
       },
+      async updateStage(obj, { id, name }, { store }) {
+        const { stages = [] } = await store.get('stages');
+        const idx = stages.findIndex(s => s.id === id);
+
+        stages[idx] = {
+          id,
+          name
+        };
+
+        await store.set('stages', stages);
+
+        return stages[idx];
+      },
       async deleteStage(obj, { id }, { store }) {
         let { stages = [] } = await store.get('stages');
 

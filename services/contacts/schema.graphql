@@ -73,6 +73,8 @@ type Mutation {
 
   createStage(name: String!): Stage!
 
+  updateStage(id: ID!, name: String!): Stage!
+
   deleteStage(id: ID!): ID
 }
 

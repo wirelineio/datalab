@@ -65,6 +65,15 @@ export const CREATE_STAGE = gql`
   }
 `;
 
+export const UPDATE_STAGE = gql`
+  mutation UpdateStage($id: ID!, $name: String!) {
+    stage: updateStage(id: $id, name: $name) {
+      id
+      name
+    }
+  }
+`;
+
 export const DELETE_STAGE = gql`
   mutation DeleteStage($id: ID!) {
     deleteStage(id: $id)
@@ -95,48 +104,44 @@ export const updatePartnerOptimistic = ({ partners, stages }, variables) => {
 };
 
 export const updateKanban = ({ partners, stages }) => {
-  let columns = partners.reduce(
+  let columns = stages.reduce(
     (result, next) => {
-      const id = get(next, 'stage.id', 'uncategorized');
+      const id = get(next, 'id', 'uncategorized');
 
       if (!result[id]) {
-        const title = get(next, 'stage.name');
+        const title = get(next, 'name');
 
         result[id] = {
           id,
           title,
+          data: next,
           cards: []
         };
       }
-
-      const cardId = get(next, 'id');
-      const cardTitle = get(next, 'name');
-      const card = {
-        id: cardId,
-        title: cardTitle,
-        data: next,
-        index: result[id].cards.length
-      };
-
-      result[id].cards.push(card);
 
       return result;
     },
     { uncategorized: { id: 'uncategorized', title: 'Uncategorized', cards: [], index: 0 } }
   );
 
-  columns = stages.reduce((result, next) => {
-    const id = get(next, 'id', 'uncategorized');
+  columns = partners.reduce((result, next) => {
+    let id = get(next, 'stage.id', 'uncategorized');
 
     if (!result[id]) {
-      const title = get(next, 'name');
-
-      result[id] = {
-        id,
-        title,
-        cards: []
-      };
+      // missing stage
+      id = 'uncategorized';
     }
+
+    const cardId = get(next, 'id');
+    const cardTitle = get(next, 'name');
+    const card = {
+      id: cardId,
+      title: cardTitle,
+      data: next,
+      index: result[id].cards.length
+    };
+
+    result[id].cards.push(card);
 
     return result;
   }, columns);

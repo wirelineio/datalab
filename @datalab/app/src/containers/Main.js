@@ -10,6 +10,7 @@ import {
   GET_ALL_PARTNERS,
   UPDATE_PARTNER,
   CREATE_STAGE,
+  UPDATE_STAGE,
   DELETE_STAGE,
   updatePartnerOptimistic,
   updateKanban
@@ -18,7 +19,7 @@ import {
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
-import FormStage from '../components/modal/FormStage';
+import StageForm from '../components/modal/StageForm';
 
 const styles = () => ({
   addCardButton: {
@@ -30,8 +31,8 @@ const styles = () => ({
 
 class Main extends Component {
   state = {
-    openFormStage: false,
-    stageId: null
+    openStageForm: false,
+    selectedStage: null
   };
 
   handleOrder = result => {
@@ -52,26 +53,36 @@ class Main extends Component {
     }
   };
 
-  handleOpenFormStage = () => {
-    this.setState({ openFormStage: true });
+  handleAddStage = () => {
+    this.setState({ openStageForm: true });
   };
 
-  handleFormStageResult = async result => {
-    const { createStage } = this.props;
+  handleEditStage = stage => {
+    this.setState({ openStageForm: true, selectedStage: stage });
+  };
+
+  handleStageFormResult = async result => {
+    const { createStage, updateStage } = this.props;
+
     if (result) {
-      await createStage({ name: result });
+      if (result.id) {
+        await updateStage({ id: result.id, name: result.name });
+      } else {
+        await createStage({ name: result.name });
+      }
     }
-    this.setState({ openFormStage: false });
+
+    this.setState({ openStageForm: false, selectedStage: null });
   };
 
-  handleDeleteStage = id => {
+  handleDeleteStage = ({ id }) => {
     const { deleteStage } = this.props;
     deleteStage({ id });
   };
 
   render() {
     const { columns = [], loading, classes } = this.props;
-    const { openFormStage } = this.state;
+    const { openStageForm, selectedStage } = this.state;
 
     return (
       <Fragment>
@@ -81,7 +92,14 @@ class Main extends Component {
           <GridColumn list={columns} onDragEnd={this.handleOrder}>
             {({ item: column }) => {
               return (
-                <Column id={column.id} title={column.title} list={column.cards} index={column.index}>
+                <Column
+                  id={column.id}
+                  title={column.title}
+                  list={column.cards}
+                  index={column.index}
+                  onEditColumn={this.handleEditStage.bind(this, column.data)}
+                  onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
+                >
                   {({ item: card }) => {
                     return <Card id={card.id} title={card.title} index={card.index} data={card.data} />;
                   }}
@@ -95,11 +113,11 @@ class Main extends Component {
           color="primary"
           aria-label="Add"
           className={classes.addCardButton}
-          onClick={this.handleOpenFormStage}
+          onClick={this.handleAddStage}
         >
           <AddIcon />
         </Button>
-        <FormStage open={openFormStage} onClose={this.handleFormStageResult} />
+        <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
       </Fragment>
     );
   }
@@ -173,6 +191,20 @@ export default compose(
                 query: GET_ALL_PARTNERS,
                 data: { ...data, stages: stages.concat([stage]) }
               });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_STAGE, {
+    props({ mutate }) {
+      return {
+        updateStage: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
             }
           });
         }
