@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -7,11 +7,11 @@ import RootRef from '@material-ui/core/RootRef';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import IconButton from '@material-ui/core/IconButton';
-import IconDelete from '@material-ui/icons/Delete';
-import IconAdd from '@material-ui/icons/Add';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const styles = () => ({
   root: {
@@ -33,40 +33,94 @@ const styles = () => ({
   }
 });
 
-const Column = ({ id, title, list, classes, children, onDelete, onAddCard }) => {
-  return (
-    <Card className={classes.root} elevation={0}>
-      <CardHeader
-        title={title}
-        action={
-          <IconButton aria-label="Delete" onClick={onDelete}>
-            <IconDelete />
-          </IconButton>
-        }
-      />
-      <CardContent>
-        <Droppable droppableId={id}>
-          {provided => (
-            <RootRef rootRef={provided.innerRef}>
-              <Grid container item className={classes.cards} direction="column" {...provided.droppableProps}>
-                {list.map((item, key) => (
-                  <Grid key={key} item>
-                    {children({ item, key })}
-                  </Grid>
-                ))}
-                {provided.placeholder}
-              </Grid>
-            </RootRef>
-          )}
-        </Droppable>
-      </CardContent>
-      <CardActions className={classes.actions} disableActionSpacing>
-        <IconButton aria-label="Add" onClick={onAddCard}>
-          <IconAdd />
+class Column extends Component {
+  state = {
+    anchorEl: null
+  };
+
+  close = cb => {
+    this.setState({ anchorEl: null }, cb);
+  };
+
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.close();
+  };
+
+  handleAddCard = () => {
+    const { onAddCard } = this.props;
+    this.close(() => {
+      if (onAddCard) {
+        onAddCard();
+      }
+    });
+  };
+
+  handleEditColumn = () => {
+    const { onEditColumn } = this.props;
+    this.close(() => {
+      if (onEditColumn) {
+        onEditColumn();
+      }
+    });
+  };
+
+  handleDeleteColumn = () => {
+    const { onDeleteColumn } = this.props;
+    this.close(() => {
+      if (onDeleteColumn) {
+        onDeleteColumn();
+      }
+    });
+  };
+
+  renderActionMenu() {
+    const { id } = this.props;
+    const { anchorEl } = this.state;
+
+    const menuId = `${id}-action-menu`;
+
+    return (
+      <Fragment>
+        <IconButton aria-owns={anchorEl ? menuId : undefined} aria-haspopup="true" onClick={this.handleClick}>
+          <MoreVertIcon />
         </IconButton>
-      </CardActions>
-    </Card>
-  );
-};
+        <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
+          <MenuItem onClick={this.handleAddCard}>Add record</MenuItem>
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleEditColumn}>Edit stage</MenuItem>}
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleDeleteColumn}>Delete stage</MenuItem>}
+        </Menu>
+      </Fragment>
+    );
+  }
+
+  render() {
+    const { id, title, list, classes, children } = this.props;
+    return (
+      <Card className={classes.root} elevation={0}>
+        <CardHeader title={title} action={this.renderActionMenu()} />
+        <CardContent>
+          <Droppable droppableId={id}>
+            {provided => (
+              <RootRef rootRef={provided.innerRef}>
+                <Grid container item className={classes.cards} direction="column" {...provided.droppableProps}>
+                  {list.map((item, key) => (
+                    <Grid key={key} item>
+                      {children({ item, key })}
+                    </Grid>
+                  ))}
+                  {provided.placeholder}
+                </Grid>
+              </RootRef>
+            )}
+          </Droppable>
+        </CardContent>
+      </Card>
+    );
+  }
+}
 
 export default withStyles(styles)(Column);

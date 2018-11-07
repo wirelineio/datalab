@@ -1,31 +1,28 @@
 import React, { Component, Fragment } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
-import produce from 'immer';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
-import { UPDATE_CARD_ORDER, GET_SERVICES, getType, updateBoard } from '../stores/board';
-import { GET_MESSAGES } from '../stores/messaging';
-import { GET_TASKS, TOGGLE_TASK } from '../stores/tasks';
+import { GET_SERVICES, getType } from '../stores/board';
 import {
-  GET_CONTACTS,
-  UPDATE_MULTIPLE_CONTACTS,
-  UPDATE_CONTACT,
-  UPDATE_OR_CREATE_CONTACTS,
+  GET_ALL_PARTNERS,
+  CREATE_PARTNER,
+  UPDATE_PARTNER,
+  DELETE_PARTNER,
   CREATE_STAGE,
+  UPDATE_STAGE,
   DELETE_STAGE,
-  CREATE_COMPANY,
-  optimisticUpdateMultipleContacts
-} from '../stores/contacts';
+  updatePartnerOptimistic,
+  updateKanban
+} from '../stores/orgs';
 
 import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
-import sort from '../components/dnd/sort';
-import FormStage from '../components/modal/FormStage';
-import ContactForm from '../components/modal/ContactForm';
+import StageForm from '../components/modal/StageForm';
+import PartnerForm from '../components/modal/PartnerForm';
 
 const styles = () => ({
   addCardButton: {
@@ -37,15 +34,16 @@ const styles = () => ({
 
 class Main extends Component {
   state = {
-    openFormStage: false,
-    openContactForm: false,
-    stageId: null,
-    editContact: null
+    openStageForm: false,
+    openPartnerForm: false,
+    selectedStage: null,
+    selectedPartner: null
   };
 
   handleOrder = result => {
     const { source, destination, draggableId } = result;
-    const { updateMultipleContacts, columns = [] } = this.props;
+    const { updatePartner } = this.props;
+
     if (!destination) {
       return null;
     }
@@ -54,89 +52,69 @@ class Main extends Component {
       return null;
     }
 
-    if (destination.droppableId === source.droppableId) {
-      //return updateCardOrder(source, destination, draggableId);
-    } else {
-      const ids = columns
-        .find(c => c.id === source.droppableId)
-        .cards.find(c => c.id === draggableId)
-        .contacts.map(c => c.id);
-
-      return updateMultipleContacts({ ids, stageId: destination.droppableId });
+    if (destination.droppableId !== source.droppableId) {
+      const { droppableId } = destination;
+      return updatePartner({ id: draggableId, stageId: droppableId });
     }
   };
 
-  handleOpenFormStage = () => {
-    this.setState({ openFormStage: true });
+  handleAddStage = () => {
+    this.setState({ openStageForm: true });
   };
 
-  handleFormStageResult = async result => {
-    const { createStage } = this.props;
+  handleEditStage = stage => {
+    this.setState({ openStageForm: true, selectedStage: stage });
+  };
+
+  handleStageFormResult = async result => {
+    const { createStage, updateStage } = this.props;
+
     if (result) {
-      await createStage({ name: result });
+      if (result.id) {
+        await updateStage({ id: result.id, name: result.name });
+      } else {
+        await createStage({ name: result.name });
+      }
     }
-    this.setState({ openFormStage: false });
+
+    this.setState({ openStageForm: false, selectedStage: null });
   };
 
-  handleDeleteStage = id => {
+  handleDeleteStage = ({ id }) => {
     const { deleteStage } = this.props;
     deleteStage({ id });
   };
 
-  handleCreateContact = id => {
-    this.setState({ openContactForm: true, stageId: id });
+  handleAddPartner = stage => {
+    this.setState({ openPartnerForm: true, selectedStage: stage });
   };
 
-  handleEditContact = contact => {
-    this.setState({ openContactForm: true, stageId: contact.stageId, editContact: contact });
+  handleEditPartner = partner => {
+    this.setState({ openPartnerForm: true, selectedPartner: partner });
   };
 
-  handleContactFormResult = async result => {
-    const { updateOrCreateContacts, createCompany } = this.props;
+  handlePartnerFormResult = async result => {
+    const { createPartner, updatePartner } = this.props;
 
-    if (!result) {
-      this.setState({ openContactForm: false, stageId: null, editContact: null });
-      return;
-    }
-
-    try {
-      let { contacts, company } = result;
-
-      if (company.__isNew__) {
-        const {
-          data: { company: newCompany }
-        } = await createCompany({ name: company.label });
-        contacts = contacts.map(c => {
-          c.companyId = newCompany.id;
-          return c;
-        });
+    if (result) {
+      if (result.id) {
+        await updatePartner(result, false);
+      } else {
+        await createPartner(result);
       }
-
-      await updateOrCreateContacts({ contacts });
-    } catch (err) {
-      console.error(err);
     }
 
-    this.setState({ openContactForm: false, stageId: null, editContact: null });
+    this.setState({ openPartnerForm: false, selectedStage: null, selectedPartner: null });
   };
 
-  handleDeleteContact = ({ id }) => {
-    const { updateContact } = this.props;
-    updateContact({ id, stageId: null });
+  handleDeletePartner = ({ id }) => {
+    const { deletePartner } = this.props;
+    deletePartner({ id });
   };
 
   render() {
-    const {
-      columns = [],
-      loading,
-      messages = null,
-      tasks = null,
-      toggleTask,
-      classes,
-      companies = [],
-      contacts = []
-    } = this.props;
-    const { openFormStage, openContactForm, stageId, editContact } = this.state;
+    const { columns = [], loading, classes } = this.props;
+    const { openStageForm, selectedStage, openPartnerForm, selectedPartner } = this.state;
 
     return (
       <Fragment>
@@ -150,23 +128,19 @@ class Main extends Component {
                   id={column.id}
                   title={column.title}
                   list={column.cards}
-                  onDelete={this.handleDeleteStage.bind(this, column.id)}
-                  onAddCard={this.handleCreateContact.bind(this, column.id)}
+                  index={column.index}
+                  onEditColumn={this.handleEditStage.bind(this, column.data)}
+                  onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
+                  onAddCard={this.handleAddPartner.bind(this, column.data)}
                 >
                   {({ item: card }) => {
-                    const cardMessages = messages ? messages.filter(m => m.to === card.id) : null;
-                    const cardTasks = tasks ? tasks.filter(m => m.to === card.id) : null;
                     return (
                       <Card
                         id={card.id}
                         title={card.title}
                         index={card.index}
-                        contacts={card.contacts}
-                        messages={cardMessages}
-                        tasks={cardTasks}
-                        toggleTask={toggleTask}
-                        onEditContact={this.handleEditContact}
-                        onDeleteContact={this.handleDeleteContact}
+                        data={card.data}
+                        onEditCard={this.handleEditPartner.bind(this, card.data)}
                       />
                     );
                   }}
@@ -180,18 +154,16 @@ class Main extends Component {
           color="primary"
           aria-label="Add"
           className={classes.addCardButton}
-          onClick={this.handleOpenFormStage}
+          onClick={this.handleAddStage}
         >
           <AddIcon />
         </Button>
-        <FormStage open={openFormStage} onClose={this.handleFormStageResult} />
-        <ContactForm
-          open={openContactForm}
-          stageId={stageId}
-          contact={editContact}
-          onClose={this.handleContactFormResult}
-          companies={companies}
-          contacts={contacts}
+        <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
+        <PartnerForm
+          open={openPartnerForm}
+          stage={selectedStage}
+          partner={selectedPartner}
+          onClose={this.handlePartnerFormResult}
         />
       </Fragment>
     );
@@ -209,7 +181,7 @@ export default compose(
       return { services: services.filter(s => s.enabled) };
     }
   }),
-  graphql(GET_CONTACTS, {
+  graphql(GET_ALL_PARTNERS, {
     skip({ services = [] }) {
       return !services.find(s => s.type === 'orgs');
     },
@@ -219,54 +191,22 @@ export default compose(
       },
       fetchPolicy: 'cache-and-network'
     },
-    props({ data: { contacts = [], stages = [], companies = [], loading } }) {
+    props({ data: { partners = [], stages = [], loading } }) {
       return {
-        columns: updateBoard({
-          groups: stages,
-          items: contacts
+        columns: updateKanban({
+          stages,
+          partners
         }),
-        contacts,
+        partners,
         stages,
-        companies,
         loading
       };
     }
   }),
-  graphql(UPDATE_MULTIPLE_CONTACTS, {
-    props({ mutate, ownProps: { contacts, stages } }) {
-      return {
-        updateMultipleContacts: variables => {
-          return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            },
-            optimisticResponse: {
-              contacts: optimisticUpdateMultipleContacts({ contacts, stages }, variables)
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(UPDATE_CONTACT, {
+  graphql(CREATE_PARTNER, {
     props({ mutate }) {
       return {
-        updateContact: variables => {
-          return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(UPDATE_OR_CREATE_CONTACTS, {
-    props({ mutate }) {
-      return {
-        updateOrCreateContacts: variables => {
+        createPartner: variables => {
           return mutate({
             variables,
             context: {
@@ -275,29 +215,53 @@ export default compose(
             update(
               cache,
               {
-                data: { contacts }
+                data: { partner }
               }
             ) {
-              const { contacts: oldContacts, ...data } = cache.readQuery({ query: GET_CONTACTS });
-
-              const mutate = produce(oldContacts => {
-                contacts.forEach(c => {
-                  const idx = oldContacts.findIndex(oc => oc.id === c.id);
-
-                  if (idx !== -1) {
-                    oldContacts[idx] = c;
-                  } else {
-                    oldContacts.push(c);
-                  }
-                });
-
-                return oldContacts;
-              });
-
+              const { partners, ...data } = cache.readQuery({ query: GET_ALL_PARTNERS });
               cache.writeQuery({
-                query: GET_CONTACTS,
-                data: { ...data, contacts: mutate(oldContacts) }
+                query: GET_ALL_PARTNERS,
+                data: { ...data, partners: partners.concat([partner]) }
               });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_PARTNER, {
+    props({ mutate, ownProps: { partners, stages } }) {
+      return {
+        updatePartner: (variables, optimistic = true) => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            optimisticResponse: optimistic ? updatePartnerOptimistic({ partners, stages }, variables) : null
+          });
+        }
+      };
+    }
+  }),
+  graphql(DELETE_PARTNER, {
+    options: {
+      refetchQueries: [
+        {
+          query: GET_ALL_PARTNERS,
+          context: {
+            serviceType: 'orgs'
+          }
+        }
+      ]
+    },
+    props({ mutate }) {
+      return {
+        deletePartner: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
             }
           });
         }
@@ -319,11 +283,25 @@ export default compose(
                 data: { stage }
               }
             ) {
-              const { stages, ...data } = cache.readQuery({ query: GET_CONTACTS });
+              const { stages, ...data } = cache.readQuery({ query: GET_ALL_PARTNERS });
               cache.writeQuery({
-                query: GET_CONTACTS,
+                query: GET_ALL_PARTNERS,
                 data: { ...data, stages: stages.concat([stage]) }
               });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_STAGE, {
+    props({ mutate }) {
+      return {
+        updateStage: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
             }
           });
         }
@@ -334,7 +312,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_CONTACTS,
+          query: GET_ALL_PARTNERS,
           context: {
             serviceType: 'orgs'
           }
@@ -348,99 +326,6 @@ export default compose(
             variables,
             context: {
               serviceType: 'orgs'
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(CREATE_COMPANY, {
-    props({ mutate }) {
-      return {
-        createCompany: variables => {
-          return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            },
-            update(
-              cache,
-              {
-                data: { company }
-              }
-            ) {
-              const { companies, ...data } = cache.readQuery({ query: GET_CONTACTS });
-              cache.writeQuery({
-                query: GET_CONTACTS,
-                data: { ...data, companies: companies.concat([company]) }
-              });
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(UPDATE_CARD_ORDER, {
-    props({ mutate, ownProps: { columns } }) {
-      return {
-        updateCardOrder: (source, destination, cardId) => {
-          return mutate({
-            variables: {
-              source,
-              destination,
-              cardId
-            },
-            optimisticResponse: {
-              columns: sort(columns, source, destination, cardId)
-            }
-          });
-        }
-      };
-    }
-  }),
-  graphql(GET_MESSAGES, {
-    skip({ services = [] }) {
-      return !services.find(s => s.type === 'messaging');
-    },
-    options: {
-      context: {
-        serviceType: 'messaging'
-      },
-      fetchPolicy: 'cache-and-network'
-    },
-    props({ data: { messages = [] } }) {
-      return {
-        messages
-      };
-    }
-  }),
-  graphql(GET_TASKS, {
-    skip({ services = [] }) {
-      return !services.find(s => s.type === 'tasks');
-    },
-    options: {
-      context: {
-        serviceType: 'tasks'
-      },
-      fetchPolicy: 'cache-and-network'
-    },
-    props({ data: { tasks = [] } }) {
-      return {
-        tasks
-      };
-    }
-  }),
-  graphql(TOGGLE_TASK, {
-    props({ mutate }) {
-      return {
-        toggleTask: ({ id, serviceId }) => {
-          return mutate({
-            variables: {
-              id
-            },
-            context: {
-              serviceType: 'tasks',
-              serviceId
             }
           });
         }
