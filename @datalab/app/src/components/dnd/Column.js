@@ -38,17 +38,21 @@ class Column extends Component {
     anchorEl: null
   };
 
+  close = cb => {
+    this.setState({ anchorEl: null }, cb);
+  };
+
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
-  handleClose = (cb = () => {}) => {
-    this.setState({ anchorEl: null }, cb);
+  handleClose = () => {
+    this.close();
   };
 
   handleAddCard = () => {
     const { onAddCard } = this.props;
-    this.handleClose(() => {
+    this.close(() => {
       if (onAddCard) {
         onAddCard();
       }
@@ -57,7 +61,7 @@ class Column extends Component {
 
   handleEditColumn = () => {
     const { onEditColumn } = this.props;
-    this.handleClose(() => {
+    this.close(() => {
       if (onEditColumn) {
         onEditColumn();
       }
@@ -66,7 +70,7 @@ class Column extends Component {
 
   handleDeleteColumn = () => {
     const { onDeleteColumn } = this.props;
-    this.handleClose(() => {
+    this.close(() => {
       if (onDeleteColumn) {
         onDeleteColumn();
       }

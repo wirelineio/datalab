@@ -8,7 +8,9 @@ import AddIcon from '@material-ui/icons/Add';
 import { GET_SERVICES, getType } from '../stores/board';
 import {
   GET_ALL_PARTNERS,
+  CREATE_PARTNER,
   UPDATE_PARTNER,
+  DELETE_PARTNER,
   CREATE_STAGE,
   UPDATE_STAGE,
   DELETE_STAGE,
@@ -20,6 +22,7 @@ import GridColumn from '../components/dnd/GridColumn';
 import Column from '../components/dnd/Column';
 import Card from '../components/dnd/Card';
 import StageForm from '../components/modal/StageForm';
+import PartnerForm from '../components/modal/PartnerForm';
 
 const styles = () => ({
   addCardButton: {
@@ -32,7 +35,9 @@ const styles = () => ({
 class Main extends Component {
   state = {
     openStageForm: false,
-    selectedStage: null
+    openPartnerForm: false,
+    selectedStage: null,
+    selectedPartner: null
   };
 
   handleOrder = result => {
@@ -80,9 +85,36 @@ class Main extends Component {
     deleteStage({ id });
   };
 
+  handleAddPartner = stage => {
+    this.setState({ openPartnerForm: true, selectedStage: stage });
+  };
+
+  handleEditPartner = partner => {
+    this.setState({ openPartnerForm: true, selectedPartner: partner });
+  };
+
+  handlePartnerFormResult = async result => {
+    const { createPartner, updatePartner } = this.props;
+
+    if (result) {
+      if (result.id) {
+        await updatePartner(result, false);
+      } else {
+        await createPartner(result);
+      }
+    }
+
+    this.setState({ openPartnerForm: false, selectedStage: null, selectedPartner: null });
+  };
+
+  handleDeletePartner = ({ id }) => {
+    const { deletePartner } = this.props;
+    deletePartner({ id });
+  };
+
   render() {
     const { columns = [], loading, classes } = this.props;
-    const { openStageForm, selectedStage } = this.state;
+    const { openStageForm, selectedStage, openPartnerForm, selectedPartner } = this.state;
 
     return (
       <Fragment>
@@ -99,9 +131,18 @@ class Main extends Component {
                   index={column.index}
                   onEditColumn={this.handleEditStage.bind(this, column.data)}
                   onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
+                  onAddCard={this.handleAddPartner.bind(this, column.data)}
                 >
                   {({ item: card }) => {
-                    return <Card id={card.id} title={card.title} index={card.index} data={card.data} />;
+                    return (
+                      <Card
+                        id={card.id}
+                        title={card.title}
+                        index={card.index}
+                        data={card.data}
+                        onEditCard={this.handleEditPartner.bind(this, card.data)}
+                      />
+                    );
                   }}
                 </Column>
               );
@@ -118,6 +159,12 @@ class Main extends Component {
           <AddIcon />
         </Button>
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
+        <PartnerForm
+          open={openPartnerForm}
+          stage={selectedStage}
+          partner={selectedPartner}
+          onClose={this.handlePartnerFormResult}
+        />
       </Fragment>
     );
   }
@@ -156,16 +203,66 @@ export default compose(
       };
     }
   }),
-  graphql(UPDATE_PARTNER, {
-    props({ mutate, ownProps: { partners, stages } }) {
+  graphql(CREATE_PARTNER, {
+    props({ mutate }) {
       return {
-        updatePartner: variables => {
+        createPartner: variables => {
           return mutate({
             variables,
             context: {
               serviceType: 'orgs'
             },
-            optimisticResponse: updatePartnerOptimistic({ partners, stages }, variables)
+            update(
+              cache,
+              {
+                data: { partner }
+              }
+            ) {
+              const { partners, ...data } = cache.readQuery({ query: GET_ALL_PARTNERS });
+              cache.writeQuery({
+                query: GET_ALL_PARTNERS,
+                data: { ...data, partners: partners.concat([partner]) }
+              });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_PARTNER, {
+    props({ mutate, ownProps: { partners, stages } }) {
+      return {
+        updatePartner: (variables, optimistic = true) => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            optimisticResponse: optimistic ? updatePartnerOptimistic({ partners, stages }, variables) : null
+          });
+        }
+      };
+    }
+  }),
+  graphql(DELETE_PARTNER, {
+    options: {
+      refetchQueries: [
+        {
+          query: GET_ALL_PARTNERS,
+          context: {
+            serviceType: 'orgs'
+          }
+        }
+      ]
+    },
+    props({ mutate }) {
+      return {
+        deletePartner: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            }
           });
         }
       };

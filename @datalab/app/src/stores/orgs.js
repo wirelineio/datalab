@@ -121,7 +121,7 @@ export const updateKanban = ({ partners, stages }) => {
 
       return result;
     },
-    { uncategorized: { id: 'uncategorized', title: 'Uncategorized', cards: [], index: 0 } }
+    { uncategorized: { id: 'uncategorized', title: 'Uncategorized', cards: [], index: 0, data: null } }
   );
 
   columns = partners.reduce((result, next) => {
