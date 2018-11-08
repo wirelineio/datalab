@@ -15,13 +15,17 @@ import TextField from '../form/TextField';
 const initialValues = (partner, stage) => ({
   id: partner ? partner.id : null,
   name: partner ? partner.name : '',
-  stageId: partner ? partner.stageId : stage ? stage.id : null
+  stageId: partner ? partner.stageId : stage ? stage.id : null,
+  url: partner ? partner.url || '' : '',
+  goals: partner ? partner.goals || '' : ''
 });
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, 'Name must be at least 3 characters long.')
-    .required('Name is required.')
+    .required('Name is required.'),
+  url: Yup.string().url('The Website must be a valid url.'),
+  goals: Yup.string()
 });
 
 export default class PartnerForm extends Component {
@@ -58,6 +62,8 @@ export default class PartnerForm extends Component {
               <DialogContent>
                 <form onSubmit={props.handleSubmit}>
                   <Field component={TextField} autoFocus margin="dense" name="name" label="Name" fullWidth />
+                  <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
+                  <Field component={TextField} margin="dense" name="goals" label="Goals" fullWidth multiline rows="3" />
                 </form>
               </DialogContent>
               <DialogActions>
