@@ -7,6 +7,23 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "stack: @datalab",
+      // "program": "/Users/elmasse/Services/wireline/darkstar/sub/cli/bin/wire.js",
+      "program": "${workspaceRoot}/node_modules/.bin/wire",
+      "args": [
+        "dev",
+        "stack",
+        "-d",
+        "--stack", "${workspaceFolder}/ops/faas/stack.yml",
+        "--services", "${workspaceFolder}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "autoAttachChildProcesses": true,
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "app.datalab",
       "program": "${workspaceFolder}/node_modules/.bin/wire",
       "args": [
