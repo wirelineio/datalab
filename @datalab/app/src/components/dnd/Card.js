@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import classnames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import { default as MuiCard } from '@material-ui/core/Card';
@@ -14,8 +15,10 @@ import RootRef from '@material-ui/core/RootRef';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Collapse from '@material-ui/core/Collapse';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import blue from '@material-ui/core/colors/blue';
 
 import Messaging from '../service-types/Messaging';
 import Tasks from '../service-types/Tasks';
@@ -40,6 +43,22 @@ const styles = theme => ({
   },
   expansionPanel: {
     margin: 0
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
+  },
+  link: {
+    textDecoration: 'none',
+    color: blue[500],
+    '&:hover': {
+      color: blue[900]
+    }
   }
 });
 
@@ -70,7 +89,8 @@ const Services = ({ classes, messages, tasks, toggleTask }) => (
 
 class Card extends Component {
   state = {
-    anchorEl: null
+    anchorEl: null,
+    expanded: false
   };
 
   close = cb => {
@@ -94,14 +114,28 @@ class Card extends Component {
     });
   };
 
+  handleExpandClick = () => {
+    this.setState(state => ({ expanded: !state.expanded }));
+  };
+
   renderActionMenu() {
-    const { id } = this.props;
-    const { anchorEl } = this.state;
+    const { id, classes } = this.props;
+    const { anchorEl, expanded } = this.state;
 
     const menuId = `${id}-action-menu`;
 
     return (
       <Fragment>
+        <IconButton
+          className={classnames(classes.expand, {
+            [classes.expandOpen]: expanded
+          })}
+          onClick={this.handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="Show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
         <IconButton aria-owns={anchorEl ? menuId : undefined} aria-haspopup="true" onClick={this.handleClick}>
           <MoreVertIcon />
         </IconButton>
@@ -113,7 +147,8 @@ class Card extends Component {
   }
 
   render() {
-    const { classes, id, title, contacts, index, subheader, messages, tasks, toggleTask } = this.props;
+    const { classes, id, title, data, contacts, index, subheader, messages, tasks, toggleTask } = this.props;
+    const { expanded } = this.state;
 
     return (
       <Draggable draggableId={id} index={index}>
@@ -145,6 +180,23 @@ class Card extends Component {
                   toggleTask={toggleTask}
                 />
               </CardContent>
+              <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent>
+                  <Typography
+                    component="a"
+                    href={data.url}
+                    target="blank"
+                    className={classes.link}
+                    variant="body2"
+                    gutterBottom
+                  >
+                    {data.url}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    {data.goals}
+                  </Typography>
+                </CardContent>
+              </Collapse>
             </MuiCard>
           </RootRef>
         )}
