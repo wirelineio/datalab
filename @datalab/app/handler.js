@@ -1,6 +1,7 @@
 //
 // Copyright 2018 Wireline, Inc.
 //
+import url from 'url';
 import 'source-map-support/register';
 
 import Wireline from '@wirelineio/sdk';
@@ -39,7 +40,7 @@ export const index = Wireline.exec(async (event, context, response) => {
 
 export const proxy = Wireline.exec(async (event, context, response) => {
   const { static_assets_url } = context.wireline;
-  const match = event.path.match(/^\/assets(\/.*)/);
+  const match = event.path.match(/^\/assets\/(.*)/);
   let path = event.path;
 
   if (match) {
@@ -47,7 +48,7 @@ export const proxy = Wireline.exec(async (event, context, response) => {
   }
 
   response
-    .set('Location', `${static_assets_url}${path}`)
+    .set('Location', url.resolve(static_assets_url, path))
     .status(301)
     .send('');
 });

@@ -38,7 +38,6 @@ module.exports = {
 
   devServer: {
     compress: true,
-    publicPath: '/assets/',
     port: 8080
   },
 
