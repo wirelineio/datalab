@@ -24,15 +24,9 @@ const validationSchema = Yup.object().shape({
 });
 
 export default class StageForm extends Component {
-  handleChange = event => {
-    this.setState({ value: event.target.value });
-  };
-
   handleClose = () => {
     const { onClose } = this.props;
-    this.setState({ value: '' }, () => {
-      onClose(false);
-    });
+    onClose(false);
   };
 
   handleAccept = (values, actions) => {

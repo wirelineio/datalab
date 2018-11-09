@@ -22,16 +22,14 @@ const firstLetters = name =>
     .map(word => word[0])
     .join('');
 
-const Orgs = ({ classes, onEdit, onDelete, contacts = [] }) => {
+const Orgs = ({ classes, contacts = [] }) => {
   return (
     <div className={classes.root}>
       {contacts.map(contact => (
         <Chip
           key={contact.id}
-          avatar={<Avatar>{firstLetters(contact.title)}</Avatar>}
-          label={contact.title}
-          onClick={onEdit.bind(null, contact.data)}
-          onDelete={onDelete.bind(null, contact.data)}
+          avatar={<Avatar>{firstLetters(contact.name)}</Avatar>}
+          label={contact.name}
           className={classes.chip}
         />
       ))}

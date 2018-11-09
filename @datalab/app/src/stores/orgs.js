@@ -12,10 +12,38 @@ export const GET_ALL_PARTNERS = gql`
         id
         name
       }
+      contacts {
+        id
+        name
+        email
+        phone
+      }
     }
     stages: getAllStages {
       id
       name
+    }
+  }
+`;
+
+export const CREATE_CONTACT = gql`
+  mutation CreateContact($name: String!, $email: String, $phone: String) {
+    contact: createContact(name: $name, email: $email, phone: $phone) {
+      id
+      name
+      email
+      phone
+    }
+  }
+`;
+
+export const UPDATE_CONTACT = gql`
+  mutation UpdateContact($name: String!, $email: String, $phone: String) {
+    contact: updateContact(name: $name, email: $email, phone: $phone) {
+      id
+      name
+      email
+      phone
     }
   }
 `;
@@ -31,6 +59,12 @@ export const CREATE_PARTNER = gql`
         id
         name
       }
+      contacts {
+        id
+        name
+        email
+        phone
+      }
     }
   }
 `;
@@ -45,6 +79,75 @@ export const UPDATE_PARTNER = gql`
       stage {
         id
         name
+      }
+      contacts {
+        id
+        name
+        email
+        phone
+      }
+    }
+  }
+`;
+
+export const ADD_CONTACT_TO_PARTNER = gql`
+  mutation AddContactToPartner($id: ID!, $contactId: ID!) {
+    partner: addContactToPartner(id: $id, contactId: $contactId) {
+      id
+      name
+      url
+      goals
+      stage {
+        id
+        name
+      }
+      contacts {
+        id
+        name
+        email
+        phone
+      }
+    }
+  }
+`;
+
+export const DELETE_CONTACT_TO_PARTNER = gql`
+  mutation DeleteContactToPartner($id: ID!, $contactId: ID!) {
+    partner: deleteContactToPartner(id: $id, contactId: $contactId) {
+      id
+      name
+      url
+      goals
+      stage {
+        id
+        name
+      }
+      contacts {
+        id
+        name
+        email
+        phone
+      }
+    }
+  }
+`;
+
+export const MOVE_CONTACT_TO_PARTNER = gql`
+  mutation MoveContactToPartner($id: ID!, $toPartner: ID!, $contactId: ID!) {
+    partner: moveContactToPartner(id: $id, toPartner: $toPartner, contactId: $contactId) {
+      id
+      name
+      url
+      goals
+      stage {
+        id
+        name
+      }
+      contacts {
+        id
+        name
+        email
+        phone
       }
     }
   }

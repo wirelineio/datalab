@@ -14,35 +14,21 @@ type Partner {
   url: String
   goals: String
   stage: Stage
+  contacts: [Contact!]
 }
 
-#type Contact {
-  #id: ID!
-  #name: String!
-  #email: String!
-  #phone: String!
-  #company: Partner
-  #createdAt: Date!
-#}
-
-#input ContactInput {
-  #id: ID
-  #name: String
-  #email: String
-  #phone: String
-  #companyId: ID
-  #stageId: ID
-#}
+type Contact {
+  id: ID!
+  name: String!
+  email: String
+  phone: String
+}
 
 #
 # Root Query
 #
 
 type Query {
-  #getAllContacts: [Contact]!
-
-  #getContact(id: ID!): Contact
-
   getAllPartners: [Partner]!
 
   getAllStages: [Stage]!
@@ -53,27 +39,25 @@ type Query {
 #
 
 type Mutation {
-  #createContact(name: String!, email: String!, phone: String!, companyId: ID!, stageId: ID!): Contact!
+  createContact(name: String!, email: String, phone: String): Contact
 
-  #updateContact(id: ID!, name: String, email: String, phone: String, companyId: ID, stageId: ID): Contact
-
-  #updateMultipleContacts(ids: [ID!]!, name: String, email: String, phone: String, companyId: ID, stageId: ID): [Contact]
-
-  #updateOrCreateContacts(contacts: [ContactInput!]!): [Contact]
-
-  #deleteContact(id: ID!): ID
-
-  #deleteAllContacts: Boolean,
+  updateContact(id: ID!, name: String, email: String, phone: String): Contact
 
   createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
 
   updatePartner(id: ID!, name: String, url: String, goals: String, stageId: ID): Partner
 
+  addContactToPartner(id: ID!, contactId: ID!): Partner
+
+  deleteContactToPartner(id: ID!, contactId: ID!): Partner
+
+  moveContactToPartner(id: ID!, toPartner: ID!, contactId: ID!): [Partner!]
+
   deletePartner(id: ID!): ID
 
-  createStage(name: String!): Stage!
+  createStage(name: String!): Stage
 
-  updateStage(id: ID!, name: String!): Stage!
+  updateStage(id: ID!, name: String!): Stage
 
   deleteStage(id: ID!): ID
 }

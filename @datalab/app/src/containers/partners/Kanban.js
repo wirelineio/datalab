@@ -8,9 +8,12 @@ import AddIcon from '@material-ui/icons/Add';
 import { GET_SERVICES, getType } from '../../stores/board';
 import {
   GET_ALL_PARTNERS,
+  CREATE_CONTACT,
+  UPDATE_CONTACT,
   CREATE_PARTNER,
   UPDATE_PARTNER,
   DELETE_PARTNER,
+  ADD_CONTACT_TO_PARTNER,
   CREATE_STAGE,
   UPDATE_STAGE,
   DELETE_STAGE,
@@ -18,11 +21,12 @@ import {
   updateKanban
 } from '../../stores/orgs';
 
-import GridColumn from '../../components/dnd/GridColumn';
-import Column from '../../components/dnd/Column';
-import Card from '../../components/dnd/Card';
-import StageForm from '../../components/modal/StageForm';
-import PartnerForm from '../../components/modal/PartnerForm';
+import GridColumn from '../components/dnd/GridColumn';
+import Column from '../components/dnd/Column';
+import Card from '../components/dnd/Card';
+import StageForm from '../components/modal/StageForm';
+import PartnerForm from '../components/modal/PartnerForm';
+import ContactForm from '../components/modal/ContactForm';
 
 const styles = theme => ({
   root: {
@@ -39,8 +43,10 @@ class Kanban extends Component {
   state = {
     openStageForm: false,
     openPartnerForm: false,
+    openContactForm: false,
     selectedStage: null,
-    selectedPartner: null
+    selectedPartner: null,
+    selectedContact: null
   };
 
   handleOrder = result => {
@@ -100,10 +106,17 @@ class Kanban extends Component {
     const { createPartner, updatePartner } = this.props;
 
     if (result) {
+      const data = {
+        name: result.name,
+        url: result.url.length > 0 ? result.url : null,
+        goals: result.goals.length > 0 ? result.goals : null,
+        stageId: result.stageId
+      };
+
       if (result.id) {
-        await updatePartner(result, false);
+        await updatePartner({ id: result.id, ...data });
       } else {
-        await createPartner(result);
+        await createPartner(data);
       }
     }
 
@@ -115,43 +128,73 @@ class Kanban extends Component {
     deletePartner({ id });
   };
 
+  handleAddContact = partner => {
+    this.setState({ openContactForm: true, selectedPartner: partner });
+  };
+
+  handleEditContact = (partner, contact) => {
+    this.setState({ openContactForm: true, selectedPartner: partner, selectedContact: contact });
+  };
+
+  handleContactFormResult = async result => {
+    const { createContact, updateContact, addContactToPartner } = this.props;
+
+    if (result) {
+      const data = {
+        name: result.name,
+        email: result.email.length > 0 ? result.email : null,
+        phone: result.phone.length > 0 ? result.phone : null
+      };
+      const {
+        data: { contact }
+      } = await (result.id ? updateContact({ id: result.id, ...data }) : createContact(data));
+      await addContactToPartner({ id: result.partnerId, contactId: contact.id });
+    }
+
+    this.setState({ openContactForm: false, selectedPartner: null, selectedContact: null });
+  };
+
   render() {
     const { columns = [], loading, classes } = this.props;
-    const { openStageForm, selectedStage, openPartnerForm, selectedPartner } = this.state;
+    const {
+      openStageForm,
+      selectedStage,
+      openPartnerForm,
+      selectedPartner,
+      openContactForm,
+      selectedContact
+    } = this.state;
 
     return (
       <div className={classes.root}>
-        {loading ? (
-          'loading'
-        ) : (
-          <GridColumn list={columns} onDragEnd={this.handleOrder}>
-            {({ item: column }) => {
-              return (
-                <Column
-                  id={column.id}
-                  title={column.title}
-                  list={column.cards}
-                  index={column.index}
-                  onEditColumn={this.handleEditStage.bind(this, column.data)}
-                  onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
-                  onAddCard={this.handleAddPartner.bind(this, column.data)}
-                >
-                  {({ item: card }) => {
-                    return (
-                      <Card
-                        id={card.id}
-                        title={card.title}
-                        index={card.index}
-                        data={card.data}
-                        onEditCard={this.handleEditPartner.bind(this, card.data)}
-                      />
-                    );
-                  }}
-                </Column>
-              );
-            }}
-          </GridColumn>
-        )}
+        <GridColumn list={columns} onDragEnd={this.handleOrder}>
+          {({ item: column }) => {
+            return (
+              <Column
+                id={column.id}
+                title={column.title}
+                list={column.cards}
+                index={column.index}
+                onEditColumn={this.handleEditStage.bind(this, column.data)}
+                onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
+                onAddCard={this.handleAddPartner.bind(this, column.data)}
+              >
+                {({ item: card }) => {
+                  return (
+                    <Card
+                      id={card.id}
+                      title={card.title}
+                      index={card.index}
+                      data={card.data}
+                      onEditCard={this.handleEditPartner.bind(this, card.data)}
+                      onAddContact={this.handleAddContact.bind(this, card.data)}
+                    />
+                  );
+                }}
+              </Column>
+            );
+          }}
+        </GridColumn>
         <Button
           variant="fab"
           color="primary"
@@ -167,6 +210,12 @@ class Kanban extends Component {
           stage={selectedStage}
           partner={selectedPartner}
           onClose={this.handlePartnerFormResult}
+        />
+        <ContactForm
+          open={openContactForm}
+          partner={selectedPartner}
+          contact={selectedContact}
+          onClose={this.handleContactFormResult}
         />
       </div>
     );
@@ -247,6 +296,54 @@ export default compose(
       };
     }
   }),
+  graphql(CREATE_CONTACT, {
+    options: {
+      refetchQueries: [
+        {
+          query: GET_ALL_PARTNERS,
+          context: {
+            serviceType: 'orgs'
+          }
+        }
+      ]
+    },
+    props({ mutate }) {
+      return {
+        createContact: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_CONTACT, {
+    options: {
+      refetchQueries: [
+        {
+          query: GET_ALL_PARTNERS,
+          context: {
+            serviceType: 'orgs'
+          }
+        }
+      ]
+    },
+    props({ mutate }) {
+      return {
+        updateContact: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            }
+          });
+        }
+      };
+    }
+  }),
   graphql(DELETE_PARTNER, {
     options: {
       refetchQueries: [
@@ -261,6 +358,20 @@ export default compose(
     props({ mutate }) {
       return {
         deletePartner: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(ADD_CONTACT_TO_PARTNER, {
+    props({ mutate }) {
+      return {
+        addContactToPartner: variables => {
           return mutate({
             variables,
             context: {
