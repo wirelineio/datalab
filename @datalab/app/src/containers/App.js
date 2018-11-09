@@ -6,7 +6,7 @@ import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
 import Layout from '../components/Layout';
 
-import Main from './Main';
+import Dashboard from './Dashboard';
 import Services from './Services';
 
 const routes = [
@@ -14,7 +14,7 @@ const routes = [
     exact: true,
     path: '/',
     title: 'Dashboard',
-    component: Main,
+    component: Dashboard,
     icon: DashboardIcon
   },
   {

@@ -126,16 +126,6 @@ class Card extends Component {
 
     return (
       <Fragment>
-        <IconButton
-          className={classnames(classes.expand, {
-            [classes.expandOpen]: expanded
-          })}
-          onClick={this.handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="Show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
         <IconButton aria-owns={anchorEl ? menuId : undefined} aria-haspopup="true" onClick={this.handleClick}>
           <MoreVertIcon />
         </IconButton>
@@ -161,6 +151,7 @@ class Card extends Component {
               raised={snapshot.isDragging}
             >
               <CardHeader
+                onClick={this.handleExpandClick}
                 action={this.renderActionMenu()}
                 title={title}
                 subheader={subheader}

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
-import { GET_SERVICES, getType } from '../stores/board';
+import { GET_SERVICES, getType } from '../../stores/board';
 import {
   GET_ALL_PARTNERS,
   CREATE_PARTNER,
@@ -16,15 +16,18 @@ import {
   DELETE_STAGE,
   updatePartnerOptimistic,
   updateKanban
-} from '../stores/orgs';
+} from '../../stores/orgs';
 
-import GridColumn from '../components/dnd/GridColumn';
-import Column from '../components/dnd/Column';
-import Card from '../components/dnd/Card';
-import StageForm from '../components/modal/StageForm';
-import PartnerForm from '../components/modal/PartnerForm';
+import GridColumn from '../../components/dnd/GridColumn';
+import Column from '../../components/dnd/Column';
+import Card from '../../components/dnd/Card';
+import StageForm from '../../components/modal/StageForm';
+import PartnerForm from '../../components/modal/PartnerForm';
 
-const styles = () => ({
+const styles = theme => ({
+  root: {
+    padding: theme.spacing.unit * 3
+  },
   addCardButton: {
     position: 'absolute',
     bottom: 20,
@@ -32,7 +35,7 @@ const styles = () => ({
   }
 });
 
-class Main extends Component {
+class Kanban extends Component {
   state = {
     openStageForm: false,
     openPartnerForm: false,
@@ -117,7 +120,7 @@ class Main extends Component {
     const { openStageForm, selectedStage, openPartnerForm, selectedPartner } = this.state;
 
     return (
-      <Fragment>
+      <div className={classes.root}>
         {loading ? (
           'loading'
         ) : (
@@ -165,7 +168,7 @@ class Main extends Component {
           partner={selectedPartner}
           onClose={this.handlePartnerFormResult}
         />
-      </Fragment>
+      </div>
     );
   }
 }
@@ -333,4 +336,4 @@ export default compose(
     }
   }),
   withStyles(styles)
-)(Main);
+)(Kanban);
