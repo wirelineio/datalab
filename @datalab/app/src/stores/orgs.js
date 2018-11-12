@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import get from 'lodash.get';
+import { produce } from 'immer';
 
 export const GET_ALL_PARTNERS = gql`
   query GetAllPartners {
@@ -38,8 +39,8 @@ export const CREATE_CONTACT = gql`
 `;
 
 export const UPDATE_CONTACT = gql`
-  mutation UpdateContact($name: String!, $email: String, $phone: String) {
-    contact: updateContact(name: $name, email: $email, phone: $phone) {
+  mutation UpdateContact($id: ID!, $name: String, $email: String, $phone: String) {
+    contact: updateContact(id: $id, name: $name, email: $email, phone: $phone) {
       id
       name
       email
@@ -134,7 +135,7 @@ export const DELETE_CONTACT_TO_PARTNER = gql`
 
 export const MOVE_CONTACT_TO_PARTNER = gql`
   mutation MoveContactToPartner($id: ID!, $toPartner: ID!, $contactId: ID!) {
-    partner: moveContactToPartner(id: $id, toPartner: $toPartner, contactId: $contactId) {
+    partners: moveContactToPartner(id: $id, toPartner: $toPartner, contactId: $contactId) {
       id
       name
       url
@@ -203,6 +204,23 @@ export const updatePartnerOptimistic = ({ partners, stages }, variables) => {
       ...partner,
       ...newPartner
     }
+  };
+};
+
+export const updateContactToPartnerOtimistic = ({ partners }, variables) => {
+  const { id, toPartner, contactId } = variables;
+
+  const mutate = produce(partners => {
+    const oldPartner = partners.find(p => p.id === id);
+    const newPartner = partners.find(p => p.id === toPartner);
+
+    const contact = oldPartner.contacts.find(c => c.id === contactId);
+    oldPartner.contacts = oldPartner.contacts.filter(c => c.id !== contactId);
+    newPartner.contacts = [...newPartner.contacts, contact];
+  });
+
+  return {
+    partners: mutate(partners)
   };
 };
 

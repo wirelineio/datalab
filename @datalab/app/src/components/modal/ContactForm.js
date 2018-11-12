@@ -12,13 +12,12 @@ import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
 
-const initialValues = (partner, contact = {}) => ({
-  id: null,
-  name: '',
-  email: '',
-  phone: '',
-  ...contact,
-  partnerId: partner.id
+const initialValues = (partner, contact) => ({
+  id: contact.id,
+  name: contact.name || '',
+  email: contact.email || '',
+  phone: contact.phone || '',
+  partnerId: partner ? partner.id : null
 });
 
 const validationSchema = Yup.object().shape({
@@ -55,11 +54,7 @@ class ContactForm extends Component {
   };
 
   render() {
-    const { open, partner, contact, classes } = this.props;
-
-    if (!partner) {
-      return null;
-    }
+    const { open, partner, contact = {}, classes } = this.props;
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" className={classes.root}>

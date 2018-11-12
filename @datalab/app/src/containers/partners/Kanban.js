@@ -14,10 +14,12 @@ import {
   UPDATE_PARTNER,
   DELETE_PARTNER,
   ADD_CONTACT_TO_PARTNER,
+  MOVE_CONTACT_TO_PARTNER,
   CREATE_STAGE,
   UPDATE_STAGE,
   DELETE_STAGE,
   updatePartnerOptimistic,
+  updateContactToPartnerOtimistic,
   updateKanban
 } from '../../stores/orgs';
 
@@ -44,14 +46,14 @@ class Kanban extends Component {
     openStageForm: false,
     openPartnerForm: false,
     openContactForm: false,
-    selectedStage: null,
-    selectedPartner: null,
-    selectedContact: null
+    selectedStage: undefined,
+    selectedPartner: undefined,
+    selectedContact: undefined
   };
 
   handleOrder = result => {
-    const { source, destination, draggableId } = result;
-    const { updatePartner } = this.props;
+    const { source, destination, draggableId, type } = result;
+    const { updatePartner, moveContactToPartner } = this.props;
 
     if (!destination) {
       return null;
@@ -62,8 +64,17 @@ class Kanban extends Component {
     }
 
     if (destination.droppableId !== source.droppableId) {
-      const { droppableId } = destination;
-      return updatePartner({ id: draggableId, stageId: droppableId });
+      if (type === 'CARD') {
+        return updatePartner({ id: draggableId, stageId: destination.droppableId });
+      }
+
+      if (type === 'CONTACT') {
+        return moveContactToPartner({
+          id: source.droppableId,
+          toPartner: destination.droppableId,
+          contactId: draggableId
+        });
+      }
     }
   };
 
@@ -86,7 +97,7 @@ class Kanban extends Component {
       }
     }
 
-    this.setState({ openStageForm: false, selectedStage: null });
+    this.setState({ openStageForm: false, selectedStage: undefined });
   };
 
   handleDeleteStage = ({ id }) => {
@@ -120,7 +131,7 @@ class Kanban extends Component {
       }
     }
 
-    this.setState({ openPartnerForm: false, selectedStage: null, selectedPartner: null });
+    this.setState({ openPartnerForm: false, selectedStage: undefined, selectedPartner: undefined });
   };
 
   handleDeletePartner = ({ id }) => {
@@ -132,8 +143,8 @@ class Kanban extends Component {
     this.setState({ openContactForm: true, selectedPartner: partner });
   };
 
-  handleEditContact = (partner, contact) => {
-    this.setState({ openContactForm: true, selectedPartner: partner, selectedContact: contact });
+  handleEditContact = contact => {
+    this.setState({ openContactForm: true, selectedContact: contact });
   };
 
   handleContactFormResult = async result => {
@@ -145,13 +156,19 @@ class Kanban extends Component {
         email: result.email.length > 0 ? result.email : null,
         phone: result.phone.length > 0 ? result.phone : null
       };
-      const {
-        data: { contact }
-      } = await (result.id ? updateContact({ id: result.id, ...data }) : createContact(data));
-      await addContactToPartner({ id: result.partnerId, contactId: contact.id });
+
+      if (result.id) {
+        await updateContact({ id: result.id, ...data });
+      } else {
+        const {
+          data: { contact }
+        } = await createContact(data);
+
+        await addContactToPartner({ id: result.partnerId, contactId: contact.id });
+      }
     }
 
-    this.setState({ openContactForm: false, selectedPartner: null, selectedContact: null });
+    this.setState({ openContactForm: false, selectedPartner: undefined, selectedContact: undefined });
   };
 
   render() {
@@ -188,6 +205,8 @@ class Kanban extends Component {
                       data={card.data}
                       onEditCard={this.handleEditPartner.bind(this, card.data)}
                       onAddContact={this.handleAddContact.bind(this, card.data)}
+                      onEditContact={this.handleEditContact}
+                      onDeleteContact={this.handleDeleteContact}
                     />
                   );
                 }}
@@ -377,6 +396,21 @@ export default compose(
             context: {
               serviceType: 'orgs'
             }
+          });
+        }
+      };
+    }
+  }),
+  graphql(MOVE_CONTACT_TO_PARTNER, {
+    props({ mutate, ownProps: { partners } }) {
+      return {
+        moveContactToPartner: variables => {
+          return mutate({
+            variables,
+            context: {
+              serviceType: 'orgs'
+            },
+            optimisticResponse: updateContactToPartnerOtimistic({ partners }, variables)
           });
         }
       };

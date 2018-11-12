@@ -120,11 +120,11 @@ class Card extends Component {
   }
 
   render() {
-    const { classes, id, title, data, index, subheader } = this.props;
+    const { classes, id, title, data, index, subheader, onEditContact, onDeleteContact } = this.props;
     const { expanded } = this.state;
 
     return (
-      <Draggable draggableId={id} index={index}>
+      <Draggable draggableId={id} index={index} type="CARD">
         {(provided, snapshot) => (
           <RootRef rootRef={provided.innerRef}>
             <MuiCard
@@ -142,9 +142,6 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'subtitle2' }}
               />
               <Divider />
-              <CardContent>
-                <Orgs contacts={data.contacts} />
-              </CardContent>
               <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
                   <Typography
@@ -160,6 +157,7 @@ class Card extends Component {
                   <Typography variant="body2" gutterBottom>
                     {data.goals}
                   </Typography>
+                  <Orgs id={id} contacts={data.contacts} onEditContact={onEditContact} onDeleteContact={onDeleteContact} />
                 </CardContent>
               </Collapse>
             </MuiCard>
