@@ -307,7 +307,8 @@ export default compose(
           return mutate({
             variables,
             context: {
-              serviceType: 'orgs'
+              serviceType: 'orgs',
+              useNetworkStatusNotifier: !optimistic
             },
             optimisticResponse: optimistic ? updatePartnerOptimistic({ partners, stages }, variables) : null
           });
@@ -408,7 +409,8 @@ export default compose(
           return mutate({
             variables,
             context: {
-              serviceType: 'orgs'
+              serviceType: 'orgs',
+              useNetworkStatusNotifier: false
             },
             optimisticResponse: updateContactToPartnerOtimistic({ partners }, variables)
           });
