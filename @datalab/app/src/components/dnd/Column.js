@@ -103,7 +103,7 @@ class Column extends Component {
       <Card className={classes.root} elevation={0}>
         <CardHeader title={title} action={this.renderActionMenu()} />
         <CardContent>
-          <Droppable droppableId={id}>
+          <Droppable droppableId={id} type="CARD">
             {provided => (
               <RootRef rootRef={provided.innerRef}>
                 <Grid container item className={classes.cards} direction="column" {...provided.droppableProps}>

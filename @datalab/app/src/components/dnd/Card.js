@@ -20,9 +20,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import blue from '@material-ui/core/colors/blue';
 
-import Messaging from '../service-types/Messaging';
-import Tasks from '../service-types/Tasks';
-//import Orgs from '../service-types/Orgs';
+import Orgs from '../service-types/Orgs';
 
 const styles = theme => ({
   card: {
@@ -62,31 +60,6 @@ const styles = theme => ({
   }
 });
 
-const Services = ({ classes, messages, tasks, toggleTask }) => (
-  <Fragment>
-    {tasks && (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Tasks</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Tasks tasks={tasks} toggleTask={toggleTask} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    )}
-    {messages && (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Messages</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Messaging messages={messages} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    )}
-  </Fragment>
-);
-
 class Card extends Component {
   state = {
     anchorEl: null,
@@ -114,6 +87,15 @@ class Card extends Component {
     });
   };
 
+  handleAddContact = () => {
+    const { onAddContact } = this.props;
+    this.close(() => {
+      if (onAddContact) {
+        onAddContact();
+      }
+    });
+  };
+
   handleExpandClick = () => {
     this.setState(state => ({ expanded: !state.expanded }));
   };
@@ -131,17 +113,18 @@ class Card extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleEditCard}>Edit record</MenuItem>
+          <MenuItem onClick={this.handleAddContact}>Add contact</MenuItem>
         </Menu>
       </Fragment>
     );
   }
 
   render() {
-    const { classes, id, title, data, contacts, index, subheader, messages, tasks, toggleTask } = this.props;
+    const { classes, id, title, data, index, subheader, onEditContact, onDeleteContact } = this.props;
     const { expanded } = this.state;
 
     return (
-      <Draggable draggableId={id} index={index}>
+      <Draggable draggableId={id} index={index} type="CARD">
         {(provided, snapshot) => (
           <RootRef rootRef={provided.innerRef}>
             <MuiCard
@@ -159,18 +142,6 @@ class Card extends Component {
                 titleTypographyProps={{ variant: 'subtitle2' }}
               />
               <Divider />
-              {/*<CardContent>
-              <Orgs contacts={contacts} onEdit={onEditContact} onDelete={onDeleteContact} />
-            </CardContent>*/}
-              <CardContent className={classes.cardContent}>
-                <Services
-                  classes={classes}
-                  contacts={contacts}
-                  messages={messages}
-                  tasks={tasks}
-                  toggleTask={toggleTask}
-                />
-              </CardContent>
               <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
                   <Typography
@@ -186,6 +157,7 @@ class Card extends Component {
                   <Typography variant="body2" gutterBottom>
                     {data.goals}
                   </Typography>
+                  <Orgs id={id} contacts={data.contacts} onEditContact={onEditContact} onDeleteContact={onDeleteContact} />
                 </CardContent>
               </Collapse>
             </MuiCard>

@@ -18,6 +18,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
+import ScreenLoader from './ScreenLoader';
+
 const drawerWidth = 240;
 
 const theme = createMuiTheme({
@@ -132,12 +134,13 @@ class Layout extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { classes, children } = this.props;
+    const { classes, children, NetworkStatusNotifier } = this.props;
     const { title } = this.getRoute();
 
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
+        <NetworkStatusNotifier render={({ loading }) => <ScreenLoader open={loading} />} />
         <div className={classes.root}>
           <AppBar position="absolute" className={classNames(classes.appBar, open && classes.appBarShift)}>
             <Toolbar disableGutters={!open} className={classes.toolbar}>

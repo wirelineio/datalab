@@ -5,10 +5,13 @@ import { withClientState } from 'apollo-link-state';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
+import { createNetworkStatusNotifier } from 'react-apollo-network-status';
 
 import { ServiceLink, extendClient } from './apollo-link-service';
 
 const { BACKEND_ENDPOINT } = window.config;
+
+const { NetworkStatusNotifier, link: networkStatusNotifierLink } = createNetworkStatusNotifier();
 
 // stores
 //import stores from '../stores';
@@ -30,17 +33,19 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 //const stateLink = withClientState({
-  //...merge(...stores),
-  //cache
+//...merge(...stores),
+//cache
 //});
 
 const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, serviceLink]),
+  link: ApolloLink.from([networkStatusNotifierLink, errorLink, serviceLink]),
   cache
 });
 
 extendClient(client, serviceLink);
 
 //client.onResetStore(stateLink.writeDefaults);
+
+export { NetworkStatusNotifier };
 
 export default client;

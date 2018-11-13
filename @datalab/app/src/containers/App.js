@@ -29,7 +29,7 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter basename={window.config.PUBLIC_PATH}>
-        <Layout routes={routes}>
+        <Layout routes={routes} NetworkStatusNotifier={this.props.NetworkStatusNotifier}>
           <Switch>
             {routes.map((rProps, key) => (
               <Route key={key} {...rProps} />
