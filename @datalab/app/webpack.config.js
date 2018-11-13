@@ -47,6 +47,16 @@ module.exports = {
   module: {
     rules: [
       {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
+        options: {
+          emitError: true,
+          configFile: path.join(__dirname, '..', '..', '.eslintrc.json')
+        }
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/, // Don't transpile deps.
         use: {
