@@ -23,12 +23,12 @@ import {
   updateKanban
 } from '../../stores/orgs';
 
-import GridColumn from '../components/dnd/GridColumn';
-import Column from '../components/dnd/Column';
-import Card from '../components/dnd/Card';
-import StageForm from '../components/modal/StageForm';
-import PartnerForm from '../components/modal/PartnerForm';
-import ContactForm from '../components/modal/ContactForm';
+import GridColumn from '../../components/dnd/GridColumn';
+import Column from '../../components/dnd/Column';
+import Card from '../../components/dnd/Card';
+import StageForm from '../../components/modal/StageForm';
+import PartnerForm from '../../components/modal/PartnerForm';
+import ContactForm from '../../components/modal/ContactForm';
 
 const styles = theme => ({
   root: {
@@ -172,7 +172,7 @@ class Kanban extends Component {
   };
 
   render() {
-    const { columns = [], loading, classes } = this.props;
+    const { columns = [], classes } = this.props;
     const {
       openStageForm,
       selectedStage,
