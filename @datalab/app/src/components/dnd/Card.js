@@ -6,11 +6,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { default as MuiCard } from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import FormLabel from '@material-ui/core/FormLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import RootRef from '@material-ui/core/RootRef';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
@@ -51,12 +49,28 @@ const styles = theme => ({
   expandOpen: {
     transform: 'rotate(180deg)'
   },
+  header: {
+    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 3}px`
+  },
+  action: {
+    marginTop: 0
+  },
+  avatar: {
+    marginLeft: -theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit
+  },
   link: {
     textDecoration: 'none',
     color: blue[500],
     '&:hover': {
       color: blue[900]
     }
+  },
+  formLabel: {
+    fontSize: '.8em'
+  },
+  formItem: {
+    minHeight: '1.5em'
   }
 });
 
@@ -101,8 +115,8 @@ class Card extends Component {
   };
 
   renderActionMenu() {
-    const { id, classes } = this.props;
-    const { anchorEl, expanded } = this.state;
+    const { id } = this.props;
+    const { anchorEl } = this.state;
 
     const menuId = `${id}-action-menu`;
 
@@ -134,30 +148,54 @@ class Card extends Component {
               raised={snapshot.isDragging}
             >
               <CardHeader
-                onClick={this.handleExpandClick}
+                // onClick={this.handleExpandClick}
+                avatar={
+                  <IconButton
+                    className={classnames(classes.expand, {
+                      [classes.expandOpen]: expanded
+                    })}
+                    onClick={this.handleExpandClick}
+                    aria-expanded={expanded}
+                    aria-label="Show more"
+                  >
+                    <ExpandMoreIcon />
+                  </IconButton>
+                }
                 action={this.renderActionMenu()}
                 title={title}
                 subheader={subheader}
                 className={classes.header}
+                classes={{
+                  avatar: classes.avatar,
+                  action: classes.action
+                }}
                 titleTypographyProps={{ variant: 'subtitle2' }}
               />
               <Divider />
               <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
+                  <FormLabel className={classes.formLabel}>Website</FormLabel>
                   <Typography
                     component="a"
                     href={data.url}
                     target="blank"
-                    className={classes.link}
+                    className={classnames([classes.formItem, data.url && classes.link])}
                     variant="body2"
                     gutterBottom
                   >
                     {data.url}
                   </Typography>
-                  <Typography variant="body2" gutterBottom>
+                  <FormLabel className={classes.formLabel}>Goals</FormLabel>
+                  <Typography className={classes.formItem} variant="body2" gutterBottom>
                     {data.goals}
                   </Typography>
-                  <Orgs id={id} contacts={data.contacts} onEditContact={onEditContact} onDeleteContact={onDeleteContact} />
+                  <FormLabel className={classes.formLabel}>Contacts</FormLabel>
+                  <Orgs
+                    id={id}
+                    contacts={data.contacts}
+                    onEditContact={onEditContact}
+                    onDeleteContact={onDeleteContact}
+                  />
                 </CardContent>
               </Collapse>
             </MuiCard>

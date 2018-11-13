@@ -90,8 +90,8 @@ class Column extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleAddCard}>Add record</MenuItem>
-          {id !== 'uncategorized' && <MenuItem onClick={this.handleEditColumn}>Edit stage</MenuItem>}
-          {id !== 'uncategorized' && <MenuItem onClick={this.handleDeleteColumn}>Delete stage</MenuItem>}
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleEditColumn}>Edit column</MenuItem>}
+          {id !== 'uncategorized' && <MenuItem onClick={this.handleDeleteColumn}>Delete column</MenuItem>}
         </Menu>
       </Fragment>
     );

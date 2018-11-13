@@ -1,9 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { GET_SERVICES, getType } from '../../stores/board';
 import {
@@ -214,15 +215,17 @@ class Kanban extends Component {
             );
           }}
         </GridColumn>
-        <Button
-          variant="fab"
-          color="primary"
-          aria-label="Add"
-          className={classes.addCardButton}
-          onClick={this.handleAddStage}
-        >
-          <AddIcon />
-        </Button>
+        <Tooltip title="Add Column">
+          <Button
+            variant="fab"
+            color="primary"
+            aria-label="Add"
+            className={classes.addCardButton}
+            onClick={this.handleAddStage}
+          >
+            <AddIcon />
+          </Button>
+        </Tooltip>
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
         <PartnerForm
           open={openPartnerForm}
