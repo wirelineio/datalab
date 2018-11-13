@@ -139,7 +139,7 @@ module.exports = {
     };
 
     if (!init) {
-      const { seeded } = await store.get('seeded');
+      // const { seeded } = await store.get('seeded');
       //if (!seeded) {
       await Promise.all([store.set('columns', columns), store.set('services', services)]);
       //}
