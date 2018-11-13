@@ -22,10 +22,6 @@ functions:
     description: Static assets proxy.
     events:
       - http:
-          path: favicon.ico
-          method: get
-          cors: true
-      - http:
           path: 'assets/{path}'
           method: get
           cors: true

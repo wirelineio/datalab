@@ -7,7 +7,7 @@ import 'source-map-support/register';
 import Wireline from '@wirelineio/sdk';
 
 export const index = Wireline.exec(async (event, context, response) => {
-  const PUBLIC_PATH = process.env.WRL_PUBLIC_PATH || '';
+  const PUBLIC_PATH = ensureNoEndSlash(process.env.WRL_PUBLIC_PATH) || '';
   const localConfig = {
     rootId: 'ux-root',
     PUBLIC_PATH,
@@ -26,7 +26,7 @@ export const index = Wireline.exec(async (event, context, response) => {
         content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
       />
       <title>DataLab</title>
-      <link rel="shortcut icon" href="${PUBLIC_PATH}/favicon.ico">
+      <link rel="shortcut icon" href="${PUBLIC_PATH}/assets/favicon.ico">
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     </head>
     <body>
@@ -48,7 +48,19 @@ export const proxy = Wireline.exec(async (event, context, response) => {
   }
 
   response
-    .set('Location', url.resolve(static_assets_url, path))
+    .set('Location', url.resolve(ensureEndSlash(static_assets_url), path))
     .status(301)
     .send('');
 });
+
+const ensureEndSlash = path => {
+  if (!path || typeof path !== 'string') return path;
+  if (!path.endsWith('/')) return `${path}/`;
+  return path;
+};
+
+const ensureNoEndSlash = path => {
+  if (!path || typeof path !== 'string') return path;
+  if (path.endsWith('/')) return path.substr(path, path.length - 1);
+  return path;
+};
