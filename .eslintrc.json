@@ -20,6 +20,11 @@
     "sourceType": "module"
   },
   "plugins": ["react", "prettier"],
+  "settings": {
+    "react": {
+      "version": "16"
+    }
+  },
   "rules": {
     "prettier/prettier": [
       "error",
