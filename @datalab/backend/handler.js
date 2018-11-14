@@ -14,7 +14,7 @@ import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 
 import SourceSchema from './schema.graphql';
-import { columns, services } from './data';
+import { services } from './data';
 
 const mapServiceUrl = wrnServices => services => {
   const serviceIds = Object.keys(wrnServices);
@@ -49,51 +49,12 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      async getAllColumns(obj, args, { store }) {
-        const { columns = [] } = await store.get('columns');
-        return columns;
-      },
       async getAllServices(obj, args, { store, mapServiceUrl }) {
         const { services = [] } = await store.get('services');
         return mapServiceUrl(services);
       }
     },
     Mutation: {
-      async updateCardOrder(obj, { source, destination, cardId }, { store }) {
-        if (!destination) {
-          return [];
-        }
-
-        if (destination.droppableId === source.droppableId && destination.index === source.index) {
-          return [];
-        }
-
-        const { columns = [] } = await store.get('columns');
-        const sourceColumn = columns.find(c => c.id === source.droppableId);
-        const destinationColumn = columns.find(c => c.id === destination.droppableId);
-        const card = sourceColumn.cards.find(c => c.id === cardId);
-        sourceColumn.cards.splice(source.index, 1);
-        destinationColumn.cards.splice(destination.index, 0, card);
-        sourceColumn.cards = sourceColumn.cards.map((card, index) => {
-          card.index = index;
-          return card;
-        });
-
-        if (source.droppableId === destination.droppableId) {
-          // order cards in same column
-          return columns;
-        }
-
-        // order cards in different columns
-        destinationColumn.cards = destinationColumn.cards.map((card, index) => {
-          card.index = index;
-          return card;
-        });
-
-        await store.set('columns', columns);
-
-        return columns;
-      },
       async switchService(obj, { id }, { store, mapServiceUrl }) {
         const { services = [] } = await store.get('services');
 
@@ -141,7 +102,8 @@ module.exports = {
     if (!init) {
       // const { seeded } = await store.get('seeded');
       //if (!seeded) {
-      await Promise.all([store.set('columns', columns), store.set('services', services)]);
+      console.log(services);
+      await store.set('services', services);
       //}
       await store.set('seeded', true);
       init = true;

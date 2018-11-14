@@ -1,72 +1,3 @@
-export const columns = [
-  {
-    id: 'column-1',
-    index: 0,
-    title: 'column 1',
-    cards: [
-      {
-        id: 'card-1',
-        index: 0,
-        title: 'card-1'
-      },
-      {
-        id: 'card-2',
-        index: 1,
-        title: 'card-2'
-      },
-      {
-        id: 'card-3',
-        index: 2,
-        title: 'card-3'
-      }
-    ]
-  },
-  {
-    id: 'column-2',
-    index: 1,
-    title: 'column 2',
-    cards: [
-      {
-        id: 'card-21',
-        index: 0,
-        title: 'card-21'
-      },
-      {
-        id: 'card-22',
-        index: 1,
-        title: 'card-22'
-      },
-      {
-        id: 'card-23',
-        index: 2,
-        title: 'card-23'
-      }
-    ]
-  },
-  {
-    id: 'column-3',
-    index: 2,
-    title: 'column 3',
-    cards: [
-      {
-        id: 'card-31',
-        index: 0,
-        title: 'card-31'
-      },
-      {
-        id: 'card-32',
-        index: 1,
-        title: 'card-32'
-      },
-      {
-        id: 'card-33',
-        index: 2,
-        title: 'card-33'
-      }
-    ]
-  }
-];
-
 export const services = [
   {
     id: 'dl-messaging-google-mail-service',
@@ -95,5 +26,12 @@ export const services = [
     description: 'Service to connect a contact list in your kanban.',
     enabled: true,
     url: 'https://tzd6hneuuk.execute-api.us-east-1.amazonaws.com/dev/gql'
+  },
+  {
+    id: 'dl-spellcheck-alex-service',
+    name: 'Alex',
+    description: 'Service to spellcheck sensitive words.',
+    enabled: false,
+    url: null
   }
 ];
