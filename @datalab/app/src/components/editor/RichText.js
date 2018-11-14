@@ -31,10 +31,21 @@ class RichText extends Component {
 
     this.spellcheckDecorator = new SimpleDecorator(
       (contentBlock, callback) => {
+        const text = contentBlock.getText();
         this.errors.forEach(error => {
-          callback(error.start, error.end, {
-            message: error.message
-          });
+          const word = new RegExp(error.word, 'ig');
+          const props = {
+            messages: error.messages
+          };
+
+          let match;
+          while ((match = word.exec(text)) !== null) {
+            // Decorate the color code
+            let matchText = match[0];
+            let start = match.index;
+            let end = start + matchText.length;
+            callback(start, end, props);
+          }
         });
       },
 
@@ -42,8 +53,8 @@ class RichText extends Component {
        * @prop {String} color
        */
       function component(props) {
-        const { message, children } = props;
-        return <WordError title={message}>{children}</WordError>;
+        const { messages, children } = props;
+        return <WordError messages={messages}>{children}</WordError>;
       }
     );
 
@@ -65,7 +76,7 @@ class RichText extends Component {
   onChange = editorState => {
     const { editorState: oldEditorState } = this.state;
     const { field, form } = this.props;
-    this.errors = [];
+
     this.setState({ editorState }, () => {
       const { editorState } = this.state;
       const oldValue = oldEditorState.getCurrentContent().getPlainText();

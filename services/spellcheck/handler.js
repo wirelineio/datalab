@@ -22,11 +22,30 @@ const schema = makeExecutableSchema({
     Query: {
       check(obj, { value }) {
         const messages = alex(value).messages;
-        return messages.map(m => ({
-          message: m.message,
-          start: m.location.start.offset,
-          end: m.location.end.offset
-        }));
+        return Object.values(
+          messages
+            .map(m => ({
+              message: m.message,
+              ruleId: m.ruleId,
+              word: value.slice(m.location.start.offset, m.location.end.offset)
+            }))
+            .reduce((result, next) => {
+              if (!result[next.word]) {
+                result[next.word] = {
+                  word: next.word,
+                  rules: [],
+                  messages: []
+                };
+              }
+
+              if (!result[next.word].rules.includes(next.ruleId)) {
+                result[next.word].rules.push(next.ruleId);
+                result[next.word].messages.push(next.message);
+              }
+
+              return result;
+            }, {})
+        );
       }
     }
   }

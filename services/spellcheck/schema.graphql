@@ -2,9 +2,8 @@
 # Types
 #
 type SpellcheckError {
-  message: String!
-  start: Int!
-  end: Int!
+  messages: [String!]!
+  word: String!
 }
 
 #

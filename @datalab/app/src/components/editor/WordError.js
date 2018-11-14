@@ -28,7 +28,7 @@ class WordError extends Component {
   };
 
   render() {
-    const { title, children, classes } = this.props;
+    const { messages, children, classes } = this.props;
     const { open } = this.state;
 
     return (
@@ -42,7 +42,7 @@ class WordError extends Component {
           disableFocusListener
           disableHoverListener
           disableTouchListener
-          title={title}
+          title={messages.join('\n')}
         >
           <span className={classes.root} onClick={this.handleTooltipOpen}>
             {children}
