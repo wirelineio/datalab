@@ -58,7 +58,7 @@ export default class PartnerForm extends Component {
                 <form onSubmit={props.handleSubmit}>
                   <Field component={TextField} autoFocus margin="dense" name="name" label="Name" fullWidth />
                   <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
-                  <RichText margin="dense" name="goals" label="Goals" fullWidth onSpellcheck={onSpellcheck} />
+                  <Field component={RichText} name="goals" label="Goals" onSpellcheck={onSpellcheck} />
                 </form>
               </DialogContent>
               <DialogActions>

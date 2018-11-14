@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Editor, EditorState } from 'draft-js';
+import { Editor, EditorState, ContentState } from 'draft-js';
 import SimpleDecorator from 'draft-js-simpledecorator';
 import debounce from 'lodash.debounce';
 
@@ -25,6 +25,10 @@ class RichText extends Component {
   constructor(props) {
     super(props);
 
+    const { field } = props;
+
+    this.errors = [];
+
     this.spellcheckDecorator = new SimpleDecorator(
       (contentBlock, callback) => {
         this.errors.forEach(error => {
@@ -43,22 +47,37 @@ class RichText extends Component {
       }
     );
 
+    const contentState = ContentState.createFromText(field.value);
+    const editorState = EditorState.createWithContent(contentState, this.spellcheckDecorator);
+
     this.state = {
-      editorState: EditorState.createEmpty(this.spellcheckDecorator)
+      editorState
     };
+
     this.spellcheck = debounce(this.spellcheck.bind(this), 1000);
   }
 
+  componentDidMount() {
+    const { editorState } = this.state;
+    this.spellcheck(editorState.getCurrentContent().getPlainText());
+  }
+
   onChange = editorState => {
+    const { editorState: oldEditorState } = this.state;
+    const { field, form } = this.props;
     this.errors = [];
     this.setState({ editorState }, () => {
-      this.spellcheck();
+      const { editorState } = this.state;
+      const oldValue = oldEditorState.getCurrentContent().getPlainText();
+      const value = editorState.getCurrentContent().getPlainText();
+      form.setFieldValue(field.name, value);
+      if (oldValue !== value) {
+        this.spellcheck(value);
+      }
     });
   };
 
-  spellcheck = async () => {
-    const { editorState } = this.state;
-    const value = editorState.getCurrentContent().getPlainText();
+  spellcheck = async value => {
     const { onSpellcheck } = this.props;
 
     if (!onSpellcheck) {
