@@ -23,6 +23,7 @@ import {
   updateContactToPartnerOtimistic,
   updateKanban
 } from '../../stores/orgs';
+import { SPELLCHECK } from '../../stores/spellcheck';
 
 import GridColumn from '../../components/dnd/GridColumn';
 import Column from '../../components/dnd/Column';
@@ -172,6 +173,19 @@ class Kanban extends Component {
     this.setState({ openContactForm: false, selectedPartner: undefined, selectedContact: undefined });
   };
 
+  handleSpellcheck = variables => {
+    const { client } = this.props;
+    return client.query({
+      query: SPELLCHECK,
+      context: {
+        serviceType: 'spellcheck',
+        useNetworkStatusNotifier: false
+      },
+      variables,
+      fetchPolicy: 'network-only'
+    });
+  };
+
   render() {
     const { columns = [], classes } = this.props;
     const {
@@ -232,6 +246,7 @@ class Kanban extends Component {
           stage={selectedStage}
           partner={selectedPartner}
           onClose={this.handlePartnerFormResult}
+          onSpellcheck={this.handleSpellcheck}
         />
         <ContactForm
           open={openContactForm}

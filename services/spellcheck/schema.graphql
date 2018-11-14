@@ -1,0 +1,25 @@
+#
+# Types
+#
+type SpellcheckError {
+  message: String!
+  start: Int!
+  end: Int!
+}
+
+#
+# Root Query
+#
+
+type Query {
+
+  check(value: String!): [SpellcheckError!]
+
+}
+
+#
+# Schema
+#
+schema {
+  query: Query
+}

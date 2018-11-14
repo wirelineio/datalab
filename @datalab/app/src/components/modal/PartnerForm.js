@@ -11,6 +11,7 @@ import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
+import RichText from '../editor/RichText';
 
 const initialValues = (partner, stage) => ({
   id: partner ? partner.id : null,
@@ -41,7 +42,7 @@ export default class PartnerForm extends Component {
   };
 
   render() {
-    const { open, partner, stage } = this.props;
+    const { open, partner, stage, onSpellcheck } = this.props;
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
@@ -57,7 +58,7 @@ export default class PartnerForm extends Component {
                 <form onSubmit={props.handleSubmit}>
                   <Field component={TextField} autoFocus margin="dense" name="name" label="Name" fullWidth />
                   <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
-                  <Field component={TextField} margin="dense" name="goals" label="Goals" fullWidth multiline rows="3" />
+                  <Field component={RichText} name="goals" label="Goals" onSpellcheck={onSpellcheck} />
                 </form>
               </DialogContent>
               <DialogActions>
