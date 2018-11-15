@@ -101,6 +101,15 @@ class Card extends Component {
     });
   };
 
+  handleDeleteCard = () => {
+    const { onDeleteCard } = this.props;
+    this.close(() => {
+      if (onDeleteCard) {
+        onDeleteCard();
+      }
+    });
+  };
+
   handleAddContact = () => {
     const { onAddContact } = this.props;
     this.close(() => {
@@ -126,8 +135,9 @@ class Card extends Component {
           <MoreVertIcon />
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
-          <MenuItem onClick={this.handleEditCard}>Edit record</MenuItem>
           <MenuItem onClick={this.handleAddContact}>Add contact</MenuItem>
+          <MenuItem onClick={this.handleEditCard}>Edit record</MenuItem>
+          <MenuItem onClick={this.handleDeleteCard}>Delete record</MenuItem>
         </Menu>
       </Fragment>
     );

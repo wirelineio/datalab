@@ -219,6 +219,7 @@ class Kanban extends Component {
                       index={card.index}
                       data={card.data}
                       onEditCard={this.handleEditPartner.bind(this, card.data)}
+                      onDeleteCard={this.handleDeletePartner.bind(this, card.data)}
                       onAddContact={this.handleAddContact.bind(this, card.data)}
                       onEditContact={this.handleEditContact}
                       onDeleteContact={this.handleDeleteContact}
