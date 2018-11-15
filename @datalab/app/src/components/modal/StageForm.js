@@ -39,7 +39,7 @@ export default class StageForm extends Component {
     const { open, stage } = this.props;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{stage ? 'Edit stage' : 'New stage'}</DialogTitle>
         <Divider />
         <Formik

@@ -45,7 +45,7 @@ export default class PartnerForm extends Component {
     const { open, partner, stage, onSpellcheck } = this.props;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{partner ? 'Edit partner' : 'New partner'}</DialogTitle>
         <Divider />
         <Formik
@@ -58,7 +58,13 @@ export default class PartnerForm extends Component {
                 <form onSubmit={props.handleSubmit}>
                   <Field component={TextField} autoFocus margin="dense" name="name" label="Name" fullWidth />
                   <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
-                  <Field component={RichText} name="goals" label="Goals" onSpellcheck={onSpellcheck} />
+                  <Field
+                    component={RichText}
+                    placeholder="Enter partner goals."
+                    name="goals"
+                    label="Goals"
+                    onSpellcheck={onSpellcheck}
+                  />
                 </form>
               </DialogContent>
               <DialogActions>

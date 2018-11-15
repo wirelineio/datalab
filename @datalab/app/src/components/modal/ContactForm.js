@@ -57,7 +57,7 @@ class ContactForm extends Component {
     const { open, partner, contact = {}, classes } = this.props;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" className={classes.root}>
+      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{contact ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik

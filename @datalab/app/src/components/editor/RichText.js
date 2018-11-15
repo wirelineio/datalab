@@ -3,6 +3,7 @@ import { Editor, EditorState, ContentState } from 'draft-js';
 import SimpleDecorator from 'draft-js-simpledecorator';
 import debounce from 'lodash.debounce';
 
+import FormLabel from '@material-ui/core/FormLabel';
 import { withStyles } from '@material-ui/core/styles';
 import WordError from './WordError';
 
@@ -15,8 +16,19 @@ const styles = theme => ({
     color: theme.palette.text.primary,
     fontSize: theme.typography.pxToRem(16),
     lineHeight: '1.1875em',
+    '& .DraftEditor-root': {
+      marginTop: 3
+    },
     '& .public-DraftEditor-content': {
       minHeight: 50
+    },
+    '& .public-DraftEditorPlaceholder-root': {
+      position: 'absolute',
+      pointerEvents: 'none',
+      userSelect: 'none'
+    },
+    '& .public-DraftEditorPlaceholder-inner': {
+      color: theme.palette.grey[500]
     }
   }
 });
@@ -119,11 +131,11 @@ class RichText extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-
+    const { classes, label, placeholder } = this.props;
     return (
       <div className={classes.root}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} />
+        <FormLabel className={classes.formLabel}>{label}</FormLabel>
+        <Editor editorState={this.state.editorState} onChange={this.onChange} placeholder={placeholder} />
       </div>
     );
   }
