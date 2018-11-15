@@ -45,7 +45,7 @@ class RichText extends Component {
       (contentBlock, callback) => {
         const text = contentBlock.getText();
         this.errors.forEach(error => {
-          const word = new RegExp(error.word, 'ig');
+          const word = new RegExp(`\\b${error.word}\\b`, 'ig');
           const props = {
             messages: error.messages
           };
