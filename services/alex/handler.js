@@ -9,9 +9,7 @@ import 'source-map-support/register';
 import Wireline from '@wirelineio/sdk';
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
 import { graphql } from 'graphql';
-import retext from 'retext';
-import spell from 'retext-spell';
-import dictionary from 'dictionary-en-gb';
+import alex from 'alex';
 
 import SourceSchema from './schema.graphql';
 
@@ -22,16 +20,33 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      async check(obj, { value }) {
-        const file = await retext()
-          .use(spell, dictionary)
-          .process(value);
+      check(obj, { value }) {
+        const messages = alex(value).messages;
+        return Object.values(
+          messages
+            .map(m => ({
+              message: m.message,
+              ruleId: m.ruleId,
+              word: value.slice(m.location.start.offset, m.location.end.offset)
+            }))
+            .reduce((result, next) => {
+              if (!result[next.word]) {
+                result[next.word] = {
+                  word: next.word,
+                  rules: [],
+                  messages: [],
+                  suggestions: []
+                };
+              }
 
-        return file.messages.map(m => ({
-          messages: [m.message],
-          suggestions: m.expected,
-          word: m.actual
-        }));
+              if (!result[next.word].rules.includes(next.ruleId)) {
+                result[next.word].rules.push(next.ruleId);
+                result[next.word].messages.push(next.message);
+              }
+
+              return result;
+            }, {})
+        );
       }
     }
   }

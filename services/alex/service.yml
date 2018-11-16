@@ -1,4 +1,4 @@
-name: dl-spellcheck-dictionary-service
+name: dl-spellcheck-alex-service
 platform: nodejs
 buildTool: yarn
 version: 0.0.1
