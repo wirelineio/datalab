@@ -6,11 +6,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const styles = theme => ({
   root: {
-    backgroundColor: theme.palette.error.dark,
     cursor: 'pointer',
-    '& > *': {
-      color: theme.palette.error.contrastText
-    }
+    borderBottom: `2px solid ${theme.palette.error.dark}`
   }
 });
 

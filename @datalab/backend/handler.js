@@ -14,9 +14,11 @@ import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 
 import SourceSchema from './schema.graphql';
-import { services } from './data';
+import { services, profiles } from './data';
 
-const mapServiceUrl = wrnServices => services => {
+const mapServices = ({ wrnServices, store }) => async services => {
+  const { profiles } = await store.get('profiles');
+
   const serviceIds = Object.keys(wrnServices);
   let onlyFirst = false;
 
@@ -25,12 +27,16 @@ const mapServiceUrl = wrnServices => services => {
     onlyFirst = true;
   }
 
+  const profile = profiles[0]; // admin
+
   const result = services.map(s => {
     const id = serviceIds.find(id => id.includes(s.id));
 
     if (id) {
       s.url = wrnServices[id].endpoint;
     }
+
+    s.enabled = !!profile.services.find(ps => ps.id === s.id && ps.enabled);
 
     return s;
   });
@@ -49,21 +55,28 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      async getAllServices(obj, args, { store, mapServiceUrl }) {
+      async getAllServices(obj, args, { store, mapServices }) {
         const { services = [] } = await store.get('services');
-        return mapServiceUrl(services);
+        return mapServices(services);
       }
     },
     Mutation: {
-      async switchService(obj, { id }, { store, mapServiceUrl }) {
-        const { services = [] } = await store.get('services');
+      async switchService(obj, { id }, { store, mapServices }) {
+        const [{ services }, { profiles }] = await Promise.all([store.get('services'), store.get('profiles')]);
 
-        const service = services.find(s => s.id === id);
-        service.enabled = !service.enabled;
+        const profile = profiles[0]; // admin
 
-        await store.set('services', services);
+        const service = profile.services.find(s => s.id === id);
 
-        return mapServiceUrl(service);
+        if (service) {
+          service.enabled = !service.enabled;
+        } else {
+          profile.services.push({ id, enabled: true });
+        }
+
+        await store.set('profiles', profiles);
+
+        return mapServices(services.find(s => s.id === id));
       }
     },
     Date: new GraphQLScalarType({
@@ -95,17 +108,16 @@ module.exports = {
 
     const store = new Store(context);
     let queryContext = {
-      mapServiceUrl: mapServiceUrl(context.wireline.services),
+      mapServices: mapServices({ wrnServices: context.wireline.services, store }),
       store
     };
 
     if (!init) {
-      // const { seeded } = await store.get('seeded');
-      //if (!seeded) {
-      console.log(services);
+      const { profiles: oldProfiles } = await store.get('profiles');
+      if (!oldProfiles) {
+        await store.set('profiles', profiles);
+      }
       await store.set('services', services);
-      //}
-      await store.set('seeded', true);
       init = true;
     }
 
