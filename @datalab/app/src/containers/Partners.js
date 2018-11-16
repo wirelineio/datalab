@@ -19,12 +19,12 @@ import {
   updatePartnerOptimistic,
   updateContactToPartnerOtimistic
 } from '../stores/orgs';
+import { SPELLCHECK } from '../stores/spellcheck';
 
 import StageForm from '../components/modal/StageForm';
 import PartnerForm from '../components/modal/PartnerForm';
 import ContactForm from '../components/modal/ContactForm';
-
-import Kanban from './partners/Kanban';
+import Kanban from '../components/partners/Kanban';
 
 const styles = () => ({
   root: {}
@@ -131,6 +131,19 @@ class Partners extends Component {
     }
 
     this.setState({ openContactForm: false, selectedPartner: undefined, selectedContact: undefined });
+  };
+
+  handleSpellcheck = variables => {
+    const { client } = this.props;
+    return client.query({
+      query: SPELLCHECK,
+      context: {
+        serviceType: 'spellcheck',
+        useNetworkStatusNotifier: false
+      },
+      variables,
+      fetchPolicy: 'network-only'
+    });
   };
 
   render() {

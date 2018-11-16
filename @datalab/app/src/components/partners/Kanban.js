@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { compose, withApollo } from 'react-apollo';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -7,7 +6,6 @@ import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { updateKanban } from '../../stores/orgs';
-import { SPELLCHECK } from '../../stores/spellcheck';
 
 import GridColumn from '../../components/dnd/GridColumn';
 import Column from '../../components/dnd/Column';
@@ -50,19 +48,6 @@ class Kanban extends Component {
         });
       }
     }
-  };
-
-  handleSpellcheck = variables => {
-    const { client } = this.props;
-    return client.query({
-      query: SPELLCHECK,
-      context: {
-        serviceType: 'spellcheck',
-        useNetworkStatusNotifier: false
-      },
-      variables,
-      fetchPolicy: 'network-only'
-    });
   };
 
   render() {
@@ -125,7 +110,4 @@ class Kanban extends Component {
   }
 }
 
-export default compose(
-  withApollo,
-  withStyles(styles)
-)(Kanban);
+export default withStyles(styles)(Kanban);
