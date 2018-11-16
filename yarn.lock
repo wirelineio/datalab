@@ -4183,6 +4183,11 @@ dezalgo@^1.0.0:
     asap "^2.0.0"
     wrappy "1"
 
+dictionary-en-gb@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/dictionary-en-gb/-/dictionary-en-gb-2.0.0.tgz#616b971a9d53e01e8209281fe36871e70db334bb"
+  integrity sha512-Li5KnDPOVMlDYaeNoLP/tNzmqrbhnzVfV8skCAR0hwsxKjOWFP/SVQVnltXtpsjBLDxpdiunztViLZIBkHU/+A==
+
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/diffie-hellman/-/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
@@ -7038,7 +7043,7 @@ lodash.get@^4.4.2:
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
 
-lodash.includes@^4.3.0:
+lodash.includes@^4.2.0, lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.includes/-/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
   integrity sha1-YLuYqHy5I8aMoeUTJUgzFISfVT8=
@@ -7683,7 +7688,7 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-nlcst-is-literal@^1.1.0:
+nlcst-is-literal@^1.0.0, nlcst-is-literal@^1.1.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/nlcst-is-literal/-/nlcst-is-literal-1.1.2.tgz#f941989ca46c6dfc635e96df6b25dcebdb2eb89d"
   integrity sha512-eFdFvG7XE/YwPFbRk3ryzinTVGWpAEBQNH/FWc4sVSHXUumZtdSVaJYsz0axK4uF1pmlIAWgYWhzDuQ8NTf79A==
@@ -7970,6 +7975,13 @@ npm-run-path@^2.0.0:
     console-control-strings "~1.1.0"
     gauge "~2.7.3"
     set-blocking "~2.0.0"
+
+nspell@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/nspell/-/nspell-2.1.0.tgz#4b60a823ece7a4b3df733356a800964f77e4367a"
+  integrity sha512-jrXE7tZvLbWuuAZt/fR8yPTeypBHDhmRPuY+MsVSRAZKB2UO+IWncnCb/CCFlBurMhTDZ9dZ3fhA4TU6QRId7g==
+  dependencies:
+    is-buffer "^2.0.0"
 
 num2fraction@^1.2.2:
   version "1.2.2"
@@ -9195,7 +9207,7 @@ quick-lru@^1.0.0:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
   integrity sha1-Q2CxfGETatOAeDl/8RQW4Ybc+7g=
 
-quotation@^1.0.0, quotation@^1.0.1:
+quotation@^1.0.0, quotation@^1.0.1, quotation@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/quotation/-/quotation-1.1.1.tgz#b599a2b7361a566086458014fda9d6b00326f169"
   integrity sha512-bjz7kEsfg6D3uMeed+VbeypnooGlX7enMnDbx0KLYEEM8J1k24jk2pc+1nyQ1sExnERz8xKXRSZ0EYNIwLM83g==
@@ -9915,6 +9927,14 @@ retext-equality@~3.4.0:
     quotation "^1.0.1"
     unist-util-visit "^1.0.0"
 
+retext-latin@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/retext-latin/-/retext-latin-2.0.1.tgz#af85394aefd926649add1c43f1ac7af984e2512e"
+  integrity sha512-w+S6PXPh8s94CaIDHvRUtFLeHhePzLMr/gVzZavcDvDlWyQ1MAk0uth24GBSr+RbJvQD7LDUUDeZIqAoZt9j4w==
+  dependencies:
+    parse-latin "^4.0.0"
+    unherit "^1.0.4"
+
 retext-profanities@~4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/retext-profanities/-/retext-profanities-4.4.0.tgz#23cf67573132c02d2ac14101e7b31616505cd4f2"
@@ -9928,6 +9948,34 @@ retext-profanities@~4.4.0:
     object-keys "^1.0.9"
     pluralize "^7.0.0"
     quotation "^1.0.0"
+
+retext-spell@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/retext-spell/-/retext-spell-2.4.0.tgz#0d72ccd8ebbbd45152bec99668d74bf297c4b282"
+  integrity sha512-k3YHCcHUGESEi6AckQBi8ID3ySsYE8DKRMlnnWhGFiJnHfWKwk+jCLMsxwgRygC0qI91WpYwaeO9wP9kKBECAw==
+  dependencies:
+    lodash.includes "^4.2.0"
+    nlcst-is-literal "^1.0.0"
+    nlcst-to-string "^2.0.0"
+    nspell "^2.0.0"
+    quotation "^1.1.0"
+    unist-util-visit "^1.0.0"
+
+retext-stringify@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/retext-stringify/-/retext-stringify-2.0.1.tgz#d2bfc28d3ba17b7d7a977e935390ded5425023f2"
+  integrity sha512-FmN4T88qBt2t4M4Y2MO3zmQgcfZi2M1ey51RhhqSBUw4+iKQaeas/Ty3VNOCG3VfVeRzQ0WvZniNDIuReURyig==
+  dependencies:
+    nlcst-to-string "^2.0.0"
+
+retext@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/retext/-/retext-6.0.0.tgz#93e89df7e071dc87a51aa256c77cf3684b7d0c66"
+  integrity sha512-Ep15A39q/DPoxXfIHz3XkT3Ji0hc5CmSCjH0NMGoOZQY4qNY4uUPNSxE/Z/jL/lLN6uk/Ca/D0pwmby++2lRHA==
+  dependencies:
+    retext-latin "^2.0.0"
+    retext-stringify "^2.0.0"
+    unified "^7.0.0"
 
 retry@^0.10.0:
   version "0.10.1"

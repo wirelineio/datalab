@@ -6,7 +6,6 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
-const dictionaryEN = path.dirname(require.resolve('dictionary-en-gb'));
 
 module.exports = {
   target: 'node',
@@ -15,11 +14,6 @@ module.exports = {
 
   entry: {
     handler: [path.resolve('./handler.js')]
-  },
-
-  node: {
-    __filename: true,
-    __dirname: true
   },
 
   output: {
@@ -32,11 +26,7 @@ module.exports = {
   devtool: 'source-map',
 
   plugins: [
-    new CopyWebpackPlugin([
-      'wireline.yml',
-      'service.yml',
-      ...['index.dic', 'index.aff'].map(file => path.join(dictionaryEN, file))
-    ]),
+    new CopyWebpackPlugin(['wireline.yml', 'service.yml']),
     new ZipPlugin({
       path: '../',
       filename: 'webpack.zip'

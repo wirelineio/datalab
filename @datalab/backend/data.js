@@ -33,5 +33,12 @@ export const services = [
     description: 'Service to spellcheck sensitive words.',
     enabled: false,
     url: null
+  },
+  {
+    id: 'dl-spellcheck-dictionary-service',
+    name: 'Dictionary',
+    description: 'Service to spellcheck words based on the dictionary.',
+    enabled: false,
+    url: null
   }
 ];

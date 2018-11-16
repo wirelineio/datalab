@@ -23,6 +23,10 @@ stack:
     deployment:
       image: 'wrn::dl-spellcheck-alex-service'
       version: 0.0.1
+  dl-spellcheck-dictionary-service:
+    deployment:
+      image: 'wrn::dl-spellcheck-dictionary-service'
+      version: 0.0.1
   wireline.io/store:
     reference:
       endpointUrl: wrn::wireline.io/wireline/store
