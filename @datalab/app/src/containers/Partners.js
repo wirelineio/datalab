@@ -206,7 +206,7 @@ class Partners extends Component {
       <div className={classes.root}>
         <Toolbar>
           <Button onClick={this.handleViewMenuShow}>
-            <SelectedViewIcon className={classes.viewIcon}/>
+            <SelectedViewIcon className={classes.viewIcon} />
             {selectedViewCfg.title}
           </Button>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleViewMenuClose}>
