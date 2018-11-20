@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+
+import AddIcon from '@material-ui/icons/Add';
 
 import { updateKanban } from '../../stores/orgs';
 
