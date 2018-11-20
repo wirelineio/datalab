@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
-import Tooltip from '@material-ui/core/Tooltip';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import { withStyles } from '@material-ui/core/styles';
 
-import { GET_SERVICES, getType } from '../../stores/board';
+import KanbanIcon from '@material-ui/icons/InsertChart';
+import ListIcon from '@material-ui/icons/GridOn';
+
+import { GET_SERVICES, getType } from '../stores/board';
 import {
   GET_ALL_PARTNERS,
   CREATE_CONTACT,
@@ -20,31 +26,27 @@ import {
   UPDATE_STAGE,
   DELETE_STAGE,
   updatePartnerOptimistic,
-  updateContactToPartnerOtimistic,
-  updateKanban
-} from '../../stores/orgs';
-import { SPELLCHECK } from '../../stores/spellcheck';
+  updateContactToPartnerOtimistic
+} from '../stores/orgs';
+import { SPELLCHECK } from '../stores/spellcheck';
 
-import GridColumn from '../../components/dnd/GridColumn';
-import Column from '../../components/dnd/Column';
-import Card from '../../components/dnd/Card';
-import StageForm from '../../components/modal/StageForm';
-import PartnerForm from '../../components/modal/PartnerForm';
-import ContactForm from '../../components/modal/ContactForm';
+import StageForm from '../components/modal/StageForm';
+import PartnerForm from '../components/modal/PartnerForm';
+import ContactForm from '../components/modal/ContactForm';
+import Kanban from '../components/partners/Kanban';
+import List from '../components/partners/List';
 
 const styles = theme => ({
-  root: {
-    padding: theme.spacing.unit * 3
-  },
-  addCardButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%'
+  root: {},
+  viewIcon: {
+    paddingRight: theme.spacing.unit
   }
 });
 
-class Kanban extends Component {
+class Partners extends Component {
   state = {
+    selectedView: 0,
+    anchorEl: null,
     openStageForm: false,
     openPartnerForm: false,
     openContactForm: false,
@@ -53,31 +55,29 @@ class Kanban extends Component {
     selectedContact: undefined
   };
 
-  handleOrder = result => {
-    const { source, destination, draggableId, type } = result;
-    const { updatePartner, moveContactToPartner } = this.props;
-
-    if (!destination) {
-      return null;
+  views = [
+    {
+      title: 'Kanban',
+      Component: Kanban,
+      Icon: KanbanIcon
+    },
+    {
+      title: 'List',
+      Component: List,
+      Icon: ListIcon
     }
+  ];
 
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return null;
-    }
+  handleViewMenuShow = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
 
-    if (destination.droppableId !== source.droppableId) {
-      if (type === 'CARD') {
-        return updatePartner({ id: draggableId, stageId: destination.droppableId });
-      }
+  handleViewMenuClose = () => {
+    this.setState({ anchorEl: null });
+  };
 
-      if (type === 'CONTACT') {
-        return moveContactToPartner({
-          id: source.droppableId,
-          toPartner: destination.droppableId,
-          contactId: draggableId
-        });
-      }
-    }
+  handleSelectViewChange = (event, index) => {
+    this.setState({ selectedView: index, anchorEl: null });
   };
 
   handleAddStage = () => {
@@ -187,8 +187,10 @@ class Kanban extends Component {
   };
 
   render() {
-    const { columns = [], classes } = this.props;
+    const { classes, partners = [], stages = [], updatePartner, moveContactToPartner } = this.props;
     const {
+      selectedView,
+      anchorEl,
       openStageForm,
       selectedStage,
       openPartnerForm,
@@ -196,56 +198,53 @@ class Kanban extends Component {
       openContactForm,
       selectedContact
     } = this.state;
+    const selectedViewCfg = this.views[selectedView];
+    const SelectedView = selectedViewCfg.Component;
+    const SelectedViewIcon = selectedViewCfg.Icon;
 
     return (
       <div className={classes.root}>
-        <GridColumn list={columns} onDragEnd={this.handleOrder}>
-          {({ item: column }) => {
-            return (
-              <Column
-                id={column.id}
-                title={column.title}
-                list={column.cards}
-                index={column.index}
-                onEditColumn={this.handleEditStage.bind(this, column.data)}
-                onDeleteColumn={this.handleDeleteStage.bind(this, column.data)}
-                onAddCard={this.handleAddPartner.bind(this, column.data)}
-              >
-                {({ item: card }) => {
-                  return (
-                    <Card
-                      id={card.id}
-                      title={card.title}
-                      index={card.index}
-                      data={card.data}
-                      onEditCard={this.handleEditPartner.bind(this, card.data)}
-                      onDeleteCard={this.handleDeletePartner.bind(this, card.data)}
-                      onAddContact={this.handleAddContact.bind(this, card.data)}
-                      onEditContact={this.handleEditContact}
-                      onDeleteContact={this.handleDeleteContact}
-                    />
-                  );
-                }}
-              </Column>
-            );
-          }}
-        </GridColumn>
-        <Tooltip title="Add Column">
-          <Button
-            variant="fab"
-            color="primary"
-            aria-label="Add"
-            className={classes.addCardButton}
-            onClick={this.handleAddStage}
-          >
-            <AddIcon />
+        <Toolbar>
+          <Button onClick={this.handleViewMenuShow}>
+            <SelectedViewIcon className={classes.viewIcon}/>
+            {selectedViewCfg.title}
           </Button>
-        </Tooltip>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleViewMenuClose}>
+            {this.views.map(({ title, Icon }, index) => (
+              <MenuItem
+                key={title}
+                onClick={event => this.handleSelectViewChange(event, index)}
+                selected={index === selectedView}
+              >
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText>{title}</ListItemText>
+              </MenuItem>
+            ))}
+          </Menu>
+        </Toolbar>
+        <SelectedView
+          partners={partners}
+          stages={stages}
+          onAddPartner={this.handleAddPartner}
+          onEditPartner={this.handleEditPartner}
+          onDeletePartner={this.handleDeletePartner}
+          onAddContact={this.handleAddContact}
+          onEditContact={this.handleEditContact}
+          onDeleteContact={this.handleDeleteContact}
+          onAddStage={this.handleAddStage}
+          onEditStage={this.handleEditStage}
+          onDeleteStage={this.handleDeleteStage}
+          // TODO(elmasse): Review these 2 used by handleOrder in Kanban view.
+          moveContactToPartner={moveContactToPartner}
+          updatePartner={updatePartner}
+        />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
         <PartnerForm
           open={openPartnerForm}
-          stage={selectedStage}
           partner={selectedPartner}
+          stage={selectedStage}
           onClose={this.handlePartnerFormResult}
           onSpellcheck={this.handleSpellcheck}
         />
@@ -283,10 +282,6 @@ export default compose(
     },
     props({ data: { partners = [], stages = [], loading } }) {
       return {
-        columns: updateKanban({
-          stages,
-          partners
-        }),
         partners,
         stages,
         loading
@@ -502,4 +497,4 @@ export default compose(
     }
   }),
   withStyles(styles)
-)(Kanban);
+)(Partners);

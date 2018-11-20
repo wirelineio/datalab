@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 
-import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { withStyles } from '@material-ui/core/styles';
 
-import Kanban from './partners/Kanban';
+import Partners from './Partners';
 
 const styles = theme => ({
   root: {
@@ -33,7 +33,7 @@ class Dashboard extends Component {
           <Tab label="Partners" />
           <Tab label="Contacts" />
         </Tabs>
-        {value === 0 && <Kanban />}
+        {value === 0 && <Partners />}
         {value === 1 && <div />}
       </div>
     );
