@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 
-import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { withStyles } from '@material-ui/core/styles';
 
 import Partners from './Partners';
 

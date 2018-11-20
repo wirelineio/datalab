@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
+import Button from '@material-ui/core/Button';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
+
+import KanbanIcon from '@material-ui/icons/InsertChart';
+import ListIcon from '@material-ui/icons/GridOn';
 
 import { GET_SERVICES, getType } from '../stores/board';
 import {
@@ -25,19 +34,50 @@ import StageForm from '../components/modal/StageForm';
 import PartnerForm from '../components/modal/PartnerForm';
 import ContactForm from '../components/modal/ContactForm';
 import Kanban from '../components/partners/Kanban';
+import List from '../components/partners/List';
 
-const styles = () => ({
-  root: {}
+const styles = theme => ({
+  root: {},
+  viewIcon: {
+    paddingRight: theme.spacing.unit
+  }
 });
 
 class Partners extends Component {
   state = {
+    selectedView: 0,
+    anchorEl: null,
     openStageForm: false,
     openPartnerForm: false,
     openContactForm: false,
     selectedStage: undefined,
     selectedPartner: undefined,
     selectedContact: undefined
+  };
+
+  views = [
+    {
+      title: 'Kanban',
+      Component: Kanban,
+      Icon: KanbanIcon
+    },
+    {
+      title: 'List',
+      Component: List,
+      Icon: ListIcon
+    }
+  ];
+
+  handleViewMenuShow = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleViewMenuClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
+  handleSelectViewChange = (event, index) => {
+    this.setState({ selectedView: index, anchorEl: null });
   };
 
   handleAddStage = () => {
@@ -149,6 +189,8 @@ class Partners extends Component {
   render() {
     const { classes, partners = [], stages = [], updatePartner, moveContactToPartner } = this.props;
     const {
+      selectedView,
+      anchorEl,
       openStageForm,
       selectedStage,
       openPartnerForm,
@@ -156,11 +198,32 @@ class Partners extends Component {
       openContactForm,
       selectedContact
     } = this.state;
-
-    const SelectedView = Kanban;
+    const selectedViewCfg = this.views[selectedView];
+    const SelectedView = selectedViewCfg.Component;
+    const SelectedViewIcon = selectedViewCfg.Icon;
 
     return (
       <div className={classes.root}>
+        <Toolbar>
+          <Button onClick={this.handleViewMenuShow}>
+            <SelectedViewIcon className={classes.viewIcon}/>
+            {selectedViewCfg.title}
+          </Button>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleViewMenuClose}>
+            {this.views.map(({ title, Icon }, index) => (
+              <MenuItem
+                key={title}
+                onClick={event => this.handleSelectViewChange(event, index)}
+                selected={index === selectedView}
+              >
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText>{title}</ListItemText>
+              </MenuItem>
+            ))}
+          </Menu>
+        </Toolbar>
         <SelectedView
           partners={partners}
           stages={stages}
