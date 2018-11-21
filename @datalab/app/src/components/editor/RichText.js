@@ -46,8 +46,11 @@ class RichText extends Component {
         const text = contentBlock.getText();
         this.errors.forEach(error => {
           const word = new RegExp(`\\b${error.word}\\b`, 'ig');
+
           const props = {
-            messages: error.messages
+            messages: error.messages,
+            suggestions: error.suggestions,
+            word: error.word
           };
 
           let match;
@@ -65,8 +68,8 @@ class RichText extends Component {
        * @prop {String} color
        */
       function component(props) {
-        const { messages, children } = props;
-        return <WordError messages={messages}>{children}</WordError>;
+        const { children, ...otherProps } = props;
+        return <WordError {...otherProps}>{children}</WordError>;
       }
     );
 
