@@ -28,7 +28,6 @@ const schema = makeExecutableSchema({
           .process(value);
 
         return file.messages.map(m => ({
-          messages: [m.message],
           suggestions: m.expected,
           word: m.actual
         }));

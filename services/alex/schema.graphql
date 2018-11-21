@@ -2,7 +2,7 @@
 # Types
 #
 type SpellcheckError {
-  messages: [String!]!
+  messages: [String!]
   suggestions: [String!]
   word: String!
 }

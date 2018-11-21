@@ -1,51 +1,89 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Popover from '@material-ui/core/Popover';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 const styles = theme => ({
   root: {
     cursor: 'pointer',
     borderBottom: `2px solid ${theme.palette.error.dark}`
+  },
+  list: {
+    maxHeight: 200,
+    overflow: 'auto',
+    width: '100%',
+    backgroundColor: theme.palette.background.paper
   }
 });
 
 class WordError extends Component {
   state = {
-    open: false
+    anchorEl: null
   };
 
-  handleTooltipClose = () => {
-    this.setState({ open: false });
+  handleClick = event => {
+    this.setState({
+      anchorEl: event.currentTarget
+    });
   };
 
-  handleTooltipOpen = () => {
-    this.setState({ open: true });
+  handleClose = () => {
+    this.setState({
+      anchorEl: null
+    });
+  };
+
+  handleFix = suggestion => {
+    const { start, end, onFix } = this.props;
+    onFix({ start, end, suggestion });
   };
 
   render() {
-    const { messages, children, classes } = this.props;
-    const { open } = this.state;
+    const { word, children, classes, suggestions, messages: userMessages } = this.props;
+    const { anchorEl } = this.state;
+
+    let messages = userMessages ? userMessages : [`Spelling error: ${word}`];
 
     return (
-      <ClickAwayListener onClickAway={this.handleTooltipClose}>
-        <Tooltip
-          PopperProps={{
-            disablePortal: true
+      <Fragment>
+        <span className={classes.root} onClick={this.handleClick}>
+          {children}
+        </span>
+        <Popover
+          id={word}
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="right"
+          className={classes.popper}
+          onClose={this.handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
           }}
-          onClose={this.handleTooltipClose}
-          open={open}
-          disableFocusListener
-          disableHoverListener
-          disableTouchListener
-          title={messages.join('\n')}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
         >
-          <span className={classes.root} onClick={this.handleTooltipOpen}>
-            {children}
-          </span>
-        </Tooltip>
-      </ClickAwayListener>
+          <List
+            dense
+            component="nav"
+            subheader={<ListSubheader component="div">{messages.join('\n')}</ListSubheader>}
+            className={classes.list}
+          >
+            {suggestions &&
+              suggestions.map(s => (
+                <ListItem button key={s} onClick={this.handleFix.bind(this, s)}>
+                  <ListItemText primary={s} />
+                </ListItem>
+              ))}
+          </List>
+        </Popover>
+      </Fragment>
     );
   }
 }

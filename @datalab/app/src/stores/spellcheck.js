@@ -5,6 +5,7 @@ export const SPELLCHECK = gql`
     errors: check(value: $value) {
       word
       messages
+      suggestions
     }
   }
 `;
