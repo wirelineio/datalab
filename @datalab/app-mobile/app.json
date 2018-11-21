@@ -1,14 +1,20 @@
 {
   "expo": {
-    "name": "app-mobile",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "description": "This project is really great.",
-    "slug": "app-mobile",
+    "entryPoint": "./index.js",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": true
+    },
+    "name": "app-mobile",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"],
     "privacy": "public",
     "sdkVersion": "31.0.0",
-    "platforms": ["ios", "android"],
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "slug": "app-mobile",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,16 +23,6 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "ignoreNodeModulesValidation": true,
-    "packagerOpts": {
-      "config": "rn-cli.config.js",
-      "projectRoots": ""
-    }
+    "version": "1.0.0"
   }
 }

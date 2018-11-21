@@ -5,10 +5,13 @@
   "repository": "git@github.com:wirelineio/datalab.git",
   "license": "UNLICENSED",
   "private": true,
-  "workspaces": [
-    "@datalab/*",
-    "services/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "@datalab/*",
+      "services/*"
+    ],
+    "nohoist": ["**/react-native", "**/react-native/**","**/expo", "**/expo/**", "**/@datalab/some-internal", "**/@datalab/some-internal/**", "**/schedule", "**/schedule/**" ]
+  },
   "lint-staged": {
     "*.js": "eslint --ignore-path .eslintignore"
   },
