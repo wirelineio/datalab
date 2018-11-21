@@ -38,12 +38,14 @@ class WordError extends Component {
   };
 
   handleFix = suggestion => {
-    const { start, end, onFix } = this.props;
-    onFix({ start, end, suggestion });
+    const { start, end, onFix, blockKey } = this.props;
+    this.setState({ anchorEl: null }, () => {
+      onFix({ start, end, suggestion, blockKey });
+    });
   };
 
   render() {
-    const { word, children, classes, suggestions, messages: userMessages } = this.props;
+    const { start, word, children, classes, suggestions, messages: userMessages } = this.props;
     const { anchorEl } = this.state;
 
     let messages = userMessages ? userMessages : [`Spelling error: ${word}`];
@@ -54,7 +56,7 @@ class WordError extends Component {
           {children}
         </span>
         <Popover
-          id={word}
+          id={word + start}
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           placement="right"

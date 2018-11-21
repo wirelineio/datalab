@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Editor, EditorState, ContentState } from 'draft-js';
+import { Editor, EditorState, ContentState, SelectionState, Modifier } from 'draft-js';
 import SimpleDecorator from 'draft-js-simpledecorator';
 import debounce from 'lodash.debounce';
 
@@ -33,6 +33,44 @@ const styles = theme => ({
   }
 });
 
+const spellcheckDecorator = ({ errors = [], onFix }) =>
+  new SimpleDecorator(
+    (contentBlock, callback) => {
+      const text = contentBlock.getText();
+      errors.forEach(error => {
+        const word = new RegExp(`\\b${error.word}\\b`, 'ig');
+
+        const props = {
+          messages: error.messages,
+          suggestions: error.suggestions,
+          word: error.word,
+          blockKey: contentBlock.getKey()
+        };
+
+        let match;
+        while ((match = word.exec(text)) !== null) {
+          // Decorate the color code
+          let matchText = match[0];
+          let start = match.index;
+          let end = start + matchText.length;
+          callback(start, end, {
+            start,
+            end,
+            ...props
+          });
+        }
+      });
+    },
+    function render(props) {
+      const { children, ...otherProps } = props;
+      return (
+        <WordError {...otherProps} onFix={onFix}>
+          {children}
+        </WordError>
+      );
+    }
+  );
+
 class RichText extends Component {
   constructor(props) {
     super(props);
@@ -41,59 +79,45 @@ class RichText extends Component {
 
     this.errors = [];
 
-    this.spellcheckDecorator = new SimpleDecorator(
-      (contentBlock, callback) => {
-        const text = contentBlock.getText();
-        this.errors.forEach(error => {
-          const word = new RegExp(`\\b${error.word}\\b`, 'ig');
-
-          const props = {
-            messages: error.messages,
-            suggestions: error.suggestions,
-            word: error.word
-          };
-
-          let match;
-          while ((match = word.exec(text)) !== null) {
-            // Decorate the color code
-            let matchText = match[0];
-            let start = match.index;
-            let end = start + matchText.length;
-            callback(start, end, {
-              start,
-              end,
-              ...props
-            });
-          }
-        });
-      },
-      props => {
-        const { children, ...otherProps } = props;
-        return (
-          <WordError {...otherProps} onFix={this.fix}>
-            {children}
-          </WordError>
-        );
-      }
+    const contentState = ContentState.createFromText(field.value);
+    const editorState = EditorState.createWithContent(
+      contentState,
+      spellcheckDecorator({ errors: this.errors, onFix: this.fix })
     );
 
-    const contentState = ContentState.createFromText(field.value);
-    const editorState = EditorState.createWithContent(contentState, this.spellcheckDecorator);
-
     this.state = {
+      search: 'helo',
+      replace: 'hello',
       editorState
     };
 
     this.spellcheck = debounce(this.spellcheck.bind(this), 1000);
   }
 
-  updateEditorState = value => {
-    const contentState = ContentState.createFromText(value);
-    const editorState = EditorState.createWithContent(contentState, this.spellcheckDecorator);
+  fix = ({ start, end, suggestion, blockKey }) => {
+    const { field, form } = this.props;
 
-    this.setState({
-      editorState
-    });
+    this.setState(
+      state => {
+        const { editorState } = state;
+
+        const selectionToReplace = SelectionState.createEmpty(blockKey).merge({
+          anchorOffset: start,
+          focusOffset: end
+        });
+
+        const contentState = Modifier.replaceText(editorState.getCurrentContent(), selectionToReplace, suggestion);
+
+        return {
+          editorState: EditorState.push(editorState, contentState)
+        };
+      },
+      () => {
+        const { editorState } = this.state;
+        const value = editorState.getCurrentContent().getPlainText();
+        form.setFieldValue(field.name, value);
+      }
+    );
   };
 
   componentDidMount() {
@@ -104,7 +128,6 @@ class RichText extends Component {
   onChange = editorState => {
     const { editorState: oldEditorState } = this.state;
     const { field, form } = this.props;
-
     this.setState({ editorState }, () => {
       const { editorState } = this.state;
       const oldValue = oldEditorState.getCurrentContent().getPlainText();
@@ -126,31 +149,14 @@ class RichText extends Component {
     const {
       data: { errors = [] }
     } = await onSpellcheck({ value });
-    this.forceEditorUpdate(errors);
-  };
 
-  fix = ({ start, end, suggestion }) => {
-    const { editorState } = this.state;
-    let value = editorState.getCurrentContent().getPlainText();
-    value = value.substring(0, start) + suggestion + value.substring(end);
-    this.updateEditorState(value);
-  };
-
-  forceEditorUpdate = errors => {
     this.errors = errors;
-    const { editorState } = this.state;
-    const contentState = editorState.getCurrentContent();
 
-    const newEditorStateInstance = EditorState.createWithContent(contentState, this.spellcheckDecorator);
-
-    const copyOfEditorState = EditorState.set(newEditorStateInstance, {
-      selection: editorState.getSelection(),
-      undoStack: editorState.getUndoStack(),
-      redoStack: editorState.getRedoStack(),
-      lastChangeType: editorState.getLastChangeType()
-    });
-
-    this.setState({ editorState: copyOfEditorState });
+    this.setState(state => ({
+      editorState: EditorState.set(state.editorState, {
+        decorator: spellcheckDecorator({ errors: this.errors, onFix: this.fix })
+      })
+    }));
   };
 
   render() {
