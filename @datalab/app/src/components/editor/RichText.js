@@ -59,17 +59,21 @@ class RichText extends Component {
             let matchText = match[0];
             let start = match.index;
             let end = start + matchText.length;
-            callback(start, end, props);
+            callback(start, end, {
+              start,
+              end,
+              ...props
+            });
           }
         });
       },
-
-      /**
-       * @prop {String} color
-       */
-      function component(props) {
+      props => {
         const { children, ...otherProps } = props;
-        return <WordError {...otherProps}>{children}</WordError>;
+        return (
+          <WordError {...otherProps} onFix={this.fix}>
+            {children}
+          </WordError>
+        );
       }
     );
 
@@ -82,6 +86,15 @@ class RichText extends Component {
 
     this.spellcheck = debounce(this.spellcheck.bind(this), 1000);
   }
+
+  updateEditorState = value => {
+    const contentState = ContentState.createFromText(value);
+    const editorState = EditorState.createWithContent(contentState, this.spellcheckDecorator);
+
+    this.setState({
+      editorState
+    });
+  };
 
   componentDidMount() {
     const { editorState } = this.state;
@@ -114,6 +127,13 @@ class RichText extends Component {
       data: { errors = [] }
     } = await onSpellcheck({ value });
     this.forceEditorUpdate(errors);
+  };
+
+  fix = ({ start, end, suggestion }) => {
+    const { editorState } = this.state;
+    let value = editorState.getCurrentContent().getPlainText();
+    value = value.substring(0, start) + suggestion + value.substring(end);
+    this.updateEditorState(value);
   };
 
   forceEditorUpdate = errors => {
