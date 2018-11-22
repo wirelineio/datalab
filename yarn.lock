@@ -2171,20 +2171,20 @@ apollo-link-error@^1.1.1:
   dependencies:
     apollo-link "^1.2.4"
 
-apollo-link-http-common@^0.2.6:
+apollo-link-http-common@^0.2.5:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/apollo-link-http-common/-/apollo-link-http-common-0.2.6.tgz#47b9012500599fe343e2e87378026384b4fc8c1f"
   integrity sha512-LUOMWvrZuBP1hyWLBXyaW0KyFeKo79j+k3N+Q4HSkXKbLibnllXQ+JxxoSKGhm0bhREygiLtJAG9JnGlhxGO/Q==
   dependencies:
     apollo-link "^1.2.4"
 
-apollo-link-http@^1.5.5:
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/apollo-link-http/-/apollo-link-http-1.5.6.tgz#7d6952998870c2fc9e6e7fcff70b5a2bc3b1c448"
-  integrity sha512-F+KbIvKxpyUUGhx69w9fCNBPFOAT8XeHZGOwSilz12XN7JVSSXHqje86U/jKPgAmfCe1RZDrdgzkNp0zUJFNWw==
+apollo-link-http@1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/apollo-link-http/-/apollo-link-http-1.5.5.tgz#7dbe851821771ad67fa29e3900c57f38cbd80da8"
+  integrity sha512-C5N6N/mRwmepvtzO27dgMEU3MMtRKSqcljBkYNZmWwH11BxkUQ5imBLPM3V4QJXNE7NFuAQAB5PeUd4ligivTQ==
   dependencies:
-    apollo-link "^1.2.4"
-    apollo-link-http-common "^0.2.6"
+    apollo-link "^1.2.3"
+    apollo-link-http-common "^0.2.5"
 
 apollo-link-state@^0.4.2:
   version "0.4.2"
@@ -11977,7 +11977,7 @@ react-native-gesture-handler@1.0.9:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
-react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
+"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
   version "0.22.1"
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
