@@ -3,7 +3,7 @@
 __DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 _ENDPOINT_AWS=https://api.wireline.ninja
-_ENDPOINT_FAAS=https://apps.wireline.ninja/svc/registry
+_ENDPOINT_FAAS=https://core.wireline.ninja/svc/registry
 
 # aws | faas 
 PLATFORM="faas"
