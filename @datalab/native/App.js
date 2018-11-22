@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import internalModule from '@datalab/some-internal';
+import internalModule from '@datalab/core';
 
 export default class App extends React.Component {
   render() {
