@@ -125,7 +125,7 @@ class Partners extends Component {
         name: result.name,
         url: result.url.length > 0 ? result.url : null,
         goals: result.goals.length > 0 ? result.goals : null,
-        stageId: result.stage.value
+        stageId: result.stage || null
       };
 
       if (result.id) {
@@ -247,7 +247,7 @@ class Partners extends Component {
           open={openPartnerForm}
           partner={selectedPartner}
           stage={selectedStage}
-          stages={[{ id: null, name: 'Uncategorized' }, ...stages]}
+          stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
           onClose={this.handlePartnerFormResult}
           onSpellcheck={this.handleSpellcheck}
         />

@@ -7,26 +7,19 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
-import Autocomplete from '../form/Autocomplete';
+// import Autocomplete from '../form/Autocomplete';
 import RichText from '../editor/RichText';
-
-const toStageOption = c => {
-  if (c) {
-    return { label: c.name, value: c.id };
-  }
-
-  return { label: 'Uncategorized', value: null };
-};
 
 const initialValues = (partner, stage) => ({
   id: partner ? partner.id : null,
   name: partner ? partner.name : '',
-  stage: partner ? toStageOption(partner.stage) : toStageOption(stage),
+  stage: partner && partner.stage ? partner.stage.id : stage && stage.id ? stage.id : '',
   url: partner ? partner.url || '' : '',
   goals: partner ? partner.goals || '' : ''
 });
@@ -37,13 +30,7 @@ const validationSchema = Yup.object().shape({
     .required('Name is required.'),
   url: Yup.string().url('The Website must be a valid url.'),
   goals: Yup.string(),
-  stage: Yup.object()
-    .shape({
-      label: Yup.string(),
-      value: Yup.string().nullable()
-    })
-    .nullable()
-    .required('Stage is required')
+  stage: Yup.string()
 });
 
 const styles = theme => ({
@@ -67,8 +54,6 @@ class PartnerForm extends Component {
   render() {
     const { open, partner, stage, stages = [], onSpellcheck, classes } = this.props;
 
-    const stagesOptions = stages.map(toStageOption);
-
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{partner ? 'Edit partner' : 'New partner'}</DialogTitle>
@@ -80,15 +65,7 @@ class PartnerForm extends Component {
           render={props => (
             <Fragment>
               <DialogContent>
-                <form onSubmit={props.handleSubmit}>
-                  <Field
-                    name="stage"
-                    component={Autocomplete}
-                    className={classes.autocomplete}
-                    options={stagesOptions}
-                    placeholder="Stage..."
-                    textFieldProps={{ margin: 'dense' }}
-                  />
+                <form onSubmit={props.handleSubmit} autoComplete="off">
                   <Field component={TextField} autoFocus margin="dense" name="name" label="Name" fullWidth />
                   <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
                   <Field
@@ -98,6 +75,25 @@ class PartnerForm extends Component {
                     label="Goals"
                     onSpellcheck={onSpellcheck}
                   />
+                  <Field
+                    component={TextField}
+                    name="stage"
+                    label="Stage"
+                    select
+                    SelectProps={{
+                      displayEmpty: true
+                    }}
+                    InputLabelProps={{ shrink: true }}
+                    className={classes.autocomplete}
+                    margin="dense"
+                    fullWidth
+                  >
+                    {stages.map(({ name, id }) => (
+                      <MenuItem key={id} value={id}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Field>
                 </form>
               </DialogContent>
               <DialogActions>
