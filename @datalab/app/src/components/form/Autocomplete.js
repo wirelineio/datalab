@@ -14,13 +14,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    height: 250
-  },
   input: {
     display: 'flex',
-    padding: 0
+    padding: 0,
+    cursor: 'default'
   },
   valueContainer: {
     display: 'flex',
