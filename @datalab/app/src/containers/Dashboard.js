@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
+import { Route, Switch, Link, Redirect } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -14,27 +15,27 @@ const styles = theme => ({
   }
 });
 
+const PARTNERS_URL = '/partners';
+const CONTACTS_URL = '/contacts';
+
 class Dashboard extends Component {
-  state = {
-    value: 0
-  };
-
-  handleChange = (event, value) => {
-    this.setState({ value });
-  };
-
   render() {
-    const { classes } = this.props;
-    const { value } = this.state;
+    const {
+      classes,
+      location: { pathname }
+    } = this.props;
 
     return (
       <div className={classes.root}>
-        <Tabs value={value} onChange={this.handleChange}>
-          <Tab label="Partners" />
-          <Tab label="Contacts" />
+        <Tabs value={pathname}>
+          <Tab component={Link} label="Partners" to={PARTNERS_URL} value={PARTNERS_URL} />
+          <Tab component={Link} label="Contacts" to={CONTACTS_URL} value={CONTACTS_URL} />
         </Tabs>
-        {value === 0 && <Partners />}
-        {value === 1 && <div />}
+        <Switch>
+          <Route path={PARTNERS_URL} component={Partners} />
+          <Route path={CONTACTS_URL} component={() => <div />} />
+          <Redirect from="/" exact to={PARTNERS_URL} />
+        </Switch>
       </div>
     );
   }
