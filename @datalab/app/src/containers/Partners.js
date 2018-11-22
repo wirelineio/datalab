@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 
+import GraphIcon from '@material-ui/icons/BubbleChart';
 import KanbanIcon from '@material-ui/icons/InsertChart';
 import ListIcon from '@material-ui/icons/GridOn';
 
@@ -33,6 +34,8 @@ import { SPELLCHECK } from '../stores/spellcheck';
 import StageForm from '../components/modal/StageForm';
 import PartnerForm from '../components/modal/PartnerForm';
 import ContactForm from '../components/modal/ContactForm';
+
+import Graph from '../components/partners/Graph';
 import Kanban from '../components/partners/Kanban';
 import List from '../components/partners/List';
 
@@ -65,6 +68,11 @@ class Partners extends Component {
       title: 'List',
       Component: List,
       Icon: ListIcon
+    },
+    {
+      title: 'Graph',
+      Component: Graph,
+      Icon: GraphIcon
     }
   ];
 
