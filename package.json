@@ -10,7 +10,7 @@
       "@datalab/*",
       "services/*"
     ],
-    "nohoist": ["**/react-native", "**/react-native/**","**/expo", "**/expo/**", "**/@datalab/some-internal", "**/@datalab/some-internal/**", "**/schedule", "**/schedule/**" ]
+    "nohoist": ["**/react-native", "**/react-native/**","**/expo", "**/expo/**", "**/@datalab/core", "**/@datalab/core/**", "**/schedule", "**/schedule/**" ]
   },
   "lint-staged": {
     "*.js": "eslint --ignore-path .eslintignore"
