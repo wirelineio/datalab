@@ -3,20 +3,20 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "description": "This project is really great.",
-    "entryPoint": "./index.js",
-    "icon": "./assets/icon.png",
+    "description": "Datalab Mobile App",
+    "entryPoint": "./src/index.js",
+    "icon": "./src/assets/icon.png",
     "ios": {
       "supportsTablet": true
     },
-    "name": "app-mobile",
+    "name": "Datalab Mobile App",
     "orientation": "portrait",
     "platforms": ["ios", "android"],
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "31.0.0",
-    "slug": "app-mobile",
+    "slug": "datalab-native",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
