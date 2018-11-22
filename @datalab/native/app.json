@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "description": "This project is really great.",
+    "entryPoint": "./index.js",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": true
+    },
+    "name": "app-mobile",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"],
+    "privacy": "public",
+    "sdkVersion": "31.0.0",
+    "slug": "app-mobile",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "version": "1.0.0"
+  }
+}
