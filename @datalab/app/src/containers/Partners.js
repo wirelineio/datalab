@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 
-import Button from '@material-ui/core/Button';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -43,13 +42,16 @@ const styles = theme => ({
   root: {},
   viewIcon: {
     paddingRight: theme.spacing.unit
+  },
+  viewRenderValue: {
+    display: 'flex',
+    alignItems: 'center'
   }
 });
 
 class Partners extends Component {
   state = {
     selectedView: 0,
-    anchorEl: null,
     openStageForm: false,
     openPartnerForm: false,
     openContactForm: false,
@@ -76,16 +78,8 @@ class Partners extends Component {
     }
   ];
 
-  handleViewMenuShow = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleViewMenuClose = () => {
-    this.setState({ anchorEl: null });
-  };
-
-  handleSelectViewChange = (event, index) => {
-    this.setState({ selectedView: index, anchorEl: null });
+  handleSelectViewChange = event => {
+    this.setState({ selectedView: event.target.value });
   };
 
   handleAddStage = () => {
@@ -198,7 +192,6 @@ class Partners extends Component {
     const { classes, partners = [], stages = [], updatePartner, moveContactToPartner } = this.props;
     const {
       selectedView,
-      anchorEl,
       openStageForm,
       selectedStage,
       openPartnerForm,
@@ -213,24 +206,25 @@ class Partners extends Component {
     return (
       <div className={classes.root}>
         <Toolbar>
-          <Button onClick={this.handleViewMenuShow}>
-            <SelectedViewIcon className={classes.viewIcon} />
-            {selectedViewCfg.title}
-          </Button>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleViewMenuClose}>
+          <Select
+            value={selectedView}
+            onChange={this.handleSelectViewChange}
+            renderValue={() => (
+              <div className={classes.viewRenderValue}>
+                <SelectedViewIcon className={classes.viewIcon} />
+                <div>{selectedViewCfg.title}</div>
+              </div>
+            )}
+          >
             {this.views.map(({ title, Icon }, index) => (
-              <MenuItem
-                key={title}
-                onClick={event => this.handleSelectViewChange(event, index)}
-                selected={index === selectedView}
-              >
+              <MenuItem key={title} value={index}>
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>
                 <ListItemText>{title}</ListItemText>
               </MenuItem>
             ))}
-          </Menu>
+          </Select>
         </Toolbar>
         <SelectedView
           partners={partners}
