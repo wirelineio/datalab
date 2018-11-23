@@ -15,11 +15,15 @@
         "stack",
         "-d",
         "--stack", "${workspaceFolder}/ops/faas/stack.yml",
-        "--services", "${workspaceFolder}"
+        "--services", "${workspaceFolder}",
       ],
       "cwd": "${workspaceFolder}",
       "autoAttachChildProcesses": true,
-      "sourceMaps": true
+      "sourceMaps": true,
+      "env": {
+        "WRL_REGISTRY_URL": "https://api-dev.wireline.ninja/",
+        "WRL_COMPUTE_URL": "https://compute-dev.wireline.ninja/"
+      }
     },
     {
       "type": "node",
