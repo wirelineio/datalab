@@ -13,9 +13,11 @@ export class ServiceLink extends ApolloLink {
   }
 
   updateServices(services = []) {
-    this.links = services.filter(s => s.enabled && s.url).map(s => {
-      return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
-    });
+    this.links = services
+      .filter(s => s.enabled && s.url)
+      .map(s => {
+        return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
+      });
   }
 
   request(operation) {

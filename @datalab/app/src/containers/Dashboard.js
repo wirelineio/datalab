@@ -27,7 +27,7 @@ class Dashboard extends Component {
 
     return (
       <div className={classes.root}>
-        <Tabs value={pathname}>
+        <Tabs value={pathname === '/' ? PARTNERS_URL : pathname}>
           <Tab component={Link} label="Partners" to={PARTNERS_URL} value={PARTNERS_URL} />
           <Tab component={Link} label="Contacts" to={CONTACTS_URL} value={CONTACTS_URL} />
         </Tabs>

@@ -265,6 +265,11 @@ class Partners extends Component {
 export default compose(
   withApollo,
   graphql(GET_SERVICES, {
+    options: {
+      context: {
+        useNetworkStatusNotifier: false
+      }
+    },
     props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
       services = services.map(s => ({ ...s, type: getType(s) }));
@@ -274,15 +279,6 @@ export default compose(
     }
   }),
   graphql(GET_ALL_PARTNERS, {
-    skip({ services = [] }) {
-      return !services.find(s => s.type === 'orgs');
-    },
-    options: {
-      context: {
-        serviceType: 'orgs'
-      },
-      fetchPolicy: 'cache-and-network'
-    },
     props({ data: { partners = [], stages = [], loading } }) {
       return {
         partners,
@@ -297,9 +293,6 @@ export default compose(
         createPartner: variables => {
           return mutate({
             variables,
-            context: {
-              serviceType: 'orgs'
-            },
             update(
               cache,
               {
@@ -324,7 +317,6 @@ export default compose(
           return mutate({
             variables,
             context: {
-              serviceType: 'orgs',
               useNetworkStatusNotifier: !optimistic
             },
             optimisticResponse: optimistic ? updatePartnerOptimistic({ partners, stages }, variables) : null
@@ -337,10 +329,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS,
-          context: {
-            serviceType: 'orgs'
-          }
+          query: GET_ALL_PARTNERS
         }
       ]
     },
@@ -348,10 +337,7 @@ export default compose(
       return {
         createContact: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
@@ -361,10 +347,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS,
-          context: {
-            serviceType: 'orgs'
-          }
+          query: GET_ALL_PARTNERS
         }
       ]
     },
@@ -372,10 +355,7 @@ export default compose(
       return {
         updateContact: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
@@ -385,10 +365,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS,
-          context: {
-            serviceType: 'orgs'
-          }
+          query: GET_ALL_PARTNERS
         }
       ]
     },
@@ -396,10 +373,7 @@ export default compose(
       return {
         deletePartner: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
@@ -410,10 +384,7 @@ export default compose(
       return {
         addContactToPartner: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
@@ -426,7 +397,6 @@ export default compose(
           return mutate({
             variables,
             context: {
-              serviceType: 'orgs',
               useNetworkStatusNotifier: false
             },
             optimisticResponse: updateContactToPartnerOtimistic({ partners }, variables)
@@ -441,9 +411,6 @@ export default compose(
         createStage: variables => {
           return mutate({
             variables,
-            context: {
-              serviceType: 'orgs'
-            },
             update(
               cache,
               {
@@ -466,10 +433,7 @@ export default compose(
       return {
         updateStage: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
@@ -479,10 +443,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS,
-          context: {
-            serviceType: 'orgs'
-          }
+          query: GET_ALL_PARTNERS
         }
       ]
     },
@@ -490,10 +451,7 @@ export default compose(
       return {
         deleteStage: variables => {
           return mutate({
-            variables,
-            context: {
-              serviceType: 'orgs'
-            }
+            variables
           });
         }
       };
