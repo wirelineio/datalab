@@ -3,18 +3,7 @@
 #
 scalar Date
 
-type Card {
-  id: ID!
-  index: Int!
-  title: String!
-}
-
-type Column {
-  id: ID!
-  index: Int!
-  title: String!
-  cards: [Card!]
-}
+### SERVICES
 
 type Service {
   id: ID!
@@ -30,15 +19,46 @@ input DroppableInput {
   index: Int!
 }
 
+### ORGS
+
+type Stage {
+  id: ID!
+  name: String!
+}
+
+type Partner {
+  id: ID!
+  name: String!
+  url: String
+  goals: String
+  stage: Stage
+  contacts: [Contact!]
+}
+
+type Contact {
+  id: ID!
+  name: String!
+  email: String
+  phone: String
+}
+
 #
 # Root Query
 #
 
 type Query {
 
+  ### SERVICES
+
   getAllColumns: [Column]!
 
   getAllServices: [Service]!
+
+  ### ORGS
+
+  getAllPartners: [Partner]!
+
+  getAllStages: [Stage]!
 
 }
 
@@ -48,10 +68,35 @@ type Query {
 
 type Mutation {
 
+  ### SERVICES
+
   updateCardOrder(source: DroppableInput!, destination: DroppableInput, cardId: ID!): [Column!]!
 
   switchService(id: ID!): Service!
 
+  ### ORGS
+
+  createContact(name: String!, email: String, phone: String): Contact
+
+  updateContact(id: ID!, name: String, email: String, phone: String): Contact
+
+  createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
+
+  updatePartner(id: ID!, name: String, url: String, goals: String, stageId: ID): Partner
+
+  addContactToPartner(id: ID!, contactId: ID!): Partner
+
+  deleteContactToPartner(id: ID!, contactId: ID!): Partner
+
+  moveContactToPartner(id: ID!, toPartner: ID!, contactId: ID!): [Partner!]
+
+  deletePartner(id: ID!): ID
+
+  createStage(name: String!): Stage
+
+  updateStage(id: ID!, name: String!): Stage
+
+  deleteStage(id: ID!): ID
 }
 
 #

@@ -14,39 +14,9 @@ import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 
 import SourceSchema from './schema.graphql';
-import { services, profiles } from './data';
 
-const mapServices = ({ wrnServices, store }) => async services => {
-  const { profiles } = await store.get('profiles');
-
-  const serviceIds = Object.keys(wrnServices);
-  let onlyFirst = false;
-
-  if (!Array.isArray(services)) {
-    services = [services];
-    onlyFirst = true;
-  }
-
-  const profile = profiles[0]; // admin
-
-  const result = services.map(s => {
-    const id = serviceIds.find(id => id.includes(s.id));
-
-    if (id) {
-      s.url = wrnServices[id].endpoint;
-    }
-
-    s.enabled = !!profile.services.find(ps => ps.id === s.id && ps.enabled);
-
-    return s;
-  });
-
-  if (onlyFirst) {
-    return result[0];
-  }
-
-  return result;
-};
+import { initServices, mapServices, query as queryServices, mutation as mutationServices } from './resolvers/services';
+import { addRelationsToPartner, query as queryOrgs, mutation as mutationOrgs } from './resolvers/orgs';
 
 const schema = makeExecutableSchema({
   // Schema types.
@@ -54,31 +24,8 @@ const schema = makeExecutableSchema({
 
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
-    Query: {
-      async getAllServices(obj, args, { store, mapServices }) {
-        const { services = [] } = await store.get('services');
-        return mapServices(services);
-      }
-    },
-    Mutation: {
-      async switchService(obj, { id }, { store, mapServices }) {
-        const [{ services }, { profiles }] = await Promise.all([store.get('services'), store.get('profiles')]);
-
-        const profile = profiles[0]; // admin
-
-        const service = profile.services.find(s => s.id === id);
-
-        if (service) {
-          service.enabled = !service.enabled;
-        } else {
-          profile.services.push({ id, enabled: true });
-        }
-
-        await store.set('profiles', profiles);
-
-        return mapServices(services.find(s => s.id === id));
-      }
-    },
+    Query: { ...queryServices, ...queryOrgs },
+    Mutation: { ...mutationServices, ...mutationOrgs },
     Date: new GraphQLScalarType({
       name: 'Date',
       description: 'Date custom scalar type',
@@ -98,8 +45,6 @@ const schema = makeExecutableSchema({
   }
 });
 
-let init = false;
-
 module.exports = {
   gql: Wireline.exec(async (event, context, response) => {
     const { body } = event;
@@ -109,17 +54,11 @@ module.exports = {
     const store = new Store(context);
     let queryContext = {
       mapServices: mapServices({ wrnServices: context.wireline.services, store }),
+      addRelationsToPartner: addRelationsToPartner(store),
       store
     };
 
-    if (!init) {
-      const { profiles: oldProfiles } = await store.get('profiles');
-      if (!oldProfiles) {
-        await store.set('profiles', profiles);
-      }
-      await store.set('services', services);
-      init = true;
-    }
+    await initServices(store);
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });

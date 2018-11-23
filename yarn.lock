@@ -7733,12 +7733,12 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-hyperid@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/hyperid/-/hyperid-1.4.1.tgz#5df41b25a86171661b37534c3404655ae7657d29"
-  integrity sha512-rtuRoJyEPZZEGN25T1PC2/IYxdApJEYbBB+8e7vZMFnfhZV7HobkpUr7z1gZvcxqleg4OVg0YrMEtfmIoV85gQ==
+hyperid@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/hyperid/-/hyperid-2.0.0.tgz#76d67b5a931e86b5122fb4c3827e3469dc90fe28"
+  integrity sha512-ZkEB93YwHdSGCPcGCwgDXTLOjUodvoXjcPZdWOTxo+nAaXVndBOLqQUWNHq1r3+Opg5t6uDxWxfGeXpcU8KgJA==
   dependencies:
-    uuid "^3.2.1"
+    uuid "^3.3.2"
     uuid-parse "^1.0.0"
 
 hyphenate-style-name@^1.0.2:

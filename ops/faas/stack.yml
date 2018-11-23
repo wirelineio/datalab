@@ -13,10 +13,6 @@ stack:
     deployment:
       image: 'wrn::datalab-backend'
       version: 0.0.1
-  datalab-contacts:
-    deployment:
-      image: 'wrn::datalab-contacts'
-      version: 0.0.1
   datalab-spellcheck:
     deployment:
       image: 'wrn::datalab-spellcheck'
