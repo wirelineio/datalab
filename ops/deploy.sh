@@ -109,10 +109,10 @@ echo "DOMAIN: ${DOMAIN}"
 echo "ENDPOINT: ${ENDPOINT}"
 
 # Build
-yarn lerna run build --parallel
+yarn lerna run build --ignore="@datalab/native" --parallel
 
 # Register
-yarn lerna exec -- -- wire service register --domain $DOMAIN --endpoint $ENDPOINT
+yarn lerna exec -- --ignore="@datalab/{native,core}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT
 
 # Upload Assets
 
