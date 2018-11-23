@@ -21,7 +21,7 @@ export const addRelationsToPartner = store => async record => {
   return record;
 };
 
-export const Query = {
+export const query = {
   async getAllPartners(obj, args, { store, addRelationsToPartner }) {
     const { partners = [] } = await store.get('partners');
     return addRelationsToPartner(partners);
@@ -32,7 +32,7 @@ export const Query = {
   }
 };
 
-export const Mutation = {
+export const mutation = {
   async createContact(obj, args, { store }) {
     const { contacts = [] } = await store.get('contacts');
     const contact = Object.assign({}, args, { id: uuid() });

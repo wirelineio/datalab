@@ -44,14 +44,14 @@ export const mapServices = ({ wrnServices, store }) => async services => {
   return result;
 };
 
-export const Query = {
+export const query = {
   async getAllServices(obj, args, { store, mapServices }) {
     const { services = [] } = await store.get('services');
     return mapServices(services);
   }
 };
 
-export const Mutation = {
+export const mutation = {
   async switchService(obj, { id }, { store, mapServices }) {
     const [{ services }, { profiles }] = await Promise.all([store.get('services'), store.get('profiles')]);
 

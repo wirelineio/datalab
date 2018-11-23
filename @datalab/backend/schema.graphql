@@ -14,11 +14,6 @@ type Service {
   url: String!
 }
 
-input DroppableInput {
-  droppableId: ID!
-  index: Int!
-}
-
 ### ORGS
 
 type Stage {
@@ -50,8 +45,6 @@ type Query {
 
   ### SERVICES
 
-  getAllColumns: [Column]!
-
   getAllServices: [Service]!
 
   ### ORGS
@@ -69,8 +62,6 @@ type Query {
 type Mutation {
 
   ### SERVICES
-
-  updateCardOrder(source: DroppableInput!, destination: DroppableInput, cardId: ID!): [Column!]!
 
   switchService(id: ID!): Service!
 
