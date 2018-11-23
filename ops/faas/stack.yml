@@ -19,4 +19,4 @@ stack:
       version: 0.0.1
   wireline.io/store:
     reference:
-      endpointUrl: wrn::wireline.io/wireline/store
+      endpointUrl: wrn::dev.wireline.io/wireline/store
