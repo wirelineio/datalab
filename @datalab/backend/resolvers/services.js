@@ -44,10 +44,72 @@ export const mapServices = ({ wrnServices, store }) => async services => {
   return result;
 };
 
+const getServiceList = async registry => {
+  const query = `
+      query QueryServices($domain: String) {
+        services: queryServices(domain: $domain) {
+          domain
+          name
+          versions {
+            functions {
+              name
+              description
+            }
+          }
+        }
+      }
+    `;
+
+  const variables = {
+    domain: 'example.com'
+  };
+
+  const { services } = await registry._client.query(query, variables);
+  return services.filter(service =>
+    service.versions.find(v =>
+      v.functions.find(f => {
+        try {
+          eval(`(${f.description})`);
+        } catch (err) {
+          return false;
+        }
+
+        return true;
+      })
+    )
+  );
+};
+
+const getDeployments = async ({ serviceId, compute }) => {
+  const query = `
+    query QueryStackDeploymentsByService($serviceId: String) {
+      deployments: queryStackDeploymentsByService(serviceIds: [$serviceId]) {
+        name
+        service
+        endpointUrl
+      }
+    }
+  `;
+
+  const variables = {
+    serviceId
+  };
+
+  const { deployments } = await compute._client.query(query, variables);
+
+  return deployments && deployments.length ? deployments[0] : null;
+};
+
 export const query = {
-  async getAllServices(obj, args, { store, mapServices }) {
-    const { services = [] } = await store.get('services');
-    return mapServices(services);
+  async getAllServices(obj, args, { store, mapServices, registry, compute }) {
+    const services = await getServiceList(registry);
+
+    const deployments = await Promise.all(
+      services.map(s => getDeployments({ compute, serviceId: `example.com/${s.name}` }))
+    );
+
+    const { services: other = [] } = await store.get('services');
+    return mapServices(other);
   }
 };
 

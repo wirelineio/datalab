@@ -5,7 +5,7 @@ version: 0.0.1
 functions:
   gql:
     handler: handler.gql
-    description: GraphQL Endpoint
+    description: "{ interface: 'wire://datalab' }"
     events:
       - http:
           path: gql
