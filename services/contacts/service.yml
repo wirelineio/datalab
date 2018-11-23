@@ -1,4 +1,4 @@
-name: dl-orgs-contacts-service
+name: datalab-contacts
 platform: nodejs
 buildTool: yarn
 version: 0.0.1

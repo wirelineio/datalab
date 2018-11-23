@@ -15,17 +15,13 @@ stack:
     deployment:
       image: 'wrn::datalab-backend'
       version: 0.0.1
-  dl-orgs-contacts-service:
+  datalab-contacts:
     deployment:
-      image: 'wrn::dl-orgs-contacts-service'
+      image: 'wrn::datalab-contacts'
       version: 0.0.1
-  dl-spellcheck-alex-service:
+  datalab-spellcheck:
     deployment:
-      image: 'wrn::dl-spellcheck-alex-service'
-      version: 0.0.1
-  dl-spellcheck-dictionary-service:
-    deployment:
-      image: 'wrn::dl-spellcheck-dictionary-service'
+      image: 'wrn::datalab-spellcheck'
       version: 0.0.1
   wireline.io/store:
     reference:
