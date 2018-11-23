@@ -1,29 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
-
 import Layout from '../components/Layout';
-
-import Dashboard from './Dashboard';
-import Services from './Services';
-
-const routes = [
-  {
-    exact: true,
-    path: '/',
-    title: 'Dashboard',
-    component: Dashboard,
-    icon: DashboardIcon
-  },
-  {
-    path: '/services',
-    title: 'Services',
-    component: Services,
-    icon: ScatterPlotIcon
-  }
-];
+import { routes } from './routes';
 
 class App extends Component {
   render() {
@@ -31,9 +10,11 @@ class App extends Component {
       <BrowserRouter basename={window.config.PUBLIC_PATH}>
         <Layout routes={routes} NetworkStatusNotifier={this.props.NetworkStatusNotifier}>
           <Switch>
-            {routes.map((rProps, key) => (
-              <Route key={key} {...rProps} />
-            ))}
+            {routes
+              .filter(r => r.sidebar)
+              .map((rProps, key) => (
+                <Route key={key} {...rProps} />
+              ))}
           </Switch>
         </Layout>
       </BrowserRouter>
