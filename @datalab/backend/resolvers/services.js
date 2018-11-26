@@ -84,6 +84,7 @@ const getDeployments = async ({ serviceId, compute }) => {
   const query = `
     query QueryStackDeploymentsByService($serviceId: String) {
       deployments: queryStackDeploymentsByService(serviceIds: [$serviceId]) {
+        domain
         name
         service
         endpointUrl
@@ -101,15 +102,21 @@ const getDeployments = async ({ serviceId, compute }) => {
 };
 
 export const query = {
-  async getAllServices(obj, args, { store, mapServices, registry, compute }) {
-    const services = await getServiceList(registry);
+  async getAllServices(obj, args, { mapServices, registry, compute }) {
+    const allServices = await getServiceList(registry);
 
     const deployments = await Promise.all(
-      services.map(s => getDeployments({ compute, serviceId: `example.com/${s.name}` }))
+      allServices.map(s => getDeployments({ compute, serviceId: `example.com/${s.name}` }))
     );
 
-    const { services: other = [] } = await store.get('services');
-    return mapServices(other);
+    const services = deployments.map(({ domain, name, endpointUrl }) => ({
+      id: `${domain}/${name}`,
+      name,
+      description: '',
+      url: endpointUrl
+    }));
+
+    return mapServices(services);
   }
 };
 
