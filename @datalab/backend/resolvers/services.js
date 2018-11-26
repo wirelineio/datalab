@@ -65,19 +65,23 @@ const getServiceList = async registry => {
   };
 
   const { services } = await registry._client.query(query, variables);
-  return services.filter(service =>
-    service.versions.find(v =>
-      v.functions.find(f => {
-        try {
-          eval(`(${f.description})`);
-        } catch (err) {
-          return false;
-        }
-
-        return true;
-      })
-    )
-  );
+  return services
+    .map(service => {
+      service.versions.find(v =>
+        v.functions.find(f => {
+          try {
+            const { interface: type } = JSON.parse(f.description);
+            service.type = type.replace('wire://datalab/', '');
+          } catch (err) {
+            service.type = undefined;
+            return false;
+          }
+          return true;
+        })
+      );
+      return service;
+    })
+    .filter(s => !!s.type);
 };
 
 const getDeployments = async ({ serviceId, compute }) => {
@@ -106,12 +110,16 @@ export const query = {
     const allServices = await getServiceList(registry);
 
     const deployments = await Promise.all(
-      allServices.map(s => getDeployments({ compute, serviceId: `example.com/${s.name}` }))
+      allServices.map(async s => ({
+        ...(await getDeployments({ compute, serviceId: `example.com/${s.name}` })),
+        type: s.type
+      }))
     );
 
-    const services = deployments.map(({ domain, name, endpointUrl }) => ({
+    const services = deployments.map(({ domain, name, endpointUrl, type }) => ({
       id: `${domain}/${name}`,
       name,
+      type,
       description: '',
       url: endpointUrl
     }));

@@ -5,6 +5,7 @@ export const GET_SERVICES = gql`
     services: getAllServices {
       id
       name
+      type
       description
       enabled
       url
@@ -20,5 +21,3 @@ export const SWITCH_SERVICE = gql`
     }
   }
 `;
-
-export const getType = service => service.id.split('-')[1];
