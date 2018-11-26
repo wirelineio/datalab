@@ -112,7 +112,8 @@ export const query = {
     const deployments = await Promise.all(
       allServices.map(async s => ({
         ...(await getDeployments({ compute, serviceId: `example.com/${s.name}` })),
-        type: s.type
+        type: s.type,
+        name: s.name
       }))
     );
 
