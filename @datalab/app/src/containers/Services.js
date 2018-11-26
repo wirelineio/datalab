@@ -33,6 +33,7 @@ class Services extends Component {
 
 export default compose(
   graphql(GET_SERVICES, {
+    options: { pollInterval: 5000 },
     props({ data: { services = [] } }) {
       return {
         services: services.map(s => ({

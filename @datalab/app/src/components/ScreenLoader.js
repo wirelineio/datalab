@@ -1,27 +1,26 @@
 import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Modal from '@material-ui/core/Modal';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const styles = theme => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   progress: {
-    margin: theme.spacing.unit * 2,
-    outline: 'none'
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    margin: theme.spacing.unit * 0,
+    outline: 'none',
+    zIndex: 3001,
+    backgroundColor: 'transparent'
+  },
+  bar: {
+    backgroundColor: 'rgba(0,0,0,.3)'
   }
 });
 
-function Loader({ classes, ...other }) {
-  return (
-    <Modal className={classes.root} {...other}>
-      <CircularProgress className={classes.progress} />
-    </Modal>
-  );
+function Loader({ classes, open }) {
+  return open ? <LinearProgress className={classes.progress} classes={{ bar1Indeterminate: classes.bar }} /> : null;
 }
 
 export default withStyles(styles)(Loader);
