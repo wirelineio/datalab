@@ -105,35 +105,39 @@ const getDeployments = async ({ serviceId, compute }) => {
   return deployments && deployments.length ? deployments[0] : null;
 };
 
+export const addDeployments = async ({ services, compute }) => {
+  const deployments = await Promise.all(
+    services.map(async s => ({
+      ...(await getDeployments({ compute, serviceId: `example.com/${s.name}` })),
+      type: s.type,
+      name: s.name
+    }))
+  );
+
+  return deployments
+    .filter(s => !!s.endpointUrl)
+    .map(({ name, domain, endpointUrl, type }) => ({
+      id: `${domain}/${name}`,
+      name,
+      type,
+      description: '',
+      url: endpointUrl
+    }));
+};
+
 export const query = {
   async getAllServices(obj, args, { mapServices, registry, compute }) {
-    const allServices = await getServiceList(registry);
-
-    const deployments = await Promise.all(
-      allServices.map(async s => ({
-        ...(await getDeployments({ compute, serviceId: `example.com/${s.name}` })),
-        type: s.type,
-        name: s.name
-      }))
-    );
-
-    const services = deployments
-      .filter(s => !!s.endpointUrl)
-      .map(({ domain, name, endpointUrl, type }) => ({
-        id: `${domain}/${name}`,
-        name,
-        type,
-        description: '',
-        url: endpointUrl
-      }));
-
+    let services = await getServiceList(registry);
+    services = await addDeployments({ services, compute });
     return mapServices(services);
   }
 };
 
 export const mutation = {
-  async switchService(obj, { id }, { store, mapServices }) {
-    const [{ services }, { profiles }] = await Promise.all([store.get('services'), store.get('profiles')]);
+  async switchService(obj, { id }, { store, mapServices, registry, compute }) {
+    let [services, { profiles }] = await Promise.all([getServiceList(registry), store.get('profiles')]);
+
+    services = await addDeployments({ services, compute });
 
     const profile = profiles[0]; // admin
 
