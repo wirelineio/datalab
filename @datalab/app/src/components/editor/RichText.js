@@ -146,10 +146,7 @@ class RichText extends Component {
       return;
     }
 
-    const {
-      data: { errors = [] }
-    } = await onSpellcheck({ value });
-
+    const errors = await onSpellcheck({ value });
     this.errors = errors;
 
     this.setState(state => ({

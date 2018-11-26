@@ -175,9 +175,11 @@ class Partners extends Component {
     this.setState({ openContactForm: false, selectedPartner: undefined, selectedContact: undefined });
   };
 
-  handleSpellcheck = variables => {
+  handleSpellcheck = async variables => {
     const { client } = this.props;
-    return client.query({
+    const {
+      data: { errors = [] }
+    } = await client.query({
       query: SPELLCHECK,
       context: {
         serviceType: 'spellcheck',
@@ -186,6 +188,22 @@ class Partners extends Component {
       variables,
       fetchPolicy: 'network-only'
     });
+
+    return errors.reduce((prev, curr) => {
+      const defaultMessage = word => `${word} is misspelled.`;
+      let error = prev.find(e => e.word === curr.word);
+      if (error) {
+        error.messages = [
+          ...(error.messages || [defaultMessage(error.word)]),
+          ...(curr.messages || [defaultMessage(curr.word)])
+        ];
+        error.suggestions = [...error.suggestions, ...curr.suggestions];
+      } else {
+        error = curr;
+        prev.push(error);
+      }
+      return prev;
+    }, []);
   };
 
   render() {
