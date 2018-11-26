@@ -116,13 +116,15 @@ export const query = {
       }))
     );
 
-    const services = deployments.map(({ domain, name, endpointUrl, type }) => ({
-      id: `${domain}/${name}`,
-      name,
-      type,
-      description: '',
-      url: endpointUrl
-    }));
+    const services = deployments
+      .filter(s => !!s.endpointUrl)
+      .map(({ domain, name, endpointUrl, type }) => ({
+        id: `${domain}/${name}`,
+        name,
+        type,
+        description: '',
+        url: endpointUrl
+      }));
 
     return mapServices(services);
   }
