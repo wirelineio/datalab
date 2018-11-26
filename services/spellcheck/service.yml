@@ -5,7 +5,7 @@ version: 0.0.1
 functions:
   gql:
     handler: handler.gql
-    description: "{ interface: 'wire://datalab' }"
+    description: '{ "interface": "wire://datalab/spellcheck" }'
     events:
       - http:
           path: gql
