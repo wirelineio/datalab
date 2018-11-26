@@ -6,7 +6,7 @@
 // https://github.com/evanw/node-source-map-support#programmatic-usage
 import 'source-map-support/register';
 
-import Wireline from '@wirelineio/sdk';
+import Wireline, { Registry, Compute } from '@wirelineio/sdk';
 import Store from '@wirelineio/store-client';
 
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
@@ -55,7 +55,15 @@ module.exports = {
     let queryContext = {
       mapServices: mapServices({ wrnServices: context.wireline.services, store }),
       addRelationsToPartner: addRelationsToPartner(store),
-      store
+      store,
+      registry: new Registry({
+        endpoint: Registry.getEndpoint(),
+        accessKey: context.wireline.accessKey
+      }),
+      compute: new Compute({
+        endpoint: Compute.getEndpoint(),
+        accessKey: context.wireline.accessKey
+      })
     };
 
     await initServices(store);
