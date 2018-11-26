@@ -12,7 +12,7 @@ import GraphIcon from '@material-ui/icons/BubbleChart';
 import KanbanIcon from '@material-ui/icons/InsertChart';
 import ListIcon from '@material-ui/icons/GridOn';
 
-import { GET_SERVICES, getType } from '../stores/board';
+import { GET_SERVICES } from '../stores/board';
 import {
   GET_ALL_PARTNERS,
   CREATE_CONTACT,
@@ -272,8 +272,6 @@ export default compose(
     },
     props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
-      services = services.map(s => ({ ...s, type: getType(s) }));
-
       client.updateServices(services);
       return { services: services.filter(s => s.enabled) };
     }
