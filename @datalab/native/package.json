@@ -17,6 +17,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@babel/runtime": "^7.1.5",
     "@datalab/core": "0.0.1",
     "apollo-cache-inmemory": "^1.3.11",
     "apollo-client": "^2.4.7",
