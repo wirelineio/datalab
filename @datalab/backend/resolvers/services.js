@@ -12,10 +12,9 @@ export const initServices = async store => {
   }
 };
 
-export const mapServices = ({ wrnServices, store }) => async services => {
+export const mapProfiles = store => async services => {
   const { profiles } = await store.get('profiles');
 
-  const serviceIds = Object.keys(wrnServices);
   let onlyFirst = false;
 
   if (!Array.isArray(services)) {
@@ -26,12 +25,6 @@ export const mapServices = ({ wrnServices, store }) => async services => {
   const profile = profiles[0]; // admin
 
   const result = services.map(s => {
-    const id = serviceIds.find(id => id.includes(s.id));
-
-    if (id) {
-      s.url = wrnServices[id].endpoint;
-    }
-
     s.enabled = !!profile.services.find(ps => ps.id === s.id && ps.enabled);
 
     return s;
@@ -84,31 +77,43 @@ const getServiceList = async registry => {
     .filter(s => !!s.type);
 };
 
-const getDeployments = async ({ serviceId, compute }) => {
+const getDeployments = async ({ domain, name, compute, wrnServices }) => {
   const query = `
     query QueryStackDeploymentsByService($serviceId: String) {
       deployments: queryStackDeploymentsByService(serviceIds: [$serviceId]) {
         domain
-        name
-        service
         endpointUrl
       }
     }
   `;
 
   const variables = {
-    serviceId
+    serviceId: `example.com/${name}`
   };
 
   const { deployments } = await compute._client.query(query, variables);
+  let deployment = deployments && deployments.length ? deployments[0] : null;
 
-  return deployments && deployments.length ? deployments[0] : null;
+  // support for `wire dev` local deployments
+  if (wrnServices[name]) {
+    const endpointUrl = wrnServices[name].endpoint;
+    if (deployment) {
+      deployment.endpointUrl = endpointUrl;
+    } else {
+      deployment = {
+        domain,
+        endpointUrl
+      };
+    }
+  }
+
+  return deployment;
 };
 
-export const addDeployments = async ({ services, compute }) => {
+export const addDeployments = async ({ services, compute, wrnServices }) => {
   const deployments = await Promise.all(
     services.map(async s => ({
-      ...(await getDeployments({ compute, serviceId: `example.com/${s.name}` })),
+      ...(await getDeployments({ compute, wrnServices, name: s.name, domain: 'example.com' })),
       type: s.type,
       name: s.name
     }))
@@ -125,19 +130,21 @@ export const addDeployments = async ({ services, compute }) => {
     }));
 };
 
+export const getAllServices = async ({ registry, compute, wrnServices }) => {
+  const services = await getServiceList(registry);
+  return addDeployments({ services, compute, wrnServices });
+};
+
 export const query = {
-  async getAllServices(obj, args, { mapServices, registry, compute }) {
-    let services = await getServiceList(registry);
-    services = await addDeployments({ services, compute });
-    return mapServices(services);
+  async getAllServices(obj, args, { mapProfiles, getAllServices }) {
+    let services = await getAllServices();
+    return mapProfiles(services);
   }
 };
 
 export const mutation = {
-  async switchService(obj, { id }, { store, mapServices, registry, compute }) {
-    let [services, { profiles }] = await Promise.all([getServiceList(registry), store.get('profiles')]);
-
-    services = await addDeployments({ services, compute });
+  async switchService(obj, { id }, { store, mapProfiles, getAllServices }) {
+    const [services, { profiles }] = await Promise.all([getAllServices(), store.get('profiles')]);
 
     const profile = profiles[0]; // admin
 
@@ -151,6 +158,6 @@ export const mutation = {
 
     await store.set('profiles', profiles);
 
-    return mapServices(services.find(s => s.id === id));
+    return mapProfiles(services.find(s => s.id === id));
   }
 };

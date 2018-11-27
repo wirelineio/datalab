@@ -15,7 +15,13 @@ import { Kind } from 'graphql/language';
 
 import SourceSchema from './schema.graphql';
 
-import { initServices, mapServices, query as queryServices, mutation as mutationServices } from './resolvers/services';
+import {
+  initServices,
+  mapProfiles,
+  getAllServices,
+  query as queryServices,
+  mutation as mutationServices
+} from './resolvers/services';
 import { addRelationsToPartner, query as queryOrgs, mutation as mutationOrgs } from './resolvers/orgs';
 
 const schema = makeExecutableSchema({
@@ -52,18 +58,28 @@ module.exports = {
     let queryRoot = {};
 
     const store = new Store(context);
+    const registry = new Registry({
+      endpoint: Registry.getEndpoint(),
+      accessKey: context.wireline.accessKey
+    });
+    const compute = new Compute({
+      endpoint: Compute.getEndpoint(),
+      accessKey: context.wireline.accessKey
+    });
+
+    const wrnServices = context.wireline.services;
+    const _getAllServices = getAllServices({ registry, compute, wrnServices });
     let queryContext = {
-      mapServices: mapServices({ wrnServices: context.wireline.services, store }),
-      addRelationsToPartner: addRelationsToPartner(store),
-      store,
-      registry: new Registry({
-        endpoint: Registry.getEndpoint(),
-        accessKey: context.wireline.accessKey
+      mapProfiles: mapProfiles(store),
+      addRelationsToPartner: addRelationsToPartner({
+        store,
+        getAllServices: _getAllServices
       }),
-      compute: new Compute({
-        endpoint: Compute.getEndpoint(),
-        accessKey: context.wireline.accessKey
-      })
+      getAllServices: _getAllServices,
+      store,
+      registry,
+      compute,
+      wrnServices
     };
 
     await initServices(store);

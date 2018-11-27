@@ -1,0 +1,28 @@
+#
+# Types
+#
+type Contact {
+  id: ID!
+  name: String!
+  email: String
+  phone: String
+}
+
+#
+# Root Query
+#
+
+type Query {
+
+  getContact(id: ID!): Contact
+
+  search(value: String!): [Contact!]
+
+}
+
+#
+# Schema
+#
+schema {
+  query: Query
+}

@@ -1,3 +1,6 @@
+import { request } from 'graphql-request';
+import { getAllServices } from './services';
+
 import hyperid from 'hyperid';
 
 const uuid = hyperid({
@@ -5,8 +8,14 @@ const uuid = hyperid({
   urlSafe: true
 });
 
-export const addRelationsToPartner = store => async record => {
-  const [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
+export const addRelationsToPartner = ({ store, getAllServices }) => async record => {
+  let [{ stages = [] }, { contacts = [] }, services = []] = await Promise.all([
+    store.get('stages'),
+    store.get('contacts'),
+    getAllServices()
+  ]);
+
+  contacts = await Promise.all(contacts.map(contact => checkRemoteContact({ contact, services })));
 
   if (Array.isArray(record)) {
     return record.map(r => {
@@ -21,6 +30,47 @@ export const addRelationsToPartner = store => async record => {
   return record;
 };
 
+export const checkRemoteContact = async ({ contact, services }) => {
+  contact = {
+    ...contact,
+    ref: {
+      id: 'contact-1',
+      serviceId: 'example.com/datalab-contacts'
+    }
+  };
+  if (!contact || !contact.ref) {
+    return contact;
+  }
+
+  const query = `
+    query GetContact($id: ID!) {
+      contact: getContact(id: $id) {
+        name
+        email
+        phone
+      }
+    }
+  `;
+
+  const variables = {
+    id: contact.ref.id
+  };
+
+  const service = services.find(s => s.id === contact.ref.serviceId);
+  if (!service) {
+    return contact;
+  }
+
+  const { contact: remoteContact } = await request(`${service.url}/gql`, query, variables);
+
+  return {
+    ...contact,
+    name: remoteContact.name,
+    email: remoteContact.email,
+    phone: remoteContact.phone
+  };
+};
+
 export const query = {
   async getAllPartners(obj, args, { store, addRelationsToPartner }) {
     const { partners = [] } = await store.get('partners');
@@ -33,12 +83,12 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, args, { store }) {
+  async createContact(obj, args, { store, getAllServices }) {
     const { contacts = [] } = await store.get('contacts');
     const contact = Object.assign({}, args, { id: uuid() });
     contacts.push(contact);
     await store.set('contacts', contacts);
-    return contact;
+    return checkRemoteContact({ contact, services: await getAllServices() });
   },
   async updateContact(obj, { id, ...args }, { store }) {
     const { contacts = [] } = await store.get('contacts');
@@ -54,7 +104,7 @@ export const mutation = {
     };
 
     await store.set('contacts', contacts);
-    return contacts[idx];
+    return checkRemoteContact({ contact: contacts[idx], services: await getAllServices() });
   },
   async createPartner(obj, args, { store, addRelationsToPartner }) {
     const { partners = [] } = await store.get('partners');

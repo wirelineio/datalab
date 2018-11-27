@@ -30,11 +30,17 @@ type Partner {
   contacts: [Contact!]
 }
 
+type RemoteReference {
+  id: ID!
+  serviceId: ID!
+}
+
 type Contact {
   id: ID!
   name: String!
   email: String
   phone: String
+  ref: RemoteReference
 }
 
 #
