@@ -191,16 +191,17 @@ class Partners extends Component {
 
     return errors.reduce((prev, curr) => {
       const defaultMessage = word => `${word} is misspelled.`;
+      if (!curr.messages) curr.messages = [defaultMessage(curr.word)];
+
       let error = prev.find(e => e.word === curr.word);
+
       if (error) {
-        error.messages = [
-          ...(error.messages || [defaultMessage(error.word)]),
-          ...(curr.messages || [defaultMessage(curr.word)])
-        ];
-        error.suggestions = [...error.suggestions, ...curr.suggestions];
+        error.items.push(curr);
       } else {
-        error = curr;
-        prev.push(error);
+        prev.push({
+          word: curr.word,
+          items: [curr]
+        });
       }
       return prev;
     }, []);
