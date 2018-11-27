@@ -41,9 +41,7 @@ const spellcheckDecorator = ({ errors = [], onFix }) =>
         const word = new RegExp(`\\b${error.word}\\b`, 'ig');
 
         const props = {
-          messages: error.messages,
-          suggestions: error.suggestions,
-          word: error.word,
+          ...error,
           blockKey: contentBlock.getKey()
         };
 

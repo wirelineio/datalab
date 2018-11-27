@@ -16,7 +16,8 @@ const styles = theme => ({
     maxHeight: 200,
     overflow: 'auto',
     width: '100%',
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
+    padding: 0
   }
 });
 
@@ -26,6 +27,7 @@ class WordError extends Component {
   };
 
   handleClick = event => {
+    event.stopPropagation();
     this.setState({
       anchorEl: event.currentTarget
     });
@@ -45,10 +47,8 @@ class WordError extends Component {
   };
 
   render() {
-    const { start, word, children, classes, suggestions, messages: userMessages } = this.props;
+    const { start, word, children, classes, items = [] } = this.props;
     const { anchorEl } = this.state;
-
-    let messages = userMessages ? userMessages : [`Spelling error: ${word}`];
 
     return (
       <Fragment>
@@ -71,18 +71,18 @@ class WordError extends Component {
             horizontal: 'left'
           }}
         >
-          <List
-            dense
-            component="nav"
-            subheader={<ListSubheader component="div">{messages.join('\n')}</ListSubheader>}
-            className={classes.list}
-          >
-            {suggestions &&
-              suggestions.map(s => (
-                <ListItem button key={s} onClick={this.handleFix.bind(this, s)}>
-                  <ListItemText primary={s} />
-                </ListItem>
-              ))}
+          <List dense component="nav" className={classes.list}>
+            {items.map(({ messages, suggestions = [] }) => (
+              <Fragment key={messages.join('-')}>
+                <ListSubheader component="div">{messages.join(' ')}</ListSubheader>
+                {suggestions &&
+                  suggestions.map(s => (
+                    <ListItem button key={s} onClick={this.handleFix.bind(this, s)}>
+                      <ListItemText primary={s} />
+                    </ListItem>
+                  ))}
+              </Fragment>
+            ))}
           </List>
         </Popover>
       </Fragment>
