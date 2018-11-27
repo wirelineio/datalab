@@ -130,7 +130,7 @@ export const addDeployments = async ({ services, compute, wrnServices }) => {
     }));
 };
 
-export const getAllServices = async ({ registry, compute, wrnServices }) => {
+export const getAllServices = ({ registry, compute, wrnServices }) => async () => {
   const services = await getServiceList(registry);
   return addDeployments({ services, compute, wrnServices });
 };
