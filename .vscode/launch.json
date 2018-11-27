@@ -20,11 +20,11 @@
       "cwd": "${workspaceFolder}",
       "autoAttachChildProcesses": true,
       "sourceMaps": true,
-      "env": {
-        "WRL_REGISTRY_URL": "https://api-dev.wireline.ninja/",
-        "WRL_COMPUTE_URL": "https://compute-dev.wireline.ninja/",
-        "WRL_SERVICES_WIRELINE.IO/STORE": "{ \"name\": \"wireline.io/store\", \"wrn\": \"wrn::dev.wireline.io/wireline/store\"}"
-      }
+      // "env": {
+      //   "WRL_REGISTRY_URL": "https://api-dev.wireline.ninja/",
+      //   "WRL_COMPUTE_URL": "https://compute-dev.wireline.ninja/",
+      //   "WRL_SERVICES_WIRELINE.IO/STORE": "{ \"name\": \"wireline.io/store\", \"wrn\": \"wrn::dev.wireline.io/wireline/store\"}"
+      // }
     },
     {
       "type": "node",
