@@ -48,9 +48,10 @@ const styles = theme => ({
 });
 
 const TYPES = {
+  spellcheck: 'Spellcheck',
   messaging: 'Messaging',
   tasks: 'Tasks',
-  contacts: 'Contacts/Orgs'
+  contacts: 'Contacts & Organizations'
 };
 
 class ServiceCard extends React.Component {

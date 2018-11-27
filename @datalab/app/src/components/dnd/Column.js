@@ -33,6 +33,8 @@ const styles = () => ({
   }
 });
 
+const isUncategorized = id => id === 'uncategorized';
+
 class Column extends Component {
   state = {
     anchorEl: null
@@ -90,8 +92,8 @@ class Column extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleAddCard}>Add record</MenuItem>
-          {id !== 'uncategorized' && <MenuItem onClick={this.handleEditColumn}>Edit column</MenuItem>}
-          {id !== 'uncategorized' && <MenuItem onClick={this.handleDeleteColumn}>Delete column</MenuItem>}
+          {!isUncategorized(id) && <MenuItem onClick={this.handleEditColumn}>Edit column</MenuItem>}
+          {!isUncategorized(id) && <MenuItem onClick={this.handleDeleteColumn}>Delete column</MenuItem>}
         </Menu>
       </Fragment>
     );
@@ -101,7 +103,11 @@ class Column extends Component {
     const { id, title, list, classes, children } = this.props;
     return (
       <Card className={classes.root} elevation={0}>
-        <CardHeader title={title} action={this.renderActionMenu()} />
+        <CardHeader
+          title={title}
+          titleTypographyProps={{ color: isUncategorized(id) ? 'textSecondary' : 'textPrimary' }}
+          action={this.renderActionMenu()}
+        />
         <CardContent>
           <Droppable droppableId={id} type="CARD">
             {provided => (
