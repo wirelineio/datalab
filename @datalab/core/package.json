@@ -1,5 +1,19 @@
 {
   "name": "@datalab/core",
   "version": "0.0.1",
-  "main": "index.js"
+  "main": "./dist/datalab-core.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/runtime": "7.0.0-beta.55",
+    "@babel/preset-env": "^7.1.6",
+    "babel-core": "^7.0.0-bridge",
+    "babel-loader": "^8.0.4",
+    "webpack": "^4.26.0"
+  }
 }
