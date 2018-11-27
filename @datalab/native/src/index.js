@@ -3,11 +3,18 @@ import { KeepAwake, registerRootComponent } from 'expo';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 
-import { default as client } from './config/apollo';
+// import { default as client } from './config/apollo';
 import App from './containers/App';
 
+import { ApolloConfig } from '@datalab/core';
+
+const apolloConfig = new ApolloConfig({
+  backendEndpoint: process.env.BACKEND_URL,
+  localhostServiceHost: process.env.LAN_IP
+});
+
 const DatalabNative = () => (
-  <ApolloProvider client={client}>
+  <ApolloProvider client={apolloConfig.client}>
     <App />
   </ApolloProvider>
 );
