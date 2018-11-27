@@ -1,7 +1,8 @@
 module.exports = function(api) {
-  api.cache(true);
+  const env = api.env() || 'development';
+
   return {
     presets: ['babel-preset-expo'],
-    plugins: ['@babel/plugin-transform-runtime']
+    plugins: ['@babel/plugin-transform-runtime', ['inline-dotenv', { path: `./.env.${env}` }]]
   };
 };

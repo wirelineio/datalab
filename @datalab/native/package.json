@@ -7,19 +7,40 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "start": "expo start",
+    "prestart": "rm ./node_modules/.cache/@babel -rf",
+    "start": "expo start --clear",
+    "start:dev": "cross-env NODE_ENV=development npm start",
+    "start:stg": "cross-env NODE_ENV=staging npm start",
+    "start:prod": "cross-env NODE_ENV=production npm start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject"
   },
   "dependencies": {
+    "@babel/runtime": "^7.1.5",
     "@datalab/core": "0.0.1",
+    "apollo-cache-inmemory": "^1.3.11",
+    "apollo-client": "^2.4.7",
+    "apollo-link": "^1.2.4",
+    "apollo-link-error": "^1.1.2",
+    "apollo-link-http": "^1.5.6",
+    "apollo-utilities": "^1.0.26",
+    "deepmerge": "^2.2.1",
     "expo": "^31.0.2",
+    "graphql-tag": "^2.10.0",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz"
+    "react-dom": "16.5.0",
+    "react-apollo": "^2.3.2-beta.0",
+    "react-apollo-network-status": "^1.1.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
+    "react-native-screens": "^1.0.0-alpha.16",
+    "react-navigation": "^3.0.0",
+    "zen-observable": "^0.8.11"
   },
   "devDependencies": {
+    "babel-plugin-inline-dotenv": "^1.2.0",
     "babel-preset-expo": "^5.0.0",
+    "cross-env": "^5.2.0",
     "expo-cli": "^2.4.0",
     "schedule": "0.3.0"
   }
