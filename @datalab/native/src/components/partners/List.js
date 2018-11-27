@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-navigation';
 
 import ListItem from './ListItem';
 
@@ -13,7 +12,6 @@ const List = props => {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       contentContainerStyle={{ backgroundColor: '#fff' }}
-      renderScrollComponent={props => <ScrollView {...props} />}
       style={styles.container}
       data={data}
       renderItem={({ item }) => <ListItem title={item.name} subtitle={item.url} />}
