@@ -9,7 +9,9 @@ const uuid = hyperid({
 export const addRelationsToPartner = ({ store, getAllServices }) => async record => {
   let [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
 
-  contacts = await Promise.all(contacts.map(contact => checkRemoteContact({ contact, getAllServices })));
+  contacts = (await Promise.all(contacts.map(contact => checkRemoteContact({ contact, getAllServices })))).filter(
+    Boolean
+  );
 
   if (Array.isArray(record)) {
     return record.map(r => {
@@ -47,17 +49,23 @@ export const checkRemoteContact = async ({ contact, getAllServices }) => {
 
   const service = services.find(s => s.id === contact.ref.serviceId);
   if (!service) {
-    return contact;
+    return null;
   }
 
-  const { contact: remoteContact } = await request(`${service.url}/gql`, query, variables);
+  try {
+    const { contact: remoteContact } = await request(`${service.url}/gql`, query, variables);
 
-  return {
-    ...contact,
-    name: remoteContact.name,
-    email: remoteContact.email,
-    phone: remoteContact.phone
-  };
+    return {
+      ...contact,
+      name: remoteContact.name,
+      email: remoteContact.email,
+      phone: remoteContact.phone
+    };
+  } catch (err) {
+    console.log(err.message);
+  }
+
+  return null;
 };
 
 export const query = {

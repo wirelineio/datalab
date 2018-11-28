@@ -18,6 +18,10 @@ export const GET_ALL_PARTNERS = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
     stages: getAllStages {
@@ -34,6 +38,10 @@ export const CREATE_CONTACT = gql`
       name
       email
       phone
+      ref {
+        id
+        serviceId
+      }
     }
   }
 `;
@@ -45,6 +53,10 @@ export const UPDATE_CONTACT = gql`
       name
       email
       phone
+      ref {
+        id
+        serviceId
+      }
     }
   }
 `;
@@ -65,6 +77,10 @@ export const CREATE_PARTNER = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
   }
@@ -86,6 +102,10 @@ export const UPDATE_PARTNER = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
   }
@@ -107,6 +127,10 @@ export const ADD_CONTACT_TO_PARTNER = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
   }
@@ -128,6 +152,10 @@ export const DELETE_CONTACT_TO_PARTNER = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
   }
@@ -149,6 +177,10 @@ export const MOVE_CONTACT_TO_PARTNER = gql`
         name
         email
         phone
+        ref {
+          id
+          serviceId
+        }
       }
     }
   }
@@ -212,11 +244,17 @@ export const updateContactToPartnerOtimistic = ({ partners }, variables) => {
 
   const mutate = produce(partners => {
     const oldPartner = partners.find(p => p.id === id);
-    const newPartner = partners.find(p => p.id === toPartner);
-
     const contact = oldPartner.contacts.find(c => c.id === contactId);
+
+    // delete old
     oldPartner.contacts = oldPartner.contacts.filter(c => c.id !== contactId);
-    newPartner.contacts = [...newPartner.contacts, contact];
+
+    const newPartner = partners.find(p => p.id === toPartner && !p.contacts.find(c => c.id === contactId));
+
+    // check if the contact is not already there
+    if (newPartner) {
+      newPartner.contacts = [...newPartner.contacts, contact];
+    }
   });
 
   return {

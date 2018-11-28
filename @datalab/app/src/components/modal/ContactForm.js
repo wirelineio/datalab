@@ -13,13 +13,13 @@ import * as Yup from 'yup';
 import TextField from '../form/TextField';
 import Autocomplete from '../form/Autocomplete';
 
-const initialValues = (partner, contact) => ({
+const initialValues = ({ partner, contact, refOptions }) => ({
   id: contact.id,
   name: contact.name || '',
   email: contact.email || '',
   phone: contact.phone || '',
   partnerId: partner ? partner.id : null,
-  ref: null
+  ref: contact.ref ? refOptions.find(o => o.value === contact.ref.id) : null
 });
 
 const validationSchema = Yup.object().shape({
@@ -57,13 +57,14 @@ class ContactForm extends Component {
 
   render() {
     const { open, partner, contact = {}, remoteContacts = [], classes } = this.props;
+    const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{contact ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik
-          initialValues={initialValues(partner, contact)}
+          initialValues={initialValues({ partner, contact, refOptions })}
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => {
@@ -78,7 +79,7 @@ class ContactForm extends Component {
                       name="ref"
                       component={Autocomplete}
                       className={classes.autocomplete}
-                      options={remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }))}
+                      options={refOptions}
                       placeholder="Search for contacts..."
                       textFieldProps={{ margin: 'dense' }}
                       onAfterChange={(value, { form }) => {
