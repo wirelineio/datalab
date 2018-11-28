@@ -337,7 +337,6 @@ export default compose(
       }
     },
     props({ data: { contacts = [] } }) {
-      console.log('container', contacts);
       return { remoteContacts: contacts };
     }
   }),

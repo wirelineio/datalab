@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
@@ -81,15 +81,9 @@ class List extends Component {
           </TableBody>
         </Table>
         <Tooltip title="Add Partner">
-          <Button
-            variant="fab"
-            color="primary"
-            aria-label="Add"
-            className={classes.addPartnerButton}
-            onClick={onAddPartner}
-          >
+          <Fab color="primary" aria-label="Add" className={classes.addPartnerButton} onClick={onAddPartner}>
             <AddIcon />
-          </Button>
+          </Fab>
         </Tooltip>
       </div>
     );
