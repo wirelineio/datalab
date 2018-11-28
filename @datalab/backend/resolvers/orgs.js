@@ -77,7 +77,7 @@ export const mutation = {
     let contact = contacts.find(c => c.ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
 
     if (!contact) {
-      contact = Object.assign({}, args, { id: uuid() });
+      contact = Object.assign({}, args, { id: uuid(), ref });
       contacts.push(contact);
       await store.set('contacts', contacts);
     }

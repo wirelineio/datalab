@@ -85,8 +85,8 @@ class ContactForm extends Component {
                         if (value && value.remoteContact) {
                           const { remoteContact } = value;
                           form.setFieldValue('name', remoteContact.name);
-                          form.setFieldValue('email', remoteContact.email);
-                          form.setFieldValue('phone', remoteContact.phone);
+                          form.setFieldValue('email', remoteContact.email || '');
+                          form.setFieldValue('phone', remoteContact.phone || '');
                         }
                       }}
                       isClearable
