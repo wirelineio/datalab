@@ -6,12 +6,12 @@ const uuid = hyperid({
   urlSafe: true
 });
 
-export const addRelationsToPartner = ({ store, getAllServices }) => async record => {
+export const addRelationsToPartner = ({ store, getAllEnabledServices }) => async record => {
   let [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
 
-  contacts = (await Promise.all(contacts.map(contact => checkRemoteContact({ contact, getAllServices })))).filter(
-    Boolean
-  );
+  contacts = (await Promise.all(
+    contacts.map(contact => checkRemoteContact({ contact, getAllEnabledServices }))
+  )).filter(Boolean);
 
   if (Array.isArray(record)) {
     return record.map(r => {
@@ -26,12 +26,12 @@ export const addRelationsToPartner = ({ store, getAllServices }) => async record
   return record;
 };
 
-export const checkRemoteContact = async ({ contact, getAllServices }) => {
+export const checkRemoteContact = async ({ contact, getAllEnabledServices }) => {
   if (!contact || !contact.ref) {
     return contact;
   }
 
-  const services = await getAllServices({ cache: true });
+  const services = await getAllEnabledServices({ cache: true });
 
   const query = `
     query GetContact($id: ID!) {
@@ -80,7 +80,7 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, { ref, ...args }, { store, getAllServices }) {
+  async createContact(obj, { ref, ...args }, { store, getAllEnabledServices }) {
     const { contacts = [] } = await store.get('contacts');
     let contact = contacts.find(c => c.ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
 
@@ -90,9 +90,9 @@ export const mutation = {
       await store.set('contacts', contacts);
     }
 
-    return checkRemoteContact({ contact, getAllServices });
+    return checkRemoteContact({ contact, getAllEnabledServices });
   },
-  async updateContact(obj, { id, ref, ...args }, { store, getAllServices }) {
+  async updateContact(obj, { id, ref, ...args }, { store, getAllEnabledServices }) {
     const { contacts = [] } = await store.get('contacts');
     const idx = contacts.findIndex(c => c.id === id);
 
@@ -107,7 +107,7 @@ export const mutation = {
     };
 
     await store.set('contacts', contacts);
-    return checkRemoteContact({ contact: contacts[idx], getAllServices });
+    return checkRemoteContact({ contact: contacts[idx], getAllEnabledServices });
   },
   async createPartner(obj, args, { store, addRelationsToPartner }) {
     const { partners = [] } = await store.get('partners');

@@ -147,6 +147,11 @@ export const getAllServices = ({ registry, compute, wrnServices }) => async ({ c
   return services;
 };
 
+export const getAllEnabledServices = ({ store, registry, compute, wrnServices }) => async (...args) => {
+  const services = await getAllServices({ registry, compute, wrnServices })(...args);
+  return (await mapProfiles(store)(services)).filter(s => s.enabled);
+};
+
 export const query = {
   async getAllServices(obj, args, { mapProfiles, getAllServices }) {
     let services = await getAllServices();

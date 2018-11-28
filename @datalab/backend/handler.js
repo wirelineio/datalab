@@ -19,6 +19,7 @@ import {
   initServices,
   mapProfiles,
   getAllServices,
+  getAllEnabledServices,
   query as queryServices,
   mutation as mutationServices
 } from './resolvers/services';
@@ -69,13 +70,16 @@ module.exports = {
 
     const wrnServices = context.wireline.services;
     const _getAllServices = getAllServices({ registry, compute, wrnServices });
+    const _getAllEnabledServices = getAllEnabledServices({ store, registry, compute, wrnServices });
+
     let queryContext = {
       mapProfiles: mapProfiles(store),
       addRelationsToPartner: addRelationsToPartner({
         store,
-        getAllServices: _getAllServices
+        getAllEnabledServices: _getAllEnabledServices
       }),
       getAllServices: _getAllServices,
+      getAllEnabledServices: _getAllEnabledServices,
       store,
       registry,
       compute,
