@@ -58,13 +58,13 @@ class Orgs extends Component {
 
   renderContact(contact, index) {
     const { anchorEl, menuId } = this.state;
-    const { classes } = this.props;
+    const { classes, id: partnerId } = this.props;
 
-    const id = `${contact.id}-action-menu`;
+    const id = `${partnerId}|${contact.id}`;
 
     return (
-      <Fragment key={contact.id}>
-        <Draggable draggableId={contact.id} index={index} type="CONTACT">
+      <Fragment key={id}>
+        <Draggable draggableId={id} index={index} type="CONTACT">
           {provided => (
             <RootRef rootRef={provided.innerRef}>
               <Chip

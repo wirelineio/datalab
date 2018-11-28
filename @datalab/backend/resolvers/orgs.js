@@ -7,13 +7,9 @@ const uuid = hyperid({
 });
 
 export const addRelationsToPartner = ({ store, getAllServices }) => async record => {
-  let [{ stages = [] }, { contacts = [] }, services = []] = await Promise.all([
-    store.get('stages'),
-    store.get('contacts'),
-    getAllServices()
-  ]);
+  let [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
 
-  contacts = await Promise.all(contacts.map(contact => checkRemoteContact({ contact, services })));
+  contacts = await Promise.all(contacts.map(contact => checkRemoteContact({ contact, getAllServices })));
 
   if (Array.isArray(record)) {
     return record.map(r => {
@@ -28,10 +24,12 @@ export const addRelationsToPartner = ({ store, getAllServices }) => async record
   return record;
 };
 
-export const checkRemoteContact = async ({ contact, services }) => {
+export const checkRemoteContact = async ({ contact, getAllServices }) => {
   if (!contact || !contact.ref) {
     return contact;
   }
+
+  const services = await getAllServices({ cache: true });
 
   const query = `
     query GetContact($id: ID!) {
@@ -84,7 +82,7 @@ export const mutation = {
       await store.set('contacts', contacts);
     }
 
-    return checkRemoteContact({ contact, services: await getAllServices() });
+    return checkRemoteContact({ contact, getAllServices });
   },
   async updateContact(obj, { id, ref, ...args }, { store, getAllServices }) {
     const { contacts = [] } = await store.get('contacts');
@@ -101,7 +99,7 @@ export const mutation = {
     };
 
     await store.set('contacts', contacts);
-    return checkRemoteContact({ contact: contacts[idx], services: await getAllServices() });
+    return checkRemoteContact({ contact: contacts[idx], getAllServices });
   },
   async createPartner(obj, args, { store, addRelationsToPartner }) {
     const { partners = [] } = await store.get('partners');

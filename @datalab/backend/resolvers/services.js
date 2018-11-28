@@ -130,9 +130,21 @@ export const addDeployments = async ({ services, compute, wrnServices }) => {
     }));
 };
 
-export const getAllServices = ({ registry, compute, wrnServices }) => async () => {
-  const services = await getServiceList(registry);
-  return addDeployments({ services, compute, wrnServices });
+let cacheMap = new Map();
+export const getAllServices = ({ registry, compute, wrnServices }) => async ({ cache = false } = {}) => {
+  let services;
+
+  if (cache) {
+    services = cacheMap.get('services') || [];
+    if (services.length) {
+      console.log('from cache!!');
+      return services;
+    }
+  }
+
+  services = addDeployments({ services: await getServiceList(registry), compute, wrnServices });
+  cacheMap.set('services', services);
+  return services;
 };
 
 export const query = {

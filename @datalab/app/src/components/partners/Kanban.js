@@ -42,10 +42,12 @@ class Kanban extends Component {
       }
 
       if (type === 'CONTACT') {
+        const [contactId] = draggableId.split('|').reverse();
+
         return moveContactToPartner({
           id: source.droppableId,
           toPartner: destination.droppableId,
-          contactId: draggableId
+          contactId
         });
       }
     }
