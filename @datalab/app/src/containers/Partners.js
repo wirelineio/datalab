@@ -164,7 +164,7 @@ class Partners extends Component {
         data = {
           ref: {
             id: remoteContact.id,
-            serviceId: remoteContact.__serviceId
+            serviceId: remoteContact._serviceId
           }
         };
       } else {

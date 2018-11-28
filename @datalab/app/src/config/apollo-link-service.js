@@ -1,9 +1,35 @@
 import { ApolloLink } from 'apollo-link';
-import { getMainDefinition } from 'apollo-utilities';
+import { hasDirectives, getMainDefinition, checkDocument, removeDirectivesFromDocument } from 'apollo-utilities';
 import { HttpLink } from 'apollo-link-http';
 import Observable from 'zen-observable';
 import { toPromise } from 'apollo-link/lib/linkUtils';
+import { DirectiveNode } from 'graphql';
 import merge from 'deepmerge';
+
+const serviceRemoveConfig = {
+  test: (directive: DirectiveNode) => directive.name.value === 'service',
+  remove: true
+};
+
+const removed = new Map();
+
+const removeServiceSetsFromDocument = query => {
+  if (!hasDirectives(['service'], query)) {
+    return query;
+  }
+
+  // caching
+  const cached = removed.get(query);
+  if (cached) return cached;
+
+  checkDocument(query);
+
+  const docClone = removeDirectivesFromDocument([serviceRemoveConfig], query);
+
+  // caching
+  removed.set(query, docClone);
+  return docClone;
+};
 
 export class ServiceLink extends ApolloLink {
   constructor({ links = [], fallback = null }) {
@@ -23,6 +49,14 @@ export class ServiceLink extends ApolloLink {
   request(operation) {
     const { operation: operationType } = getMainDefinition(operation.query);
     const context = operation.getContext() || {};
+
+    const directives = 'directive @service on FIELD';
+
+    operation.setContext(({ schemas = [] }) => ({
+      schemas: schemas.concat([{ directives }])
+    }));
+
+    operation.query = removeServiceSetsFromDocument(operation.query);
 
     if (!context.serviceType) {
       return this.fallback.request(operation) || Observable.of();
@@ -59,12 +93,12 @@ export class ServiceLink extends ApolloLink {
             Object.keys(data).forEach(field => {
               const value = data[field];
               if (Array.isArray(value)) {
-                data[field] = value.map(row => ({ ...row, __serviceId: id, __serviceType: type }));
+                data[field] = value.map(row => ({ ...row, _serviceId: id, _serviceType: type }));
               } else if (typeof value === 'object') {
                 data[field] = {
                   ...value,
-                  __serviceId: id,
-                  __serviceType: type
+                  _serviceId: id,
+                  _serviceType: type
                 };
               }
             });
@@ -74,7 +108,6 @@ export class ServiceLink extends ApolloLink {
           }
         })
       );
-console.log(merge.all(result));
       observer.next(merge.all(result));
       observer.complete();
     });

@@ -76,14 +76,19 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, args, { store, getAllServices }) {
+  async createContact(obj, { ref, ...args }, { store, getAllServices }) {
     const { contacts = [] } = await store.get('contacts');
-    const contact = Object.assign({}, args, { id: uuid() });
-    contacts.push(contact);
-    await store.set('contacts', contacts);
+    let contact = contacts.find(c => c.ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
+
+    if (!contact) {
+      contact = Object.assign({}, args, { id: uuid() });
+      contacts.push(contact);
+      await store.set('contacts', contacts);
+    }
+
     return checkRemoteContact({ contact, services: await getAllServices() });
   },
-  async updateContact(obj, { id, ...args }, { store }) {
+  async updateContact(obj, { id, ref, ...args }, { store, getAllServices }) {
     const { contacts = [] } = await store.get('contacts');
     const idx = contacts.findIndex(c => c.id === id);
 

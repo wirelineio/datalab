@@ -7,8 +7,8 @@ export const GET_ALL_REMOTE_CONTACTS = gql`
       name
       email
       phone
-      __serviceId @skip(if: true)
-      __serviceType @skip(if: true)
+      _serviceId @service
+      _serviceType @service
     }
   }
 `;
