@@ -82,7 +82,7 @@ export const query = {
 export const mutation = {
   async createContact(obj, { ref, ...args }, { store, getAllEnabledServices }) {
     const { contacts = [] } = await store.get('contacts');
-    let contact = contacts.find(c => c.ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
+    let contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
 
     if (!contact) {
       contact = Object.assign({}, args, { id: uuid(), ref });
