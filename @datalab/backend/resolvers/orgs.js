@@ -1,6 +1,4 @@
 import { request } from 'graphql-request';
-import { getAllServices } from './services';
-
 import hyperid from 'hyperid';
 
 const uuid = hyperid({
@@ -98,7 +96,8 @@ export const mutation = {
 
     contacts[idx] = {
       ...contacts[idx],
-      ...args
+      ...args,
+      ref
     };
 
     await store.set('contacts', contacts);
