@@ -1,9 +1,34 @@
 import { ApolloLink } from 'apollo-link';
-import { getMainDefinition } from 'apollo-utilities';
+import { hasDirectives, getMainDefinition, checkDocument, removeDirectivesFromDocument } from 'apollo-utilities';
 import { HttpLink } from 'apollo-link-http';
 import Observable from 'zen-observable';
 import { toPromise } from 'apollo-link/lib/linkUtils';
 import merge from 'deepmerge';
+
+const serviceRemoveConfig = {
+  test: directive => directive.name.value === 'service',
+  remove: true
+};
+
+const removed = new Map();
+
+const removeServiceSetsFromDocument = query => {
+  if (!hasDirectives(['service'], query)) {
+    return query;
+  }
+
+  // caching
+  const cached = removed.get(query);
+  if (cached) return cached;
+
+  checkDocument(query);
+
+  const docClone = removeDirectivesFromDocument([serviceRemoveConfig], query);
+
+  // caching
+  removed.set(query, docClone);
+  return docClone;
+};
 
 export class ServiceLink extends ApolloLink {
   constructor({ links = [], fallback = null }) {
@@ -16,7 +41,6 @@ export class ServiceLink extends ApolloLink {
     this.links = services
       .filter(s => s.enabled && s.url)
       .map(s => {
-        s.url = process.env.NODE_ENV === 'development' ? s.url.replace('localhost', process.env.LAN_HOST) : s.url;
         return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
       });
   }
@@ -24,6 +48,14 @@ export class ServiceLink extends ApolloLink {
   request(operation) {
     const { operation: operationType } = getMainDefinition(operation.query);
     const context = operation.getContext() || {};
+
+    const directives = 'directive @service on FIELD';
+
+    operation.setContext(({ schemas = [] }) => ({
+      schemas: schemas.concat([{ directives }])
+    }));
+
+    operation.query = removeServiceSetsFromDocument(operation.query);
 
     if (!context.serviceType) {
       return this.fallback.request(operation) || Observable.of();
@@ -54,15 +86,27 @@ export class ServiceLink extends ApolloLink {
 
     return new Observable(async observer => {
       const result = await Promise.all(
-        services.map(async ({ link }) => {
+        services.map(async ({ id, type, link }) => {
           try {
-            return toPromise(link.request(operation));
+            const { data } = await toPromise(link.request(operation));
+            Object.keys(data).forEach(field => {
+              const value = data[field];
+              if (Array.isArray(value)) {
+                data[field] = value.map(row => ({ ...row, _serviceId: id, _serviceType: type }));
+              } else if (typeof value === 'object') {
+                data[field] = {
+                  ...value,
+                  _serviceId: id,
+                  _serviceType: type
+                };
+              }
+            });
+            return { data };
           } catch (err) {
             return {};
           }
         })
       );
-
       observer.next(merge.all(result));
       observer.complete();
     });
