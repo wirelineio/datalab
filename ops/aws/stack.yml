@@ -19,6 +19,10 @@ stack:
     deployment:
       image: 'wrn::datalab-spellcheck'
       version: 0.0.1
+  datalab-contacts:
+    deployment:
+      image: 'wrn::datalab-contacts'
+      version: 0.0.1
   wireline.io/store:
     reference:
       endpointUrl: wrn::wireline.io/wireline/store

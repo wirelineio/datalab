@@ -28,8 +28,8 @@ export const GET_ALL_PARTNERS = gql`
 `;
 
 export const CREATE_CONTACT = gql`
-  mutation CreateContact($name: String!, $email: String, $phone: String) {
-    contact: createContact(name: $name, email: $email, phone: $phone) {
+  mutation CreateContact($name: String, $email: String, $phone: String, $ref: InputRemoteReference) {
+    contact: createContact(name: $name, email: $email, phone: $phone, ref: $ref) {
       id
       name
       email
@@ -39,8 +39,8 @@ export const CREATE_CONTACT = gql`
 `;
 
 export const UPDATE_CONTACT = gql`
-  mutation UpdateContact($id: ID!, $name: String, $email: String, $phone: String) {
-    contact: updateContact(id: $id, name: $name, email: $email, phone: $phone) {
+  mutation UpdateContact($id: ID!, $name: String, $email: String, $phone: String, $ref: InputRemoteReference) {
+    contact: updateContact(id: $id, name: $name, email: $email, phone: $phone, ref: $ref) {
       id
       name
       email

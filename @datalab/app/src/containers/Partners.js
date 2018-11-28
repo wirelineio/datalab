@@ -28,6 +28,9 @@ import {
   updatePartnerOptimistic,
   updateContactToPartnerOtimistic
 } from '../stores/orgs';
+
+// remote services
+import { GET_ALL_REMOTE_CONTACTS } from '../stores/contacts';
 import { SPELLCHECK } from '../stores/spellcheck';
 
 import StageForm from '../components/modal/StageForm';
@@ -155,11 +158,22 @@ class Partners extends Component {
     const { createContact, updateContact, addContactToPartner } = this.props;
 
     if (result) {
-      const data = {
-        name: result.name,
-        email: result.email.length > 0 ? result.email : null,
-        phone: result.phone.length > 0 ? result.phone : null
-      };
+      let data;
+      if (result.ref) {
+        const { remoteContact } = result.ref;
+        data = {
+          ref: {
+            id: remoteContact.id,
+            serviceId: remoteContact._serviceId
+          }
+        };
+      } else {
+        data = {
+          name: result.name,
+          email: result.email.length > 0 ? result.email : null,
+          phone: result.phone.length > 0 ? result.phone : null
+        };
+      }
 
       if (result.id) {
         await updateContact({ id: result.id, ...data });
@@ -208,7 +222,14 @@ class Partners extends Component {
   };
 
   render() {
-    const { classes, partners = [], stages = [], updatePartner, moveContactToPartner } = this.props;
+    const {
+      classes,
+      partners = [],
+      stages = [],
+      remoteContacts = [],
+      updatePartner,
+      moveContactToPartner
+    } = this.props;
     const {
       selectedView,
       openStageForm,
@@ -274,6 +295,7 @@ class Partners extends Component {
           open={openContactForm}
           partner={selectedPartner}
           contact={selectedContact}
+          remoteContacts={remoteContacts}
           onClose={this.handleContactFormResult}
         />
       </div>
@@ -302,6 +324,21 @@ export default compose(
         stages,
         loading
       };
+    }
+  }),
+  graphql(GET_ALL_REMOTE_CONTACTS, {
+    skip({ services = [] }) {
+      return !services.find(s => s.type === 'contacts');
+    },
+    options: {
+      context: {
+        serviceType: 'contacts',
+        useNetworkStatusNotifier: false
+      }
+    },
+    props({ data: { contacts = [] } }) {
+      console.log('container', contacts);
+      return { remoteContacts: contacts };
     }
   }),
   graphql(CREATE_PARTNER, {

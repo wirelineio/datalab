@@ -1,3 +1,2 @@
 services:
   'wireline.io/store': 'wrn::wireline.io/wireline/store'
-  'dl-orgs-contacts-service': 'http://localhost:4004'
