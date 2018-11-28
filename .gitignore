@@ -78,3 +78,5 @@ typings/
 dist
 
 webpack.zip
+
+stack-dev.yml
