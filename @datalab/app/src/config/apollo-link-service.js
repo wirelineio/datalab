@@ -53,15 +53,28 @@ export class ServiceLink extends ApolloLink {
 
     return new Observable(async observer => {
       const result = await Promise.all(
-        services.map(async ({ link }) => {
+        services.map(async ({ id, type, link }) => {
           try {
-            return toPromise(link.request(operation));
+            const { data } = await toPromise(link.request(operation));
+            Object.keys(data).forEach(field => {
+              const value = data[field];
+              if (Array.isArray(value)) {
+                data[field] = value.map(row => ({ ...row, __serviceId: id, __serviceType: type }));
+              } else if (typeof value === 'object') {
+                data[field] = {
+                  ...value,
+                  __serviceId: id,
+                  __serviceType: type
+                };
+              }
+            });
+            return { data };
           } catch (err) {
             return {};
           }
         })
       );
-
+console.log(merge.all(result));
       observer.next(merge.all(result));
       observer.complete();
     });

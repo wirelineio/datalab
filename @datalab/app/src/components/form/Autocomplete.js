@@ -230,7 +230,7 @@ class Autocomplete extends Component {
     if (isCreatable) {
       return (
         <Creatable
-          disabled={isSubmitting}
+          isDisabled={isSubmitting}
           classes={classes}
           styles={selectStyles}
           components={components}
@@ -245,7 +245,7 @@ class Autocomplete extends Component {
 
     return (
       <Select
-        disabled={isSubmitting}
+        isDisabled={isSubmitting}
         classes={classes}
         styles={selectStyles}
         components={components}

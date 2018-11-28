@@ -11,13 +11,15 @@ import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
+import Autocomplete from '../form/Autocomplete';
 
 const initialValues = (partner, contact) => ({
   id: contact.id,
   name: contact.name || '',
   email: contact.email || '',
   phone: contact.phone || '',
-  partnerId: partner ? partner.id : null
+  partnerId: partner ? partner.id : null,
+  ref: null
 });
 
 const validationSchema = Yup.object().shape({
@@ -54,7 +56,7 @@ class ContactForm extends Component {
   };
 
   render() {
-    const { open, partner, contact = {}, classes } = this.props;
+    const { open, partner, contact = {}, remoteContacts = [], classes } = this.props;
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
@@ -64,38 +66,69 @@ class ContactForm extends Component {
           initialValues={initialValues(partner, contact)}
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
-          render={props => (
-            <Fragment>
-              <DialogContent className={classes.dialogContent}>
-                <form onSubmit={props.handleSubmit}>
-                  <Field component={TextField} className={classes.textField} margin="dense" name="name" label="Name" />
-                  <Field
-                    component={TextField}
-                    className={classes.textField}
-                    margin="dense"
-                    type="email"
-                    name="email"
-                    label="Email"
-                  />
-                  <Field
-                    component={TextField}
-                    className={classes.textField}
-                    margin="dense"
-                    name="phone"
-                    label="Phone"
-                  />
-                </form>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={props.submitForm} color="primary">
-                  Save
-                </Button>
-              </DialogActions>
-            </Fragment>
-          )}
+          render={props => {
+            const {
+              values: { ref }
+            } = props;
+            return (
+              <Fragment>
+                <DialogContent className={classes.dialogContent}>
+                  <form onSubmit={props.handleSubmit}>
+                    <Field
+                      name="ref"
+                      component={Autocomplete}
+                      className={classes.autocomplete}
+                      options={remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }))}
+                      placeholder="Search for contacts..."
+                      textFieldProps={{ margin: 'dense' }}
+                      onAfterChange={(value, { form }) => {
+                        if (value && value.remoteContact) {
+                          const { remoteContact } = value;
+                          form.setFieldValue('name', remoteContact.name);
+                          form.setFieldValue('email', remoteContact.email);
+                          form.setFieldValue('phone', remoteContact.phone);
+                        }
+                      }}
+                      isClearable
+                    />
+                    <Field
+                      disabled={!!ref}
+                      component={TextField}
+                      className={classes.textField}
+                      margin="dense"
+                      name="name"
+                      label="Name"
+                    />
+                    <Field
+                      disabled={!!ref}
+                      component={TextField}
+                      className={classes.textField}
+                      margin="dense"
+                      type="email"
+                      name="email"
+                      label="Email"
+                    />
+                    <Field
+                      disabled={!!ref}
+                      component={TextField}
+                      className={classes.textField}
+                      margin="dense"
+                      name="phone"
+                      label="Phone"
+                    />
+                  </form>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="primary">
+                    Cancel
+                  </Button>
+                  <Button onClick={props.submitForm} color="primary">
+                    Save
+                  </Button>
+                </DialogActions>
+              </Fragment>
+            );
+          }}
         />
       </Dialog>
     );

@@ -31,13 +31,6 @@ export const addRelationsToPartner = ({ store, getAllServices }) => async record
 };
 
 export const checkRemoteContact = async ({ contact, services }) => {
-  contact = {
-    ...contact,
-    ref: {
-      id: 'contact-1',
-      serviceId: 'example.com/datalab-contacts'
-    }
-  };
   if (!contact || !contact.ref) {
     return contact;
   }

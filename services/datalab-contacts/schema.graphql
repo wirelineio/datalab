@@ -1,7 +1,7 @@
 #
 # Types
 #
-type Contact {
+type RemoteContact {
   id: ID!
   name: String!
   email: String
@@ -14,9 +14,11 @@ type Contact {
 
 type Query {
 
-  getContact(id: ID!): Contact
+  getAllContacts: [RemoteContact!]
 
-  search(value: String!): [Contact!]
+  getContact(id: ID!): RemoteContact
+
+  search(value: String!): [RemoteContact!]
 
 }
 

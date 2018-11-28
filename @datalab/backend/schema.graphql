@@ -37,10 +37,15 @@ type RemoteReference {
 
 type Contact {
   id: ID!
-  name: String!
+  name: String
   email: String
   phone: String
   ref: RemoteReference
+}
+
+input InputRemoteReference {
+  id: ID!
+  serviceId: ID!
 }
 
 #
@@ -73,9 +78,9 @@ type Mutation {
 
   ### ORGS
 
-  createContact(name: String!, email: String, phone: String): Contact
+  createContact(name: String, email: String, phone: String, ref: InputRemoteReference): Contact
 
-  updateContact(id: ID!, name: String, email: String, phone: String): Contact
+  updateContact(id: ID!, name: String, email: String, phone: String, ref: InputRemoteReference): Contact
 
   createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
 

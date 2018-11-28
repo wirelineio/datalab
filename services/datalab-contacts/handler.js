@@ -21,6 +21,10 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
+      async getAllContacts(obj, args, { store }) {
+        const { contacts = [] } = await store.get('contacts');
+        return contacts;
+      },
       async getContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         return contacts.find(c => c.id === id);
