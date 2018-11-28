@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -102,9 +102,9 @@ class Kanban extends Component {
           }}
         </GridColumn>
         <Tooltip title="Add Column">
-          <Button variant="fab" color="primary" aria-label="Add" className={classes.addCardButton} onClick={onAddStage}>
+          <Fab color="primary" aria-label="Add" className={classes.addCardButton} onClick={onAddStage}>
             <AddIcon />
-          </Button>
+          </Fab>
         </Tooltip>
       </div>
     );
