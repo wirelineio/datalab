@@ -3,11 +3,10 @@ import { hasDirectives, getMainDefinition, checkDocument, removeDirectivesFromDo
 import { HttpLink } from 'apollo-link-http';
 import Observable from 'zen-observable';
 import { toPromise } from 'apollo-link/lib/linkUtils';
-import { DirectiveNode } from 'graphql';
 import merge from 'deepmerge';
 
 const serviceRemoveConfig = {
-  test: (directive: DirectiveNode) => directive.name.value === 'service',
+  test: directive => directive.name.value === 'service',
   remove: true
 };
 

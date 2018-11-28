@@ -75,12 +75,15 @@ class Graph extends Component {
         });
 
         contacts.forEach(({ id: contactId, name }) => {
-          data.nodes.push({
-            type: 'contact',
-            id: contactId,
-            label: name,
-            className: 'ux-node-contact'
-          });
+          const contact = data.nodes.find(c => c.id === contactId);
+          if (!contact) {
+            data.nodes.push({
+              type: 'contact',
+              id: contactId,
+              label: name,
+              className: 'ux-node-contact'
+            });
+          }
 
           data.links.push({
             id: `${id}-${contactId}`,
