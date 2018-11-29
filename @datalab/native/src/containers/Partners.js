@@ -42,6 +42,9 @@ export default compose(
     }
   }),
   graphql(GET_ALL_PARTNERS, {
+    options: {
+      pollInterval: 30000
+    },
     props({ data: { partners = [], stages = [], loading } }) {
       return {
         partners,
