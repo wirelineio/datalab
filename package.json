@@ -10,7 +10,7 @@
       "@datalab/*",
       "services/*"
     ],
-    "nohoist": ["**/@datalab/native/**"]
+    "nohoist": ["**/@datalab/native/**", "**/@datalab/core/@babel/**"]
   },
   "lint-staged": {
     "*.js": "eslint --ignore-path .eslintignore"
