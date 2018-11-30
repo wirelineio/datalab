@@ -5,6 +5,9 @@
   "scripts": {
     "build": "webpack"
   },
+  "files":[
+    "dist"
+  ],
   "dependencies": {
     "@babel/runtime": "^7.1.5"
   },
