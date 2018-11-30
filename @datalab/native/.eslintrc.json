@@ -1,0 +1,31 @@
+{
+  "plugins": [
+    "react",
+    "react-native",
+    "prettier"
+  ],
+  "env": {
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended",
+    "prettier/react"
+  ],
+  "parser": "babel-eslint",
+  "rules": {
+    "react/display-name": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "semi": true,
+        "bracketSpacing": true,
+        "printWidth": 120
+      }
+    ],
+    "react/prop-types": "off",
+    "no-console": "off"
+  }
+}
