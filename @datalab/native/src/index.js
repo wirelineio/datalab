@@ -6,7 +6,7 @@ import { ApolloProvider } from 'react-apollo';
 // import { default as client } from './config/apollo';
 import App from './containers/App';
 
-import { ApolloConfig } from '@datalab/apollo-config';
+import ApolloConfig from '@datalab/apollo-config';
 
 const apolloConfig = new ApolloConfig({
   backendEndpoint: process.env.BACKEND_URL,

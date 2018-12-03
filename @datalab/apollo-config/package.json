@@ -1,6 +1,8 @@
 {
   "name": "@datalab/apollo-config",
   "version": "0.0.1",
+  "license": "UNLICENSED",
+  "private": true,
   "main": "./dist/index.js",
   "scripts": {
     "build": "webpack"
