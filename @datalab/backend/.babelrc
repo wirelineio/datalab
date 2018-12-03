@@ -2,22 +2,18 @@
   "presets": [
     [
       "@babel/preset-env",
-       {
-         "debug": false,
-         "targets": {
-           "node": "6.10"
-         }
-       }
+      {
+        "targets": {
+          "node": "6.10.0"
+        },
+        "modules": "commonjs"
+      }
     ]
   ],
   "plugins": [
+    "add-module-exports",
     "babel-plugin-inline-import",
-    [
-      "transform-runtime",
-      "@babel/plugin-transform-runtime",
-      {
-        "polyfill": false
-      }
-    ]
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-class-properties"
   ]
 }
