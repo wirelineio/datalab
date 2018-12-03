@@ -112,7 +112,7 @@ echo "ENDPOINT: ${ENDPOINT}"
 yarn lerna run build --ignore="@datalab/native" --parallel
 
 # Register
-yarn lerna exec -- --ignore="@datalab/{native,core}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT
+yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT
 
 # Upload Assets
 
