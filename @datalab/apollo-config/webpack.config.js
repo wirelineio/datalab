@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   stats: 'errors-only',
   entry: './src/apollo-config.js',
   output: {

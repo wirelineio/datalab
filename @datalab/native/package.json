@@ -7,8 +7,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "prestart": "rm ./node_modules/.cache/@babel -rf || true",
-    "start": "expo start --clear",
+    "start": "expo start",
     "start:dev": "cross-env NODE_ENV=development npm start",
     "start:stg": "cross-env NODE_ENV=staging npm start",
     "start:prod": "cross-env NODE_ENV=production npm start",
@@ -29,6 +28,7 @@
     "react-navigation": "^3.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime":"^7.1.0",
     "babel-plugin-inline-dotenv": "^1.2.0",
     "babel-preset-expo": "^5.0.0",
     "cross-env": "^5.2.0",
