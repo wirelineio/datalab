@@ -2,11 +2,11 @@ const path = require('path');
 
 module.exports = {
   stats: 'errors-only',
-  entry: './src/index.js',
+  entry: './src/apollo-config.js',
   output: {
-    filename: 'datalab-core.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'datalabCore',
+    library: 'apolloConfig',
     libraryTarget: 'umd'
   },
   module: {
