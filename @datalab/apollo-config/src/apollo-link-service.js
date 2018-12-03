@@ -31,16 +31,21 @@ const removeServiceSetsFromDocument = query => {
 };
 
 export class ServiceLink extends ApolloLink {
-  constructor({ links = [], fallback = null }) {
+  constructor({ links = [], fallback = null, localhostServiceHost = null }) {
     super();
     this.links = links;
     this.fallback = fallback;
+    this.localhostServiceHost = localhostServiceHost;
   }
 
   updateServices(services = []) {
     this.links = services
       .filter(s => s.enabled && s.url)
       .map(s => {
+        s.url =
+          this.localhostServiceHost && process.env.NODE_ENV === 'development'
+            ? s.url.replace('localhost', this.localhostServiceHost)
+            : s.url;
         return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
       });
   }

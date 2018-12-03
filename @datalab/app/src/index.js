@@ -3,7 +3,12 @@ import ReactDOM from 'react-dom';
 
 // Apollo
 import { ApolloProvider } from 'react-apollo';
-import { default as client, NetworkStatusNotifier } from './config/apollo';
+
+import ApolloConfig from '@datalab/apollo-config';
+
+const { client, NetworkStatusNotifier } = new ApolloConfig({
+  backendEndpoint: window.config.BACKEND_ENDPOINT
+});
 
 // Ours
 import App from './containers/App';
