@@ -16,15 +16,16 @@
         "-d",
         "--stack", "${workspaceFolder}/ops/faas/stack.yml",
         "--services", "${workspaceFolder}",
+        "--endpoint", "https://dev.wireline.ninja/svc/registry" 
       ],
       "cwd": "${workspaceFolder}",
       "autoAttachChildProcesses": true,
       "sourceMaps": true,
-      "env": {
-        "WRL_REGISTRY_URL": "https://dev.wireline.ninja/svc/registry",
-        "WRL_COMPUTE_URL": "https://dev.wireline.ninja/svc/compute",
-        // "WRL_SERVICES_WIRELINE.IO/STORE": "{ \"name\": \"wireline.io/store\", \"wrn\": \"wrn::dev.wireline.io/wireline/store\"}"
-      }
+      // "env": {
+      //   "WRL_REGISTRY_URL": "https://dev.wireline.ninja/svc/registry",
+      //   "WRL_COMPUTE_URL": "https://dev.wireline.ninja/svc/compute",
+      //   // "WRL_SERVICES_WIRELINE.IO/STORE": "{ \"name\": \"wireline.io/store\", \"wrn\": \"wrn::dev.wireline.io/wireline/store\"}"
+      // }
     },
     {
       "type": "node",
