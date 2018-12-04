@@ -1,30 +1,36 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { compose, graphql, withApollo } from 'react-apollo';
-import { GET_ALL_PARTNERS } from '../stores/orgs';
-import { GET_SERVICES, getType } from '../stores/services';
-import List from '../components/partners/List';
+import { Content, Spinner } from 'native-base';
+
+import { GET_ALL_PARTNERS } from '../../stores/orgs';
+import { GET_SERVICES, getType } from '../../stores/services';
+import List from '../../components/partners/List';
 
 const Partners = props => {
-  const { partners = [] } = props;
+  const { partners = [], loading, navigation } = props;
+
+  // const { navigation } = props;
+  // const loading = false;
+  // const partners = Array.from({ length: 30 }).map((_, i) => ({
+  //   id: i,
+  //   name: `Pirlo ${i}`,
+  //   url: `http://pirlo${i}.com`,
+  //   goals: 'Decentralize the future'
+  // }));
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.list}>
-        <List data={partners} />
-      </View>
-    </View>
+    <Content>
+      <List
+        data={partners}
+        onItemPress={id => navigation.navigate('PartnersDetail', { partner: partners.find(p => id === p.id) })}
+      />
+    </Content>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  list: {
-    flex: 1
-  }
-});
 
 export default compose(
   withApollo,
