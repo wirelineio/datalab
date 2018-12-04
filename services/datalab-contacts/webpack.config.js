@@ -6,7 +6,6 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
-const dictionaryEN = path.dirname(require.resolve('dictionary-en-gb'));
 
 module.exports = {
   target: 'node',
