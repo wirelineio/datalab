@@ -19,6 +19,7 @@
     "lint:staged"
   ],
   "scripts": {
+    "build": "lerna run build --scope=@datalab/*",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix"
   },
@@ -29,7 +30,9 @@
     "eslint-loader": "^2.1.1",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
     "lerna": "^3.4.3",
-    "prettier": "^1.14.3"
+    "prettier": "^1.14.3",
+    "webpack-bundle-analyzer": "^3.0.3"
   }
 }
