@@ -3,12 +3,10 @@ import { AppLoading } from 'expo';
 import { StyleSheet, Platform, View, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { useScreens } from 'react-native-screens';
-
-import getTheme from '../style/native-base-theme/components';
-import material from '../style/native-base-theme/variables/material';
+import { StyleProvider } from 'native-base';
 
 import Navigation from '../navigation';
-import { StyleProvider } from 'native-base';
+import { buildTheme } from '../style/theme';
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
@@ -31,7 +29,7 @@ export default class App extends React.Component {
     }
 
     return (
-      <StyleProvider style={getTheme(material)}>
+      <StyleProvider style={buildTheme()}>
         <View style={styles.container}>
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
 

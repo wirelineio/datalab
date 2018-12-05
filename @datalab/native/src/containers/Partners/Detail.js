@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Content, Card, CardItem, Text, Left, Body, Badge } from 'native-base';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import material from '../../style/native-base-theme/variables/material';
+import { material } from '../../style/variables';
 
 const Icon = ({ name }) => (
   <View>
@@ -13,7 +13,6 @@ const Icon = ({ name }) => (
 
 const PartnersDetail = props => {
   const { name, url, stage, goals } = props.navigation.getParam('partner');
-
   return (
     <Content>
       <Card style={styles.card}>

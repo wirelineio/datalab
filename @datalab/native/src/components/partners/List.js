@@ -1,14 +1,8 @@
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { List as NativeBaseList, ListItem, Left, Body, Right, Text } from 'native-base';
-import material from '../../style/native-base-theme/variables/material';
-
-const Icon = ({ name }) => (
-  <View>
-    <MaterialIcons name={name} size={16} color="#fff" style={styles.itemLeftIcon} />
-  </View>
-);
+import { material } from '../../style/variables';
+import Icon from '../Icon';
 
 const List = props => {
   const { data, onItemPress } = props;
@@ -17,7 +11,7 @@ const List = props => {
       {data.map(({ id, stage, name, goals }, index) => (
         <ListItem key={index} avatar onPress={() => onItemPress(id)}>
           <Left style={styles.itemLeft}>
-            <Icon name="person" />
+            <Icon name="group" size={16} color="#fff" style={styles.itemLeftIcon} />
           </Left>
           <Body>
             <Text>{name}</Text>

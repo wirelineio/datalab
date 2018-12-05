@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 
-import PartnersListScreen from './list';
-import PartnersDetailScreen from './detail';
+import ContactsListScreen from './list';
+import ContactsDetailScreen from './detail';
 
 import Icon from '../../../components/Icon';
 import { material } from '../../../style/variables';
@@ -18,21 +18,21 @@ const defaultNavigationOptions = ({ navigation }) => ({
   headerLeftContainerStyle: {
     padding: 16
   },
-  headerLeft: <Icon name="group" onPress={navigation.openDrawer} color="#fff" size={24} />
+  headerLeft: <Icon name="contacts" onPress={navigation.openDrawer} color="#fff" size={24} />
 });
 
-const PartnersScreen = {
+const ContactsScreen = {
   screen: createStackNavigator(
     {
-      PartnersList: PartnersListScreen,
-      PartnersDetail: PartnersDetailScreen
+      ContactsList: ContactsListScreen,
+      ContactsDetail: ContactsDetailScreen
     },
     { defaultNavigationOptions }
   ),
   navigationOptions: {
-    drawerLabel: 'Partners',
-    drawerIcon: ({ tintColor }) => <Icon name="group" color={tintColor} size={24} />
+    drawerLabel: 'Contacts',
+    drawerIcon: ({ tintColor }) => <Icon name="contacts" color={tintColor} size={24} />
   }
 };
 
-export default PartnersScreen;
+export default ContactsScreen;
