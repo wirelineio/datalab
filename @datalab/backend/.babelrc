@@ -1,16 +1,19 @@
 {
   "presets": [
-    ["env", {
-      "debug": false,
-      "targets": {
-        "node": "6.10"
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "6.10.0"
+        },
+        "modules": "commonjs"
       }
-    }],
-
-    "stage-0"
+    ]
   ],
   "plugins": [
+    "add-module-exports",
     "babel-plugin-inline-import",
-    ["transform-runtime", {"polyfill": false}]
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-class-properties"
   ]
 }
