@@ -20,6 +20,7 @@
     "@datalab/apollo-config": "0.0.1",
     "expo": "^31.0.2",
     "graphql-tag": "^2.10.0",
+    "native-base": "^2.8.1",
     "react": "16.5.0",
     "react-dom": "16.5.0",
     "react-apollo": "^2.3.2-beta.0",
