@@ -5,7 +5,7 @@ import PartnersListScreen from './list';
 import PartnersDetailScreen from './detail';
 
 import Icon from '../../../components/Icon';
-import material from '../../../style/native-base-theme/variables/material';
+import { material } from '../../../style/variables';
 
 const defaultNavigationOptions = ({ navigation }) => ({
   headerStyle: {

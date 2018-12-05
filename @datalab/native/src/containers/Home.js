@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Content, Text, H1 } from 'native-base';
-import material from '../style/native-base-theme/variables/material';
+import { material } from '../style/variables';
 
 class Home extends React.Component {
   componentDidMount() {

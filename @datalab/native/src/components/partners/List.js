@@ -2,7 +2,7 @@ import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { View, StyleSheet } from 'react-native';
 import { List as NativeBaseList, ListItem, Left, Body, Right, Text } from 'native-base';
-import material from '../../style/native-base-theme/variables/material';
+import { material } from '../../style/variables';
 
 const Icon = ({ name }) => (
   <View>
