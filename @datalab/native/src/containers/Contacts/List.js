@@ -7,16 +7,16 @@ import List from '../../components/contacts/List';
 import { GET_ALL_REMOTE_CONTACTS } from '../../stores/contacts';
 
 const Contacts = props => {
-  // const { contacts = [], loading, navigation } = props;
+  const { contacts = [], loading, navigation } = props;
 
-  const { navigation } = props;
-  const loading = false;
-  const contacts = Array.from({ length: 30 }).map((_, i) => ({
-    id: i,
-    name: `Pirlo ${i}`,
-    url: `http://pirlo${i}.com`,
-    goals: 'Decentralize the future'
-  }));
+  // const { navigation } = props;
+  // const loading = false;
+  // const contacts = Array.from({ length: 30 }).map((_, i) => ({
+  //   id: i,
+  //   name: `Pirlo ${i}`,
+  //   phone: '12354671',
+  //   email: `pirlo${i}@noexistedomain.com`
+  // }));
 
   if (loading) {
     return <Spinner />;
@@ -26,7 +26,7 @@ const Contacts = props => {
     <Content>
       <List
         data={contacts}
-        onItemPress={id => navigation.navigate('ContactsDetail', { contact: contacts.find(p => id === p.id) })}
+        onItemPress={id => navigation.navigate('ContactsDetail', { contact: contacts.find(c => id === c.id) })}
       />
     </Content>
   );
@@ -52,13 +52,14 @@ export default compose(
       return !services.find(s => s.type === 'contacts');
     },
     options: {
+      pollInterval: 30000,
       context: {
         serviceType: 'contacts',
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { contacts = [] } }) {
-      return { remoteContacts: contacts };
+    props({ data: { contacts = [], loading } }) {
+      return { contacts, loading };
     }
   })
 )(Contacts);

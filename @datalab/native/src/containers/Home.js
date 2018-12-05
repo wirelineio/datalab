@@ -7,7 +7,7 @@ class Home extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       this.props.navigation.navigate('Partners');
-    }, 3000);
+    }, 2000);
   }
 
   render() {

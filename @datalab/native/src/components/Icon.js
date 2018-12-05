@@ -1,8 +1,8 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React from 'react';
 
-const Icon = ({ name, size, color = '#fff', onPress = null }) => (
-  <MaterialIcons name={name} size={size} color={color} onPress={onPress} />
+const Icon = ({ color = '#fff', onPress = null, ...props }) => (
+  <MaterialIcons color={color} onPress={onPress} {...props} />
 );
 
 export default Icon;

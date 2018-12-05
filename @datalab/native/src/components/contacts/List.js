@@ -1,32 +1,32 @@
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
-import { List as NativeBaseList, ListItem, Left, Body, Right, Text } from 'native-base';
+import { StyleSheet, Linking } from 'react-native';
+import { List as NativeBaseList, ListItem, Left, Body, Right, Text, Button } from 'native-base';
 import { material } from '../../style/variables';
-
-const Icon = ({ name }) => (
-  <View>
-    <MaterialIcons name={name} size={16} color="#fff" style={styles.itemLeftIcon} />
-  </View>
-);
+import Icon from '../Icon';
 
 const List = props => {
   const { data, onItemPress } = props;
   return (
     <NativeBaseList>
-      {data.map(({ id, stage, name, goals }, index) => (
+      {data.map(({ id, name, phone, email }, index) => (
         <ListItem key={index} avatar onPress={() => onItemPress(id)}>
-          <Left style={styles.itemLeft}>
-            <Icon name="person" />
+          <Left style={[styles.centerFlex, styles.itemLeftAndRight]}>
+            <Icon name="person" size={16} color="#fff" style={styles.itemLeftAndRightIcon} />
           </Left>
           <Body>
             <Text>{name}</Text>
-            <Text note>{goals}</Text>
+            <Text note>{email}</Text>
           </Body>
-          <Right>
-            <Text note style={styles.itemRightText}>
-              {stage || 'Uncategorized'}
-            </Text>
+          <Right style={styles.centerFlex}>
+            <Button transparent rounded style={[styles.centerFlex, styles.callButton]}>
+              <Icon
+                name="call"
+                size={24}
+                color={material.brandPrimary}
+                style={[styles.itemLeftAndRightIcon, styles.callIcon]}
+                onPress={() => Linking.openURL(`tel:${phone}`)}
+              />
+            </Button>
           </Right>
         </ListItem>
       ))}
@@ -45,17 +45,28 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     borderRadius: 8
   },
-  itemLeft: {
+  itemLeftAndRight: {
     paddingTop: 0,
-    height: '100%',
+    height: '100%'
+  },
+  itemLeftAndRightIcon: {
+    padding: 8,
+    borderRadius: 16,
+    backgroundColor: material.brandPrimary
+  },
+  callButton: {
+    height: 32,
+    width: 32
+  },
+  callIcon: {
+    padding: 0,
+    borderRadius: 24,
+    backgroundColor: 'transparent'
+  },
+  centerFlex: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  itemLeftIcon: {
-    padding: 8,
-    borderRadius: 16,
-    backgroundColor: '#3f51b5'
   }
 });
 

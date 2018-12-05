@@ -18,7 +18,7 @@ const defaultNavigationOptions = ({ navigation }) => ({
   headerLeftContainerStyle: {
     padding: 16
   },
-  headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" size={24} />
+  headerLeft: <Icon name="contacts" onPress={navigation.openDrawer} color="#fff" size={24} />
 });
 
 const ContactsScreen = {
@@ -31,7 +31,7 @@ const ContactsScreen = {
   ),
   navigationOptions: {
     drawerLabel: 'Contacts',
-    drawerIcon: ({ tintColor }) => <Icon name="group" color={tintColor} size={24} />
+    drawerIcon: ({ tintColor }) => <Icon name="contacts" color={tintColor} size={24} />
   }
 };
 

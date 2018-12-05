@@ -18,7 +18,7 @@ const defaultNavigationOptions = ({ navigation }) => ({
   headerLeftContainerStyle: {
     padding: 16
   },
-  headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" size={24} />
+  headerLeft: <Icon name="group" onPress={navigation.openDrawer} color="#fff" size={24} />
 });
 
 const PartnersScreen = {

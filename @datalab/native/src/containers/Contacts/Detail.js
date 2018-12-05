@@ -1,42 +1,35 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Content, Card, CardItem, Text, Left, Body, Badge } from 'native-base';
+import { View, StyleSheet, Linking } from 'react-native';
 
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Content, Card, CardItem, Text, Left, Body, Icon as NativeBaseIcon, Button } from 'native-base';
+
 import { material } from '../../style/variables';
-
-const Icon = ({ name }) => (
-  <View>
-    <MaterialIcons name={name} size={16} color="#fff" style={styles.icon} />
-  </View>
-);
+import Icon from '../../components/Icon';
 
 const PartnersDetail = props => {
-  const { name, url, stage, goals } = props.navigation.getParam('partner');
+  const { name, email, phone } = props.navigation.getParam('contact');
   return (
     <Content>
       <Card style={styles.card}>
         <CardItem>
           <Left>
             <View style={styles.iconContainer}>
-              <Icon name="person" />
+              <Icon name="person" style={styles.icon} />
             </View>
             <Body>
               <Text>{name}</Text>
-              <Text note>{url}</Text>
+              <Text note onPress={() => Linking.openURL(`mailto:${email}`)}>
+                {email}
+              </Text>
             </Body>
           </Left>
         </CardItem>
         <CardItem>
-          <Body>
-            <Text>{goals}</Text>
-          </Body>
-        </CardItem>
-        <CardItem>
           <Left>
-            <Badge success>
-              <Text style={styles.stageText}>{stage || 'Uncategorized'}</Text>
-            </Badge>
+            <Button transparent onPress={() => Linking.openURL(`tel:${phone}`)}>
+              <NativeBaseIcon active name="md-call" />
+              <Text>{phone}</Text>
+            </Button>
           </Left>
         </CardItem>
       </Card>
@@ -60,10 +53,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 16,
     backgroundColor: material.brandInfo
-  },
-  stageText: {
-    lineHeight: 32,
-    fontSize: 16
   }
 });
 
