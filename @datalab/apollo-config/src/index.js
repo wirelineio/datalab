@@ -3,19 +3,14 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
-import { createNetworkStatusNotifier } from 'react-apollo-network-status';
 
 import { ServiceLink, extendClient } from './apollo-link-service';
 
 class ApolloConfig {
-  constructor({ backendEndpoint, localhostServiceHost = null }) {
+  constructor({ backendEndpoint, networkStatusNotifierLink = null, localhostServiceHost = null }) {
     this.backendEndpoint = backendEndpoint;
-    this.networkStatusNotifier = createNetworkStatusNotifier();
+    this.networkStatusNotifierLink = networkStatusNotifierLink;
     this.client = this.buildClient(localhostServiceHost);
-  }
-
-  get NetworkStatusNotifier() {
-    return this.networkStatusNotifier.NetworkStatusNotifier;
   }
 
   buildClient(localhostServiceHost = null) {
@@ -33,7 +28,7 @@ class ApolloConfig {
     });
 
     const client = new ApolloClient({
-      link: ApolloLink.from([this.networkStatusNotifier.link, errorLink, serviceLink]),
+      link: ApolloLink.from([this.networkStatusNotifierLink, errorLink, serviceLink].filter(Boolean)),
       cache: new InMemoryCache()
     });
 

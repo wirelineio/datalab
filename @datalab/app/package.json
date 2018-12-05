@@ -45,6 +45,7 @@
     "lodash.merge": "^4.6.1",
     "react": "^16.5.2",
     "react-apollo": "^2.2.4",
+    "react-apollo-network-status": "^1.1.0",
     "react-beautiful-dnd": "^9.0.2",
     "react-dom": "^16.5.2",
     "react-router-dom": "^4.3.1",
