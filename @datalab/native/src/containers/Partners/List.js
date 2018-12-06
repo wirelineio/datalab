@@ -15,7 +15,13 @@ const Partners = props => {
   //   id: i,
   //   name: `Pirlo ${i}`,
   //   url: `http://pirlo${i}.com`,
-  //   goals: 'Decentralize the future'
+  //   goals: 'Decentralize the future',
+  //   contacts: Array.from({ length: 15 }).map((_, i) => ({
+  //     id: i,
+  //     name: `Pirlo ${i}`,
+  //     phone: '12354671',
+  //     email: `pirlo${i}@noexistedomain.com`
+  //   }))
   // }));
 
   if (loading) {

@@ -26,7 +26,7 @@ const Contacts = props => {
     <Content>
       <List
         data={contacts}
-        onItemPress={id => navigation.navigate('ContactsDetail', { contact: contacts.find(c => id === c.id) })}
+        onItemPress={id => navigation.push('ContactsDetail', { contact: contacts.find(c => id === c.id) })}
       />
     </Content>
   );
