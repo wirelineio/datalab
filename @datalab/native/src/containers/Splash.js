@@ -3,16 +3,16 @@ import { StyleSheet } from 'react-native';
 import { Content, Text, H1 } from 'native-base';
 import { material } from '../style/variables';
 
-class Home extends React.Component {
+class Splash extends React.Component {
   componentDidMount() {
     setTimeout(() => {
-      this.props.navigation.navigate('Partners');
-    }, 2000);
+      this.props.onHide();
+    }, this.props.timeout || 2000);
   }
 
   render() {
     return (
-      <Content contentContainerStyle={styles.main}>
+      <Content contentContainerStyle={styles.splash}>
         <Text>Welcome to</Text>
         <H1 style={styles.datalabText}>Datalab</H1>
       </Content>
@@ -21,7 +21,7 @@ class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  main: {
+  splash: {
     flex: 1,
     display: 'flex',
     alignItems: 'center',
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home;
+export default Splash;
