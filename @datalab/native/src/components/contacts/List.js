@@ -6,6 +6,7 @@ import Icon from '../Icon';
 
 const List = props => {
   const { data, onItemPress } = props;
+
   return (
     <NativeBaseList>
       {data.map(({ id, name, phone, email }, index) => (

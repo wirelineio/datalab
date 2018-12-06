@@ -7,6 +7,7 @@ import { StyleProvider } from 'native-base';
 
 import Navigation from '../navigation';
 import { buildTheme } from '../style/theme';
+import Splash from './Splash';
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
@@ -16,12 +17,17 @@ if (Platform.OS === 'android') {
 
 export default class App extends React.Component {
   state = {
-    ready: false
+    ready: false,
+    showingSplash: true
   };
 
   componentDidMount() {
     this.setState({ ready: true });
   }
+
+  onHideSplash = () => {
+    this.setState({ showingSplash: false });
+  };
 
   render() {
     if (!this.state.ready) {
@@ -33,7 +39,9 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
 
-          <Navigation />
+          {this.state.showingSplash && <Splash onHide={this.onHideSplash} />}
+
+          {!this.state.showingSplash && <Navigation />}
 
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         </View>
