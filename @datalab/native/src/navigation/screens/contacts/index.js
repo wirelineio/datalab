@@ -5,21 +5,7 @@ import ContactsListScreen from './list';
 import ContactsDetailScreen from './detail';
 
 import Icon from '../../../components/Icon';
-import { material } from '../../../style/variables';
-
-const defaultNavigationOptions = ({ navigation }) => ({
-  headerStyle: {
-    backgroundColor: material.brandPrimary
-  },
-  headerTintColor: '#fff',
-  headerTitleStyle: {
-    marginLeft: 0
-  },
-  headerLeftContainerStyle: {
-    padding: 16
-  },
-  headerLeft: <Icon name="contacts" onPress={navigation.openDrawer} color="#fff" size={24} />
-});
+import { stackNavigation } from '../../common';
 
 const ContactsScreen = {
   screen: createStackNavigator(
@@ -27,7 +13,7 @@ const ContactsScreen = {
       ContactsList: ContactsListScreen,
       ContactsDetail: ContactsDetailScreen
     },
-    { defaultNavigationOptions }
+    { defaultNavigationOptions: stackNavigation.defaultNavigationOptions }
   ),
   navigationOptions: {
     drawerLabel: 'Contacts',

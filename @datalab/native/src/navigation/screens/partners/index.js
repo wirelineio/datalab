@@ -5,21 +5,7 @@ import PartnersListScreen from './list';
 import PartnersDetailScreen from './detail';
 
 import Icon from '../../../components/Icon';
-import { material } from '../../../style/variables';
-
-const defaultNavigationOptions = ({ navigation }) => ({
-  headerStyle: {
-    backgroundColor: material.brandPrimary
-  },
-  headerTintColor: '#fff',
-  headerTitleStyle: {
-    marginLeft: 0
-  },
-  headerLeftContainerStyle: {
-    padding: 16
-  },
-  headerLeft: <Icon name="group" onPress={navigation.openDrawer} color="#fff" size={24} />
-});
+import { stackNavigation } from '../../common';
 
 const PartnersScreen = {
   screen: createStackNavigator(
@@ -27,7 +13,7 @@ const PartnersScreen = {
       PartnersList: PartnersListScreen,
       PartnersDetail: PartnersDetailScreen
     },
-    { defaultNavigationOptions }
+    { defaultNavigationOptions: stackNavigation.defaultNavigationOptions }
   ),
   navigationOptions: {
     drawerLabel: 'Partners',
