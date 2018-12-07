@@ -6,10 +6,10 @@ import { material } from '../../style/variables';
 import Icon from '../Icon';
 import List from '../contacts/List';
 
-const PartnersDetail = props => {
+const OrganizationsDetail = props => {
   const {
     onContactPress,
-    partner: { name, url, stage, goals, contacts }
+    organization: { name, url, stage, goals, contacts }
   } = props;
 
   return (
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PartnersDetail;
+export default OrganizationsDetail;

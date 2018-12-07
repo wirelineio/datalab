@@ -16,12 +16,12 @@ import TextField from '../form/TextField';
 // import Autocomplete from '../form/Autocomplete';
 import RichText from '../editor/RichText';
 
-const initialValues = (partner, stage) => ({
-  id: partner ? partner.id : null,
-  name: partner ? partner.name : '',
-  stage: partner && partner.stage ? partner.stage.id : stage && stage.id ? stage.id : '',
-  url: partner ? partner.url || '' : '',
-  goals: partner ? partner.goals || '' : ''
+const initialValues = (organization, stage) => ({
+  id: organization ? organization.id : null,
+  name: organization ? organization.name : '',
+  stage: organization && organization.stage ? organization.stage.id : stage && stage.id ? stage.id : '',
+  url: organization ? organization.url || '' : '',
+  goals: organization ? organization.goals || '' : ''
 });
 
 const validationSchema = Yup.object().shape({
@@ -39,7 +39,7 @@ const styles = theme => ({
   }
 });
 
-class PartnerForm extends Component {
+class OrganizationForm extends Component {
   handleClose = () => {
     const { onClose } = this.props;
     onClose(false);
@@ -52,14 +52,14 @@ class PartnerForm extends Component {
   };
 
   render() {
-    const { open, partner, stage, stages = [], onSpellcheck, classes } = this.props;
+    const { open, organization, stage, stages = [], onSpellcheck, classes } = this.props;
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">{partner ? 'Edit partner' : 'New partner'}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{organization ? 'Edit organization' : 'New organization'}</DialogTitle>
         <Divider />
         <Formik
-          initialValues={initialValues(partner, stage)}
+          initialValues={initialValues(organization, stage)}
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => (
@@ -70,7 +70,7 @@ class PartnerForm extends Component {
                   <Field component={TextField} margin="dense" name="url" label="Website" fullWidth />
                   <Field
                     component={RichText}
-                    placeholder="Enter partner goals."
+                    placeholder="Enter organization goals."
                     name="goals"
                     label="Goals"
                     onSpellcheck={onSpellcheck}
@@ -112,4 +112,4 @@ class PartnerForm extends Component {
   }
 }
 
-export default withStyles(styles)(PartnerForm);
+export default withStyles(styles)(OrganizationForm);

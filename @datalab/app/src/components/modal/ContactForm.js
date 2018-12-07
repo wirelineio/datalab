@@ -13,12 +13,12 @@ import * as Yup from 'yup';
 import TextField from '../form/TextField';
 import Autocomplete from '../form/Autocomplete';
 
-const initialValues = ({ partner, contact, refOptions }) => ({
+const initialValues = ({ organization, contact, refOptions }) => ({
   id: contact.id,
   name: contact.name || '',
   email: contact.email || '',
   phone: contact.phone || '',
-  partnerId: partner ? partner.id : null,
+  organizationId: organization ? organization.id : null,
   ref: contact.ref ? refOptions.find(o => o.value === contact.ref.id) : null
 });
 
@@ -56,7 +56,7 @@ class ContactForm extends Component {
   };
 
   render() {
-    const { open, partner, contact = {}, remoteContacts = [], classes } = this.props;
+    const { open, organization, contact = {}, remoteContacts = [], classes } = this.props;
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
 
     return (
@@ -64,7 +64,7 @@ class ContactForm extends Component {
         <DialogTitle id="form-dialog-title">{contact ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik
-          initialValues={initialValues({ partner, contact, refOptions })}
+          initialValues={initialValues({ organization, contact, refOptions })}
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => {

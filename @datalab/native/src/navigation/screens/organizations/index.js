@@ -1,24 +1,24 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 
-import PartnersListScreen from './list';
-import PartnersDetailScreen from './detail';
+import OrganizationsListScreen from './list';
+import OrganizationsDetailScreen from './detail';
 
 import Icon from '../../../components/Icon';
 import { stackNavigation } from '../../common';
 
-const PartnersScreen = {
+const OrganizationsScreen = {
   screen: createStackNavigator(
     {
-      PartnersList: PartnersListScreen,
-      PartnersDetail: PartnersDetailScreen
+      OrganizationsList: OrganizationsListScreen,
+      OrganizationsDetail: OrganizationsDetailScreen
     },
     { defaultNavigationOptions: stackNavigation.defaultNavigationOptions }
   ),
   navigationOptions: {
-    drawerLabel: 'Partners',
+    drawerLabel: 'Organizations',
     drawerIcon: ({ tintColor }) => <Icon name="group" color={tintColor} size={24} />
   }
 };
 
-export default PartnersScreen;
+export default OrganizationsScreen;

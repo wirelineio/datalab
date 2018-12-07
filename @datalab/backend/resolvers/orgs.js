@@ -6,7 +6,7 @@ const uuid = hyperid({
   urlSafe: true
 });
 
-export const addRelationsToPartner = ({ store, getAllEnabledServices }) => async record => {
+export const addRelationsToOrganization = ({ store, getAllEnabledServices }) => async record => {
   let [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
 
   contacts = (await Promise.all(
@@ -69,9 +69,9 @@ export const checkRemoteContact = async ({ contact, getAllEnabledServices }) => 
 };
 
 export const query = {
-  async getAllPartners(obj, args, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    return addRelationsToPartner(partners);
+  async getAllOrganizations(obj, args, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    return addRelationsToOrganization(organizations);
   },
   async getAllStages(obj, args, { store }) {
     const { stages = [] } = await store.get('stages');
@@ -109,83 +109,83 @@ export const mutation = {
     await store.set('contacts', contacts);
     return checkRemoteContact({ contact: contacts[idx], getAllEnabledServices });
   },
-  async createPartner(obj, args, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    const partner = Object.assign({}, args, { id: uuid(), contactIds: [] });
-    partners.push(partner);
-    await store.set('partners', partners);
-    return addRelationsToPartner(partner);
+  async createOrganization(obj, args, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    const organization = Object.assign({}, args, { id: uuid(), contactIds: [] });
+    organizations.push(organization);
+    await store.set('organizations', organizations);
+    return addRelationsToOrganization(organization);
   },
-  async updatePartner(obj, { id, ...args }, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    const idx = partners.findIndex(p => p.id === id);
+  async updateOrganization(obj, { id, ...args }, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    const idx = organizations.findIndex(p => p.id === id);
 
     if (idx === -1) {
       return null;
     }
 
-    partners[idx] = {
-      ...partners[idx],
+    organizations[idx] = {
+      ...organizations[idx],
       ...args
     };
 
-    await store.set('partners', partners);
+    await store.set('organizations', organizations);
 
-    return addRelationsToPartner(partners[idx]);
+    return addRelationsToOrganization(organizations[idx]);
   },
-  async deletePartner(obj, { id }, { store }) {
-    let { partners = [] } = await store.get('partners');
-    partners = partners.filter(p => p.id !== id);
-    await store.set('partners', partners);
+  async deleteOrganization(obj, { id }, { store }) {
+    let { organizations = [] } = await store.get('organizations');
+    organizations = organizations.filter(p => p.id !== id);
+    await store.set('organizations', organizations);
     return id;
   },
-  async addContactToPartner(obj, { id, contactId }, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    const partner = partners.find(p => p.id === id);
+  async addContactToOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    const organization = organizations.find(p => p.id === id);
 
-    if (!partner) {
+    if (!organization) {
       return null;
     }
 
-    if (!partner.contactIds.includes(contactId)) {
-      partner.contactIds.push(contactId);
+    if (!organization.contactIds.includes(contactId)) {
+      organization.contactIds.push(contactId);
     }
 
-    await store.set('partners', partners);
+    await store.set('organizations', organizations);
 
-    return addRelationsToPartner(partner);
+    return addRelationsToOrganization(organization);
   },
-  async deleteContactToPartner(obj, { id, contactId }, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    const partner = partners.find(p => p.id === id);
+  async deleteContactToOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    const organization = organizations.find(p => p.id === id);
 
-    if (!partner) {
+    if (!organization) {
       return null;
     }
 
-    partner.contactIds = partner.contactIds.filter(id => id !== contactId);
+    organization.contactIds = organization.contactIds.filter(id => id !== contactId);
 
-    await store.set('partners', partners);
+    await store.set('organizations', organizations);
 
-    return addRelationsToPartner(partner);
+    return addRelationsToOrganization(organization);
   },
-  async moveContactToPartner(obj, { id, toPartner, contactId }, { store, addRelationsToPartner }) {
-    const { partners = [] } = await store.get('partners');
-    const partnerFrom = partners.find(p => p.id === id);
-    const partnerTo = partners.find(p => p.id === toPartner);
+  async moveContactToOrganization(obj, { id, toOrganization, contactId }, { store, addRelationsToOrganization }) {
+    const { organizations = [] } = await store.get('organizations');
+    const organizationFrom = organizations.find(p => p.id === id);
+    const organizationTo = organizations.find(p => p.id === toOrganization);
 
-    if (!partnerFrom || !partnerTo) {
+    if (!organizationFrom || !organizationTo) {
       return null;
     }
 
-    partnerFrom.contactIds = partnerFrom.contactIds.filter(id => id !== contactId);
-    if (!partnerTo.contactIds.includes(contactId)) {
-      partnerTo.contactIds.push(contactId);
+    organizationFrom.contactIds = organizationFrom.contactIds.filter(id => id !== contactId);
+    if (!organizationTo.contactIds.includes(contactId)) {
+      organizationTo.contactIds.push(contactId);
     }
 
-    await store.set('partners', partners);
+    await store.set('organizations', organizations);
 
-    return addRelationsToPartner([partnerFrom, partnerTo]);
+    return addRelationsToOrganization([organizationFrom, organizationTo]);
   },
   async createStage(obj, { name }, { store }) {
     const { stages = [] } = await store.get('stages');

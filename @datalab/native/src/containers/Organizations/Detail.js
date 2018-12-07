@@ -1,15 +1,15 @@
 import React from 'react';
 import { Content } from 'native-base';
 
-import PartnersDetail from '../../components/partners/Detail';
+import OrganizationsDetail from '../../components/organizations/Detail';
 
 export default props => {
   const { navigation } = props;
-  const partner = navigation.getParam('partner');
+  const organization = navigation.getParam('organization');
   return (
     <Content>
-      <PartnersDetail
-        partner={partner}
+      <OrganizationsDetail
+        organization={organization}
         onContactPress={contact => navigation.navigate('ContactsDetail', { contact })}
       />
     </Content>

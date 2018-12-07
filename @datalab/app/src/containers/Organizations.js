@@ -14,19 +14,19 @@ import ListIcon from '@material-ui/icons/GridOn';
 
 import { GET_SERVICES } from '../stores/board';
 import {
-  GET_ALL_PARTNERS,
+  GET_ALL_ORGANIZATIONS,
   CREATE_CONTACT,
   UPDATE_CONTACT,
-  CREATE_PARTNER,
-  UPDATE_PARTNER,
-  DELETE_PARTNER,
-  ADD_CONTACT_TO_PARTNER,
-  MOVE_CONTACT_TO_PARTNER,
+  CREATE_ORGANIZATION,
+  UPDATE_ORGANIZATION,
+  DELETE_ORGANIZATION,
+  ADD_CONTACT_TO_ORGANIZATION,
+  MOVE_CONTACT_TO_ORGANIZATION,
   CREATE_STAGE,
   UPDATE_STAGE,
   DELETE_STAGE,
-  updatePartnerOptimistic,
-  updateContactToPartnerOtimistic
+  updateOrganizationOptimistic,
+  updateContactToOrganizationOtimistic
 } from '../stores/orgs';
 
 // remote services
@@ -34,12 +34,12 @@ import { GET_ALL_REMOTE_CONTACTS } from '../stores/contacts';
 import { SPELLCHECK } from '../stores/spellcheck';
 
 import StageForm from '../components/modal/StageForm';
-import PartnerForm from '../components/modal/PartnerForm';
+import OrganizationForm from '../components/modal/OrganizationForm';
 import ContactForm from '../components/modal/ContactForm';
 
-import Graph from '../components/partners/Graph';
-import Kanban from '../components/partners/Kanban';
-import List from '../components/partners/List';
+import Graph from '../components/organizations/Graph';
+import Kanban from '../components/organizations/Kanban';
+import List from '../components/organizations/List';
 
 const styles = theme => ({
   root: {},
@@ -52,14 +52,14 @@ const styles = theme => ({
   }
 });
 
-class Partners extends Component {
+class Organizations extends Component {
   state = {
     selectedView: 0,
     openStageForm: false,
-    openPartnerForm: false,
+    openOrganizationForm: false,
     openContactForm: false,
     selectedStage: undefined,
-    selectedPartner: undefined,
+    selectedOrganization: undefined,
     selectedContact: undefined
   };
 
@@ -112,16 +112,16 @@ class Partners extends Component {
     deleteStage({ id });
   };
 
-  handleAddPartner = stage => {
-    this.setState({ openPartnerForm: true, selectedStage: stage });
+  handleAddOrganization = stage => {
+    this.setState({ openOrganizationForm: true, selectedStage: stage });
   };
 
-  handleEditPartner = partner => {
-    this.setState({ openPartnerForm: true, selectedPartner: partner });
+  handleEditOrganization = organization => {
+    this.setState({ openOrganizationForm: true, selectedOrganization: organization });
   };
 
-  handlePartnerFormResult = async result => {
-    const { createPartner, updatePartner } = this.props;
+  handleOrganizationFormResult = async result => {
+    const { createOrganization, updateOrganization } = this.props;
 
     if (result) {
       const data = {
@@ -132,22 +132,22 @@ class Partners extends Component {
       };
 
       if (result.id) {
-        await updatePartner({ id: result.id, ...data });
+        await updateOrganization({ id: result.id, ...data });
       } else {
-        await createPartner(data);
+        await createOrganization(data);
       }
     }
 
-    this.setState({ openPartnerForm: false, selectedStage: undefined, selectedPartner: undefined });
+    this.setState({ openOrganizationForm: false, selectedStage: undefined, selectedOrganization: undefined });
   };
 
-  handleDeletePartner = ({ id }) => {
-    const { deletePartner } = this.props;
-    deletePartner({ id });
+  handleDeleteOrganization = ({ id }) => {
+    const { deleteOrganization } = this.props;
+    deleteOrganization({ id });
   };
 
-  handleAddContact = partner => {
-    this.setState({ openContactForm: true, selectedPartner: partner });
+  handleAddContact = organization => {
+    this.setState({ openContactForm: true, selectedOrganization: organization });
   };
 
   handleEditContact = contact => {
@@ -155,7 +155,7 @@ class Partners extends Component {
   };
 
   handleContactFormResult = async result => {
-    const { createContact, updateContact, addContactToPartner } = this.props;
+    const { createContact, updateContact, addContactToOrganization } = this.props;
 
     if (result) {
       let data;
@@ -182,11 +182,11 @@ class Partners extends Component {
           data: { contact }
         } = await createContact(data);
 
-        await addContactToPartner({ id: result.partnerId, contactId: contact.id });
+        await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
       }
     }
 
-    this.setState({ openContactForm: false, selectedPartner: undefined, selectedContact: undefined });
+    this.setState({ openContactForm: false, selectedOrganization: undefined, selectedContact: undefined });
   };
 
   handleSpellcheck = async variables => {
@@ -224,18 +224,18 @@ class Partners extends Component {
   render() {
     const {
       classes,
-      partners = [],
+      organizations = [],
       stages = [],
       remoteContacts = [],
-      updatePartner,
-      moveContactToPartner
+      updateOrganization,
+      moveContactToOrganization
     } = this.props;
     const {
       selectedView,
       openStageForm,
       selectedStage,
-      openPartnerForm,
-      selectedPartner,
+      openOrganizationForm,
+      selectedOrganization,
       openContactForm,
       selectedContact
     } = this.state;
@@ -267,11 +267,11 @@ class Partners extends Component {
           </Select>
         </Toolbar>
         <SelectedView
-          partners={partners}
+          organizations={organizations}
           stages={stages}
-          onAddPartner={this.handleAddPartner}
-          onEditPartner={this.handleEditPartner}
-          onDeletePartner={this.handleDeletePartner}
+          onAddOrganization={this.handleAddOrganization}
+          onEditOrganization={this.handleEditOrganization}
+          onDeleteOrganization={this.handleDeleteOrganization}
           onAddContact={this.handleAddContact}
           onEditContact={this.handleEditContact}
           onDeleteContact={this.handleDeleteContact}
@@ -279,21 +279,21 @@ class Partners extends Component {
           onEditStage={this.handleEditStage}
           onDeleteStage={this.handleDeleteStage}
           // TODO(elmasse): Review these 2 used by handleOrder in Kanban view.
-          moveContactToPartner={moveContactToPartner}
-          updatePartner={updatePartner}
+          moveContactToOrganization={moveContactToOrganization}
+          updateOrganization={updateOrganization}
         />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
-        <PartnerForm
-          open={openPartnerForm}
-          partner={selectedPartner}
+        <OrganizationForm
+          open={openOrganizationForm}
+          organization={selectedOrganization}
           stage={selectedStage}
           stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
-          onClose={this.handlePartnerFormResult}
+          onClose={this.handleOrganizationFormResult}
           onSpellcheck={this.handleSpellcheck}
         />
         <ContactForm
           open={openContactForm}
-          partner={selectedPartner}
+          organization={selectedOrganization}
           contact={selectedContact}
           remoteContacts={remoteContacts}
           onClose={this.handleContactFormResult}
@@ -317,10 +317,10 @@ export default compose(
       return { services: services.filter(s => s.enabled) };
     }
   }),
-  graphql(GET_ALL_PARTNERS, {
-    props({ data: { partners = [], stages = [], loading } }) {
+  graphql(GET_ALL_ORGANIZATIONS, {
+    props({ data: { organizations = [], stages = [], loading } }) {
       return {
-        partners,
+        organizations,
         stages,
         loading
       };
@@ -340,22 +340,22 @@ export default compose(
       return { remoteContacts: contacts };
     }
   }),
-  graphql(CREATE_PARTNER, {
+  graphql(CREATE_ORGANIZATION, {
     props({ mutate }) {
       return {
-        createPartner: variables => {
+        createOrganization: variables => {
           return mutate({
             variables,
             update(
               cache,
               {
-                data: { partner }
+                data: { organization }
               }
             ) {
-              const { partners, ...data } = cache.readQuery({ query: GET_ALL_PARTNERS });
+              const { organizations, ...data } = cache.readQuery({ query: GET_ALL_ORGANIZATIONS });
               cache.writeQuery({
-                query: GET_ALL_PARTNERS,
-                data: { ...data, partners: partners.concat([partner]) }
+                query: GET_ALL_ORGANIZATIONS,
+                data: { ...data, organizations: organizations.concat([organization]) }
               });
             }
           });
@@ -363,16 +363,16 @@ export default compose(
       };
     }
   }),
-  graphql(UPDATE_PARTNER, {
-    props({ mutate, ownProps: { partners, stages } }) {
+  graphql(UPDATE_ORGANIZATION, {
+    props({ mutate, ownProps: { organizations, stages } }) {
       return {
-        updatePartner: (variables, optimistic = true) => {
+        updateOrganization: (variables, optimistic = true) => {
           return mutate({
             variables,
             context: {
               useNetworkStatusNotifier: !optimistic
             },
-            optimisticResponse: optimistic ? updatePartnerOptimistic({ partners, stages }, variables) : null
+            optimisticResponse: optimistic ? updateOrganizationOptimistic({ organizations, stages }, variables) : null
           });
         }
       };
@@ -382,7 +382,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS
+          query: GET_ALL_ORGANIZATIONS
         }
       ]
     },
@@ -400,7 +400,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS
+          query: GET_ALL_ORGANIZATIONS
         }
       ]
     },
@@ -414,17 +414,17 @@ export default compose(
       };
     }
   }),
-  graphql(DELETE_PARTNER, {
+  graphql(DELETE_ORGANIZATION, {
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS
+          query: GET_ALL_ORGANIZATIONS
         }
       ]
     },
     props({ mutate }) {
       return {
-        deletePartner: variables => {
+        deleteOrganization: variables => {
           return mutate({
             variables
           });
@@ -432,10 +432,10 @@ export default compose(
       };
     }
   }),
-  graphql(ADD_CONTACT_TO_PARTNER, {
+  graphql(ADD_CONTACT_TO_ORGANIZATION, {
     props({ mutate }) {
       return {
-        addContactToPartner: variables => {
+        addContactToOrganization: variables => {
           return mutate({
             variables
           });
@@ -443,16 +443,16 @@ export default compose(
       };
     }
   }),
-  graphql(MOVE_CONTACT_TO_PARTNER, {
-    props({ mutate, ownProps: { partners } }) {
+  graphql(MOVE_CONTACT_TO_ORGANIZATION, {
+    props({ mutate, ownProps: { organizations } }) {
       return {
-        moveContactToPartner: variables => {
+        moveContactToOrganization: variables => {
           return mutate({
             variables,
             context: {
               useNetworkStatusNotifier: false
             },
-            optimisticResponse: updateContactToPartnerOtimistic({ partners }, variables)
+            optimisticResponse: updateContactToOrganizationOtimistic({ organizations }, variables)
           });
         }
       };
@@ -470,9 +470,9 @@ export default compose(
                 data: { stage }
               }
             ) {
-              const { stages, ...data } = cache.readQuery({ query: GET_ALL_PARTNERS });
+              const { stages, ...data } = cache.readQuery({ query: GET_ALL_ORGANIZATIONS });
               cache.writeQuery({
-                query: GET_ALL_PARTNERS,
+                query: GET_ALL_ORGANIZATIONS,
                 data: { ...data, stages: stages.concat([stage]) }
               });
             }
@@ -496,7 +496,7 @@ export default compose(
     options: {
       refetchQueries: [
         {
-          query: GET_ALL_PARTNERS
+          query: GET_ALL_ORGANIZATIONS
         }
       ]
     },
@@ -511,4 +511,4 @@ export default compose(
     }
   }),
   withStyles(styles)
-)(Partners);
+)(Organizations);

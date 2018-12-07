@@ -2,16 +2,16 @@ import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Content, Spinner } from 'native-base';
 
-import { GET_ALL_PARTNERS } from '../../stores/orgs';
+import { GET_ALL_ORGANIZATIONS } from '../../stores/orgs';
 import { GET_SERVICES, getType } from '../../stores/services';
-import List from '../../components/partners/List';
+import List from '../../components/organizations/List';
 
-const Partners = props => {
-  const { partners = [], loading, navigation } = props;
+const Organizations = props => {
+  const { organizations = [], loading, navigation } = props;
 
   // const { navigation } = props;
   // const loading = false;
-  // const partners = Array.from({ length: 30 }).map((_, i) => ({
+  // const organizations = Array.from({ length: 30 }).map((_, i) => ({
   //   id: i,
   //   name: `Pirlo ${i}`,
   //   url: `http://pirlo${i}.com`,
@@ -31,8 +31,8 @@ const Partners = props => {
   return (
     <Content>
       <List
-        data={partners}
-        onItemPress={id => navigation.navigate('PartnersDetail', { partner: partners.find(p => id === p.id) })}
+        data={organizations}
+        onItemPress={id => navigation.navigate('OrganizationsDetail', { organization: organizations.find(p => id === p.id) })}
       />
     </Content>
   );
@@ -53,16 +53,16 @@ export default compose(
       return { services: services.filter(s => s.enabled) };
     }
   }),
-  graphql(GET_ALL_PARTNERS, {
+  graphql(GET_ALL_ORGANIZATIONS, {
     options: {
       pollInterval: 30000
     },
-    props({ data: { partners = [], stages = [], loading } }) {
+    props({ data: { organizations = [], stages = [], loading } }) {
       return {
-        partners,
+        organizations,
         stages,
         loading
       };
     }
   })
-)(Partners);
+)(Organizations);
