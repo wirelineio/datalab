@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 
-import Partners from './Partners';
+import Organizations from './Organizations';
 
 const styles = theme => ({
   root: {
@@ -15,7 +15,7 @@ const styles = theme => ({
   }
 });
 
-const PARTNERS_URL = '/partners';
+const ORGANIZATIONS_URL = '/organizations';
 const CONTACTS_URL = '/contacts';
 
 class Dashboard extends Component {
@@ -27,14 +27,14 @@ class Dashboard extends Component {
 
     return (
       <div className={classes.root}>
-        <Tabs value={pathname === '/' ? PARTNERS_URL : pathname}>
-          <Tab component={Link} label="Partners" to={PARTNERS_URL} value={PARTNERS_URL} />
+        <Tabs value={pathname === '/' ? ORGANIZATIONS_URL : pathname}>
+          <Tab component={Link} label="Organizations" to={ORGANIZATIONS_URL} value={ORGANIZATIONS_URL} />
           <Tab component={Link} label="Contacts" to={CONTACTS_URL} value={CONTACTS_URL} />
         </Tabs>
         <Switch>
-          <Route path={PARTNERS_URL} component={Partners} />
+          <Route path={ORGANIZATIONS_URL} component={Organizations} />
           <Route path={CONTACTS_URL} component={() => <div />} />
-          <Redirect from="/" exact to={PARTNERS_URL} />
+          <Redirect from="/" exact to={ORGANIZATIONS_URL} />
         </Switch>
       </div>
     );

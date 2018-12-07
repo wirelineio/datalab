@@ -20,7 +20,7 @@ const styles = theme => ({
   actions: {
     maxWidth: 100
   },
-  partners: {
+  organizations: {
     width: '20%'
   },
   contacts: {
@@ -29,7 +29,7 @@ const styles = theme => ({
   chip: {
     margin: theme.spacing.unit / 2
   },
-  addPartnerButton: {
+  addOrganizationButton: {
     position: 'absolute',
     bottom: 20,
     left: '50%'
@@ -38,7 +38,7 @@ const styles = theme => ({
 
 class List extends Component {
   render() {
-    const { partners, classes, onAddPartner, onEditPartner, onDeletePartner } = this.props;
+    const { organizations, classes, onAddOrganization, onEditOrganization, onDeleteOrganization } = this.props;
 
     return (
       <div>
@@ -46,7 +46,7 @@ class List extends Component {
           <TableHead>
             <TableRow>
               <TableCell className={classes.actions}>Actions</TableCell>
-              <TableCell className={classes.partners}>Partner</TableCell>
+              <TableCell className={classes.organizations}>Organization</TableCell>
               <TableCell className={classes.contacts}>Contacts</TableCell>
               <TableCell>Website</TableCell>
               <TableCell>Goals</TableCell>
@@ -54,15 +54,15 @@ class List extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {partners.map(partner => {
-              const { id, name, url, goals, stage, contacts } = partner;
+            {organizations.map(organization => {
+              const { id, name, url, goals, stage, contacts } = organization;
               return (
                 <TableRow hover tabIndex={-1} key={id}>
                   <TableCell padding="checkbox">
-                    <IconButton onClick={() => onEditPartner(partner)}>
+                    <IconButton onClick={() => onEditOrganization(organization)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton color="secondary" onClick={() => onDeletePartner(partner)}>
+                    <IconButton color="secondary" onClick={() => onDeleteOrganization(organization)}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </TableCell>
@@ -80,8 +80,8 @@ class List extends Component {
             })}
           </TableBody>
         </Table>
-        <Tooltip title="Add Partner">
-          <Fab color="primary" aria-label="Add" className={classes.addPartnerButton} onClick={onAddPartner}>
+        <Tooltip title="Add Organization">
+          <Fab color="primary" aria-label="Add" className={classes.addOrganizationButton} onClick={onAddOrganization}>
             <AddIcon />
           </Fab>
         </Tooltip>

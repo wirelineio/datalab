@@ -2,9 +2,9 @@ import gql from 'graphql-tag';
 import get from 'lodash.get';
 import { produce } from 'immer';
 
-export const GET_ALL_PARTNERS = gql`
-  query GetAllPartners {
-    partners: getAllPartners {
+export const GET_ALL_ORGANIZATIONS = gql`
+  query GetAllOrganizations {
+    organizations: getAllOrganizations {
       id
       name
       url
@@ -61,9 +61,9 @@ export const UPDATE_CONTACT = gql`
   }
 `;
 
-export const CREATE_PARTNER = gql`
-  mutation CreatePartner($name: String!, $url: String, $goals: String, $stageId: ID) {
-    partner: createPartner(name: $name, url: $url, goals: $goals, stageId: $stageId) {
+export const CREATE_ORGANIZATION = gql`
+  mutation CreateOrganization($name: String!, $url: String, $goals: String, $stageId: ID) {
+    organization: createOrganization(name: $name, url: $url, goals: $goals, stageId: $stageId) {
       id
       name
       url
@@ -86,9 +86,9 @@ export const CREATE_PARTNER = gql`
   }
 `;
 
-export const UPDATE_PARTNER = gql`
-  mutation UpdatePartner($id: ID!, $name: String, $url: String, $goals: String, $stageId: ID) {
-    partner: updatePartner(id: $id, name: $name, url: $url, goals: $goals, stageId: $stageId) {
+export const UPDATE_ORGANIZATION = gql`
+  mutation UpdateOrganization($id: ID!, $name: String, $url: String, $goals: String, $stageId: ID) {
+    organization: updateOrganization(id: $id, name: $name, url: $url, goals: $goals, stageId: $stageId) {
       id
       name
       url
@@ -111,9 +111,9 @@ export const UPDATE_PARTNER = gql`
   }
 `;
 
-export const ADD_CONTACT_TO_PARTNER = gql`
-  mutation AddContactToPartner($id: ID!, $contactId: ID!) {
-    partner: addContactToPartner(id: $id, contactId: $contactId) {
+export const ADD_CONTACT_TO_ORGANIZATION = gql`
+  mutation AddContactToOrganization($id: ID!, $contactId: ID!) {
+    organization: addContactToOrganization(id: $id, contactId: $contactId) {
       id
       name
       url
@@ -136,9 +136,9 @@ export const ADD_CONTACT_TO_PARTNER = gql`
   }
 `;
 
-export const DELETE_CONTACT_TO_PARTNER = gql`
-  mutation DeleteContactToPartner($id: ID!, $contactId: ID!) {
-    partner: deleteContactToPartner(id: $id, contactId: $contactId) {
+export const DELETE_CONTACT_TO_ORGANIZATION = gql`
+  mutation DeleteContactToOrganization($id: ID!, $contactId: ID!) {
+    organization: deleteContactToOrganization(id: $id, contactId: $contactId) {
       id
       name
       url
@@ -161,9 +161,9 @@ export const DELETE_CONTACT_TO_PARTNER = gql`
   }
 `;
 
-export const MOVE_CONTACT_TO_PARTNER = gql`
-  mutation MoveContactToPartner($id: ID!, $toPartner: ID!, $contactId: ID!) {
-    partners: moveContactToPartner(id: $id, toPartner: $toPartner, contactId: $contactId) {
+export const MOVE_CONTACT_TO_ORGANIZATION = gql`
+  mutation MoveContactToOrganization($id: ID!, $toOrganization: ID!, $contactId: ID!) {
+    organizations: moveContactToOrganization(id: $id, toOrganization: $toOrganization, contactId: $contactId) {
       id
       name
       url
@@ -186,9 +186,9 @@ export const MOVE_CONTACT_TO_PARTNER = gql`
   }
 `;
 
-export const DELETE_PARTNER = gql`
-  mutation DeletePartner($id: ID!) {
-    deletePartner(id: $id)
+export const DELETE_ORGANIZATION = gql`
+  mutation DeleteOrganization($id: ID!) {
+    deleteOrganization(id: $id)
   }
 `;
 
@@ -216,53 +216,53 @@ export const DELETE_STAGE = gql`
   }
 `;
 
-export const updatePartnerOptimistic = ({ partners, stages }, variables) => {
+export const updateOrganizationOptimistic = ({ organizations, stages }, variables) => {
   const { id, stageId, ...args } = variables;
 
-  const partner = partners.find(p => p.id === id);
+  const organization = organizations.find(p => p.id === id);
 
-  const newPartner = {
+  const newOrganization = {
     stage: null,
     ...args
   };
 
   if (stageId) {
     const stage = stages.find(a => a.id === stageId);
-    newPartner.stage = stage ? stage : null;
+    newOrganization.stage = stage ? stage : null;
   }
 
   return {
-    partner: {
-      ...partner,
-      ...newPartner
+    organization: {
+      ...organization,
+      ...newOrganization
     }
   };
 };
 
-export const updateContactToPartnerOtimistic = ({ partners }, variables) => {
-  const { id, toPartner, contactId } = variables;
+export const updateContactToOrganizationOtimistic = ({ organizations }, variables) => {
+  const { id, toOrganization, contactId } = variables;
 
-  const mutate = produce(partners => {
-    const oldPartner = partners.find(p => p.id === id);
-    const contact = oldPartner.contacts.find(c => c.id === contactId);
+  const mutate = produce(organizations => {
+    const oldOrganization = organizations.find(p => p.id === id);
+    const contact = oldOrganization.contacts.find(c => c.id === contactId);
 
     // delete old
-    oldPartner.contacts = oldPartner.contacts.filter(c => c.id !== contactId);
+    oldOrganization.contacts = oldOrganization.contacts.filter(c => c.id !== contactId);
 
-    const newPartner = partners.find(p => p.id === toPartner && !p.contacts.find(c => c.id === contactId));
+    const newOrganization = organizations.find(p => p.id === toOrganization && !p.contacts.find(c => c.id === contactId));
 
     // check if the contact is not already there
-    if (newPartner) {
-      newPartner.contacts = [...newPartner.contacts, contact];
+    if (newOrganization) {
+      newOrganization.contacts = [...newOrganization.contacts, contact];
     }
   });
 
   return {
-    partners: mutate(partners)
+    organizations: mutate(organizations)
   };
 };
 
-export const updateKanban = ({ partners, stages }) => {
+export const updateKanban = ({ organizations, stages }) => {
   let columns = stages.reduce(
     (result, next) => {
       const id = get(next, 'id', 'uncategorized');
@@ -283,7 +283,7 @@ export const updateKanban = ({ partners, stages }) => {
     { uncategorized: { id: 'uncategorized', title: 'Uncategorized', cards: [], index: 0, data: null } }
   );
 
-  columns = partners.reduce((result, next) => {
+  columns = organizations.reduce((result, next) => {
     let id = get(next, 'stage.id', 'uncategorized');
 
     if (!result[id]) {

@@ -6,7 +6,7 @@ import { Content, Card, CardItem, Text, Left, Body, Icon as NativeBaseIcon, Butt
 import { material } from '../../style/variables';
 import Icon from '../../components/Icon';
 
-const PartnersDetail = props => {
+const OrganizationsDetail = props => {
   const { name, email, phone } = props.navigation.getParam('contact');
   return (
     <Content>
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PartnersDetail;
+export default OrganizationsDetail;

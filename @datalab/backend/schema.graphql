@@ -21,7 +21,7 @@ type Stage {
   name: String!
 }
 
-type Partner {
+type Organization {
   id: ID!
   name: String!
   url: String
@@ -60,7 +60,7 @@ type Query {
 
   ### ORGS
 
-  getAllPartners: [Partner]!
+  getAllOrganizations: [Organization]!
 
   getAllStages: [Stage]!
 
@@ -82,17 +82,17 @@ type Mutation {
 
   updateContact(id: ID!, name: String, email: String, phone: String, ref: InputRemoteReference): Contact
 
-  createPartner(name: String!, url: String, goals: String, stageId: ID): Partner
+  createOrganization(name: String!, url: String, goals: String, stageId: ID): Organization
 
-  updatePartner(id: ID!, name: String, url: String, goals: String, stageId: ID): Partner
+  updateOrganization(id: ID!, name: String, url: String, goals: String, stageId: ID): Organization
 
-  addContactToPartner(id: ID!, contactId: ID!): Partner
+  addContactToOrganization(id: ID!, contactId: ID!): Organization
 
-  deleteContactToPartner(id: ID!, contactId: ID!): Partner
+  deleteContactToOrganization(id: ID!, contactId: ID!): Organization
 
-  moveContactToPartner(id: ID!, toPartner: ID!, contactId: ID!): [Partner!]
+  moveContactToOrganization(id: ID!, toOrganization: ID!, contactId: ID!): [Organization!]
 
-  deletePartner(id: ID!): ID
+  deleteOrganization(id: ID!): ID
 
   createStage(name: String!): Stage
 

@@ -58,9 +58,9 @@ class Orgs extends Component {
 
   renderContact(contact, index) {
     const { anchorEl, menuId } = this.state;
-    const { classes, id: partnerId } = this.props;
+    const { classes, id: organizationId } = this.props;
 
-    const id = `${partnerId}|${contact.id}`;
+    const id = `${organizationId}|${contact.id}`;
 
     return (
       <Fragment key={id}>

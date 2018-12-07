@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-export const GET_ALL_PARTNERS = gql`
-  query GetAllPartners {
-    partners: getAllPartners {
+export const GET_ALL_ORGANIZATIONS = gql`
+  query GetAllOrganizations {
+    organizations: getAllOrganizations {
       id
       name
       url

@@ -1,10 +1,10 @@
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
-import PartnersScreen from './screens/partners';
+import OrganizationsScreen from './screens/organizations';
 import ContactsScreen from './screens/contacts';
 
 const RootNavigator = createDrawerNavigator(
   {
-    Partners: PartnersScreen,
+    Organizations: OrganizationsScreen,
     Contacts: ContactsScreen
   },
   { drawerType: 'slide' }

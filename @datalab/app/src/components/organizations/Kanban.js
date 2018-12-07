@@ -26,7 +26,7 @@ const styles = theme => ({
 class Kanban extends Component {
   handleOrder = result => {
     const { source, destination, draggableId, type } = result;
-    const { updatePartner, moveContactToPartner } = this.props;
+    const { updateOrganization, moveContactToOrganization } = this.props;
 
     if (!destination) {
       return null;
@@ -38,15 +38,15 @@ class Kanban extends Component {
 
     if (destination.droppableId !== source.droppableId) {
       if (type === 'CARD') {
-        return updatePartner({ id: draggableId, stageId: destination.droppableId });
+        return updateOrganization({ id: draggableId, stageId: destination.droppableId });
       }
 
       if (type === 'CONTACT') {
         const [contactId] = draggableId.split('|').reverse();
 
-        return moveContactToPartner({
+        return moveContactToOrganization({
           id: source.droppableId,
-          toPartner: destination.droppableId,
+          toOrganization: destination.droppableId,
           contactId
         });
       }
@@ -55,11 +55,11 @@ class Kanban extends Component {
 
   render() {
     const {
-      partners,
+      organizations,
       stages,
-      onAddPartner,
-      onEditPartner,
-      onDeletePartner,
+      onAddOrganization,
+      onEditOrganization,
+      onDeleteOrganization,
       onAddContact,
       onEditContact,
       onDeleteContact,
@@ -68,7 +68,7 @@ class Kanban extends Component {
       onDeleteStage,
       classes
     } = this.props;
-    const columns = updateKanban({ partners, stages });
+    const columns = updateKanban({ organizations, stages });
 
     return (
       <div className={classes.root}>
@@ -82,7 +82,7 @@ class Kanban extends Component {
                 index={index}
                 onEditColumn={() => onEditStage(data)}
                 onDeleteColumn={() => onDeleteStage(data)}
-                onAddCard={() => onAddPartner(data)}
+                onAddCard={() => onAddOrganization(data)}
               >
                 {({ item: { id, title, index, data } }) => {
                   return (
@@ -91,8 +91,8 @@ class Kanban extends Component {
                       title={title}
                       index={index}
                       data={data}
-                      onEditCard={() => onEditPartner(data)}
-                      onDeleteCard={() => onDeletePartner(data)}
+                      onEditCard={() => onEditOrganization(data)}
+                      onDeleteCard={() => onDeleteOrganization(data)}
                       onAddContact={() => onAddContact(data)}
                       onEditContact={onEditContact}
                       onDeleteContact={onDeleteContact}

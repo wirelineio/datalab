@@ -29,7 +29,7 @@ const styles = theme => ({
       }
     },
 
-    '& .ux-node.ux-node-partner': {
+    '& .ux-node.ux-node-organization': {
       '& circle': {
         fill: lighten('#E9967A', 0.3),
         stroke: theme.palette.primary.main,
@@ -64,14 +64,14 @@ const styles = theme => ({
 });
 
 class Graph extends Component {
-  graphData = partners => {
-    return partners.reduce(
+  graphData = organizations => {
+    return organizations.reduce(
       (data, { id, name, contacts }) => {
         data.nodes.push({
-          type: 'partner',
+          type: 'organization',
           id,
           label: name,
-          className: 'ux-node-partner'
+          className: 'ux-node-organization'
         });
 
         contacts.forEach(({ id: contactId, name }) => {
@@ -102,11 +102,11 @@ class Graph extends Component {
   };
 
   render() {
-    const { classes, partners } = this.props;
+    const { classes, organizations } = this.props;
     return (
       <div className={classes.root}>
         <SVG className={classes.svg}>
-          <D3Graph data={this.graphData(partners)} className={classes.graph} />
+          <D3Graph data={this.graphData(organizations)} className={classes.graph} />
         </SVG>
       </div>
     );
