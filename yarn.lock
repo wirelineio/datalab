@@ -7820,7 +7820,7 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-hyperid@^2.0.0:
+hyperid@^2.0.0, hyperid@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/hyperid/-/hyperid-2.0.1.tgz#33ccbbd39a6e4e835a0a0a61ac600bb2349a5f93"
   integrity sha512-PBnIfYdhHFejGCR1yGGdXVjAFYiylkgkP5R6ploNTZsDRSNe10ePVrcLBMmFgjy8TSxWj+I1NkCcJd6Uuv0Lig==

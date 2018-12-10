@@ -44,8 +44,14 @@ type Contact {
 }
 
 input InputRemoteReference {
-  id: ID!
+  id: ID
   serviceId: ID!
+}
+
+input InputRemoteContact {
+  name: String
+  email: String
+  phone: String
 }
 
 #
@@ -78,9 +84,9 @@ type Mutation {
 
   ### ORGS
 
-  createContact(name: String, email: String, phone: String, ref: InputRemoteReference): Contact
+  createContact(ref: InputRemoteReference!, data: InputRemoteContact): Contact
 
-  updateContact(id: ID!, name: String, email: String, phone: String, ref: InputRemoteReference): Contact
+  updateContact(id: ID!, ref: InputRemoteReference, data: InputRemoteContact): Contact
 
   createOrganization(name: String!, url: String, goals: String, stageId: ID): Organization
 

@@ -22,9 +22,16 @@ type Query {
 
 }
 
+type Mutation {
+  createContact(name: String, email: String, phone: String): RemoteContact
+
+  updateContact(id: ID!, name: String, email: String, phone: String): RemoteContact
+}
+
 #
 # Schema
 #
 schema {
   query: Query
+  mutation: Mutation
 }

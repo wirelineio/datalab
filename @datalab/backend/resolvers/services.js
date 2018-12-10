@@ -1,3 +1,4 @@
+import { request } from 'graphql-request';
 import { services, profiles } from '../data';
 
 const DATALAB_LABEL = 'wire://datalab';
@@ -154,6 +155,18 @@ export const getAllServices = ({ registry, compute, wrnServices }) => async ({ c
 export const getAllEnabledServices = ({ store, registry, compute, wrnServices }) => async (...args) => {
   const services = await getAllServices({ registry, compute, wrnServices })(...args);
   return (await mapProfiles(store)(services)).filter(s => s.enabled);
+};
+
+export const executeInService = getAllEnabledServices => async ({ query, variables, serviceId }) => {
+  const services = await getAllEnabledServices({ cache: true });
+
+  const service = services.find(s => s.id === serviceId);
+
+  if (!service) {
+    return null;
+  }
+
+  return request(`${service.url}/gql`, query, variables);
 };
 
 export const query = {
