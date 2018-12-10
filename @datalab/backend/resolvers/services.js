@@ -1,5 +1,13 @@
 import { services, profiles } from '../data';
 
+const DATALAB_LABEL = 'wire://datalab';
+const SERVICE_TYPES = ['contacts', 'spellcheck'];
+
+const serviceTypeByLabel = label => {
+  const type = label.replace(`${DATALAB_LABEL}/`, '');
+  return SERVICE_TYPES.find(t => t === type);
+};
+
 let init = false;
 export const initServices = async store => {
   if (!init) {
@@ -39,10 +47,11 @@ export const mapProfiles = store => async services => {
 
 const getServiceList = async registry => {
   const query = `
-      query QueryServices($domain: String) {
-        services: queryServices(domain: $domain) {
+      query QueryServicesByLabels($domain: String, $labels: [String]!) {
+        services: queryServicesByLabels(domain: $domain, labels: $labels) {
           domain
           name
+          labels
           versions {
             functions {
               name
@@ -54,25 +63,20 @@ const getServiceList = async registry => {
     `;
 
   const variables = {
-    domain: 'example.com'
+    domain: 'example.com',
+    labels: [DATALAB_LABEL]
   };
 
   const { services } = await registry._client.query(query, variables);
   return services
-    .map(service => {
-      service.versions.find(v =>
-        v.functions.find(f => {
-          try {
-            const { interface: type } = JSON.parse(f.description);
-            service.type = type.replace('wire://datalab/', '');
-          } catch (err) {
-            service.type = undefined;
-            return false;
-          }
-          return true;
-        })
-      );
-      return service;
+    .map(s => {
+      s.labels.forEach(label => {
+        const type = serviceTypeByLabel(label);
+        if (type) {
+          s.type = type;
+        }
+      });
+      return s;
     })
     .filter(s => !!s.type);
 };

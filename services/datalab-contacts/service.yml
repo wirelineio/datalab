@@ -1,11 +1,14 @@
 name: datalab-contacts
 platform: nodejs
 buildTool: yarn
+labels:
+  - wire://datalab
+  - wire://datalab/contacts
 version: 0.0.1
 functions:
   gql:
     handler: handler.gql
-    description: '{ "interface": "wire://datalab/contacts" }'
+    description: Datalab Contacts & Organizations
     events:
       - http:
           path: gql

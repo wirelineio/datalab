@@ -1,11 +1,14 @@
 name: datalab-spellcheck
 platform: nodejs
 buildTool: yarn
+labels:
+  - wire://datalab
+  - wire://datalab/spellcheck
 version: 0.0.1
 functions:
   gql:
     handler: handler.gql
-    description: '{ "interface": "wire://datalab/spellcheck" }'
+    description: Datalab Dictionary Spellcheck
     events:
       - http:
           path: gql
