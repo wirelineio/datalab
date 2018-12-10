@@ -32,8 +32,8 @@ export const GET_ALL_ORGANIZATIONS = gql`
 `;
 
 export const CREATE_CONTACT = gql`
-  mutation CreateContact($name: String, $email: String, $phone: String, $ref: InputRemoteReference) {
-    contact: createContact(name: $name, email: $email, phone: $phone, ref: $ref) {
+  mutation CreateContact($ref: InputRemoteReference!, $data: InputRemoteContact) {
+    contact: createContact(ref: $ref, data: $data) {
       id
       name
       email

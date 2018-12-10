@@ -56,13 +56,13 @@ export const checkRemoteContact = async ({ contact, refContact, executeInService
   };
 
   try {
-    const result = await executeInService({ query, variables, serviceId: contact.ref.serviceId });
+    const { contact: remoteContact } = await executeInService({ query, variables, serviceId: contact.ref.serviceId });
 
-    if (!result) {
+    if (!remoteContact) {
       return null;
     }
 
-    return mapRemoteContact(contact, result.contact);
+    return mapRemoteContact(contact, remoteContact);
   } catch (err) {
     console.log(err.message);
   }
@@ -88,6 +88,11 @@ export const mutation = {
 
     if (ref.id) {
       contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
+      if (!contact) {
+        contact = { id: uuid(), ref };
+        contacts.push(contact);
+        await store.set('contacts', contacts);
+      }
     }
 
     if (contact) {
@@ -99,7 +104,7 @@ export const mutation = {
     }
 
     const query = `
-      query CreateContact($name: String!, $email: String, $phone: String) {
+      mutation CreateContact($name: String!, $email: String, $phone: String) {
         contact: createContact(name: $name, email: $email, phone: $phone) {
           id
           name
@@ -110,16 +115,16 @@ export const mutation = {
     `;
 
     try {
-      const result = await executeInService({ query, variables: data, serviceId: ref.serviceId });
+      const { contact: newContact } = await executeInService({ query, variables: data, serviceId: ref.serviceId });
 
-      if (!result) {
+      if (!newContact) {
         return null;
       }
 
-      contact = mapRemoteContact(contact, result.contact);
-      contacts.push({ id: uuid(), ref: { id: contact.id, serviceId: ref.serviceId } });
+      contact = { id: uuid(), ref: { id: newContact.id, serviceId: ref.serviceId } };
+      contacts.push(contact);
       await store.set('contacts', contacts);
-      return contact;
+      return mapRemoteContact(contact, newContact);
     } catch (err) {
       console.log(err.message);
     }

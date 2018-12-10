@@ -5,6 +5,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
 import { withStyles } from '@material-ui/core/styles';
 
 import { Formik, Field } from 'formik';
@@ -44,6 +50,17 @@ const styles = theme => ({
 });
 
 class ContactForm extends Component {
+  static defaultProps = {
+    contactServices: [],
+    contact: {},
+    remoteContacts: []
+  };
+
+  state = {
+    openMenu: false,
+    serviceId: null
+  };
+
   handleClose = () => {
     const { onClose } = this.props;
     onClose(false);
@@ -51,12 +68,84 @@ class ContactForm extends Component {
 
   handleAccept = (values, actions) => {
     const { onClose } = this.props;
-    onClose(values);
+    const { serviceId } = this.state;
+    onClose(values, serviceId);
     actions.setSubmitting(false);
   };
 
+  handleMenuToggle = () => {
+    this.setState(state => ({
+      openMenu: !state.openMenu
+    }));
+  };
+
+  handleMenuSubmit = ({ serviceId, submitForm }) => {
+    this.setState(
+      {
+        openMenu: false,
+        serviceId
+      },
+      () => {
+        submitForm();
+      }
+    );
+  };
+
+  renderMenu = ({ submitForm, values }) => {
+    const { contactServices } = this.props;
+    const { openMenu } = this.state;
+
+    let service;
+    let handle = this.handleMenuToggle;
+    if (values.ref) {
+      const { remoteContact } = values.ref;
+      service = contactServices.find(s => s.id === remoteContact._serviceId);
+      handle = submitForm;
+    } else if (contactServices.length === 1) {
+      service = contactServices[0];
+      handle = this.handleMenuSubmit.bind(this, { serviceId: service.id, submitForm });
+    }
+
+    return (
+      <Fragment>
+        <Button
+          buttonRef={node => {
+            this.submitAnchorEl = node;
+          }}
+          aria-owns={openMenu ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handle}
+          color="primary"
+        >
+          Save in{service && ` ${service.name}`}
+        </Button>
+        <Popper open={openMenu} anchorEl={this.submitAnchorEl} transition disablePortal>
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              id="menu-list-grow"
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={this.handleMenuToggle}>
+                  <MenuList>
+                    {contactServices.map(s => (
+                      <MenuItem key={s.id} onClick={this.handleMenuSubmit.bind(this, { serviceId: s.id, submitForm })}>
+                        {s.name}
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </Fragment>
+    );
+  };
+
   render() {
-    const { open, organization, contact = {}, remoteContacts = [], classes } = this.props;
+    const { open, organization, contact, remoteContacts, classes } = this.props;
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
 
     return (
@@ -123,9 +212,7 @@ class ContactForm extends Component {
                   <Button onClick={this.handleClose} color="primary">
                     Cancel
                   </Button>
-                  <Button onClick={props.submitForm} color="primary">
-                    Save
-                  </Button>
+                  {this.renderMenu({ submitForm: props.submitForm, values: props.values })}
                 </DialogActions>
               </Fragment>
             );

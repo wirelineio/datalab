@@ -154,33 +154,30 @@ class Organizations extends Component {
     this.setState({ openContactForm: true, selectedContact: contact });
   };
 
-  handleContactFormResult = async result => {
+  handleContactFormResult = async (result, serviceId) => {
     const { createContact, updateContact, addContactToOrganization } = this.props;
 
     if (result) {
-      let data;
-      if (result.ref) {
-        const { remoteContact } = result.ref;
-        data = {
-          ref: {
-            id: remoteContact.id,
-            serviceId: remoteContact._serviceId
-          }
-        };
-      } else {
-        data = {
+      const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
+
+      const variables = {
+        data: {
           name: result.name,
           email: result.email.length > 0 ? result.email : null,
           phone: result.phone.length > 0 ? result.phone : null
-        };
-      }
+        },
+        ref: {
+          id: remoteContact.id,
+          serviceId: remoteContact._serviceId
+        }
+      };
 
       if (result.id) {
-        await updateContact({ id: result.id, ...data });
+        await updateContact({ id: result.id, ...variables });
       } else {
         const {
           data: { contact }
-        } = await createContact(data);
+        } = await createContact(variables);
 
         await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
       }
@@ -228,7 +225,8 @@ class Organizations extends Component {
       stages = [],
       remoteContacts = [],
       updateOrganization,
-      moveContactToOrganization
+      moveContactToOrganization,
+      contactServices
     } = this.props;
     const {
       selectedView,
@@ -297,6 +295,7 @@ class Organizations extends Component {
           contact={selectedContact}
           remoteContacts={remoteContacts}
           onClose={this.handleContactFormResult}
+          contactServices={contactServices}
         />
       </div>
     );
@@ -314,7 +313,11 @@ export default compose(
     props({ data: { services = [] }, ownProps: { client } }) {
       // return for now only the enabled services
       client.updateServices(services);
-      return { services: services.filter(s => s.enabled) };
+      const servicesEnabled = services.filter(s => s.enabled);
+      return {
+        services: servicesEnabled,
+        contactServices: servicesEnabled.filter(s => s.type === 'contacts')
+      };
     }
   }),
   graphql(GET_ALL_ORGANIZATIONS, {

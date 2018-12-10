@@ -81,11 +81,11 @@ module.exports = {
       store
     };
 
-    await store.set('contacts', [
-      { id: 'contact-1', name: 'Martin Acosta', email: 'martin@geut.com', phone: '33333' },
-      { id: 'contact-2', name: 'Esteban Primost', email: 'esteban@geut.com', phone: '2222' },
-      { id: 'contact-3', name: 'Maximiliano Fierro', email: 'max@geut.com', phone: '5555' }
-    ]);
+    //await store.set('contacts', [
+      //{ id: 'contact-1', name: 'Martin Acosta', email: 'martin@geut.com', phone: '33333' },
+      //{ id: 'contact-2', name: 'Esteban Primost', email: 'esteban@geut.com', phone: '2222' },
+      //{ id: 'contact-3', name: 'Maximiliano Fierro', email: 'max@geut.com', phone: '5555' }
+    //]);
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });
