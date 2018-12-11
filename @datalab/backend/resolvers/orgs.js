@@ -131,22 +131,45 @@ export const mutation = {
 
     return null;
   },
-  async updateContact(obj, { id, ref, ...args }, { store, executeInService }) {
+  async updateContact(obj, { id, data }, { store, executeInService }) {
     const { contacts = [] } = await store.get('contacts');
-    const idx = contacts.findIndex(c => c.id === id);
+    const contact = contacts.find(c => c.id === id);
 
-    if (idx === -1) {
+    if (!contact) {
       return null;
     }
 
-    contacts[idx] = {
-      ...contacts[idx],
-      ...args,
-      ref
-    };
+    const query = `
+      mutation UpdateContact($id: ID!, $name: String!, $email: String, $phone: String) {
+        contact: updateContact(id: $id, name: $name, email: $email, phone: $phone) {
+          id
+          name
+          email
+          phone
+        }
+      }
+    `;
 
-    await store.set('contacts', contacts);
-    return checkRemoteContact({ contact: contacts[idx], executeInService });
+    try {
+      const { contact: updatedContact } = await executeInService({
+        query,
+        variables: {
+          id: contact.ref.id,
+          ...data
+        },
+        serviceId: contact.ref.serviceId
+      });
+
+      if (!updatedContact) {
+        return null;
+      }
+
+      return mapRemoteContact(contact, updatedContact);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    return null;
   },
   async createOrganization(obj, args, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');
@@ -194,7 +217,7 @@ export const mutation = {
 
     return addRelationsToOrganization(organization);
   },
-  async deleteContactToOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
+  async deleteContactFromOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');
     const organization = organizations.find(p => p.id === id);
 

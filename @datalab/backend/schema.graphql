@@ -86,7 +86,7 @@ type Mutation {
 
   createContact(ref: InputRemoteReference!, data: InputRemoteContact): Contact
 
-  updateContact(id: ID!, ref: InputRemoteReference, data: InputRemoteContact): Contact
+  updateContact(id: ID!, data: InputRemoteContact!): Contact
 
   createOrganization(name: String!, url: String, goals: String, stageId: ID): Organization
 
@@ -94,7 +94,7 @@ type Mutation {
 
   addContactToOrganization(id: ID!, contactId: ID!): Organization
 
-  deleteContactToOrganization(id: ID!, contactId: ID!): Organization
+  deleteContactFromOrganization(id: ID!, contactId: ID!): Organization
 
   moveContactToOrganization(id: ID!, toOrganization: ID!, contactId: ID!): [Organization!]
 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
+import { produce } from 'immer';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -22,11 +23,13 @@ import {
   DELETE_ORGANIZATION,
   ADD_CONTACT_TO_ORGANIZATION,
   MOVE_CONTACT_TO_ORGANIZATION,
+  DELETE_CONTACT_FROM_ORGANIZATION,
   CREATE_STAGE,
   UPDATE_STAGE,
   DELETE_STAGE,
   updateOrganizationOptimistic,
-  updateContactToOrganizationOtimistic
+  updateContactToOrganizationOtimistic,
+  deleteContactFromOrganizationOtimistic
 } from '../stores/orgs';
 
 // remote services
@@ -154,30 +157,35 @@ class Organizations extends Component {
     this.setState({ openContactForm: true, selectedContact: contact });
   };
 
+  handleDeleteContact = (contact, organizationId) => {
+    const { deleteContactFromOrganization } = this.props;
+    return deleteContactFromOrganization({ id: organizationId, contactId: contact.id });
+  };
+
   handleContactFormResult = async (result, serviceId) => {
     const { createContact, updateContact, addContactToOrganization } = this.props;
 
     if (result) {
       const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
 
-      const variables = {
-        data: {
-          name: result.name,
-          email: result.email.length > 0 ? result.email : null,
-          phone: result.phone.length > 0 ? result.phone : null
-        },
-        ref: {
-          id: remoteContact.id,
-          serviceId: remoteContact._serviceId
-        }
+      const data = {
+        name: result.name,
+        email: result.email.length > 0 ? result.email : null,
+        phone: result.phone.length > 0 ? result.phone : null
       };
 
       if (result.id) {
-        await updateContact({ id: result.id, ...variables });
+        await updateContact({ id: result.id, data });
       } else {
         const {
           data: { contact }
-        } = await createContact(variables);
+        } = await createContact({
+          data,
+          ref: {
+            id: remoteContact.id,
+            serviceId: remoteContact._serviceId
+          }
+        });
 
         await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
       }
@@ -382,36 +390,119 @@ export default compose(
     }
   }),
   graphql(CREATE_CONTACT, {
-    options: {
-      refetchQueries: [
-        {
-          query: GET_ALL_ORGANIZATIONS
-        }
-      ]
-    },
     props({ mutate }) {
       return {
         createContact: variables => {
           return mutate({
-            variables
+            variables,
+            update(
+              cache,
+              {
+                data: { contact }
+              }
+            ) {
+              let { contacts = [] } = cache.readQuery({
+                query: GET_ALL_REMOTE_CONTACTS,
+                context: {
+                  serviceType: 'contacts',
+                  useNetworkStatusNotifier: false
+                }
+              });
+              if (!contacts.find(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId)) {
+                contacts = [
+                  ...contacts,
+                  {
+                    id: contact.ref.id,
+                    _serviceId: contact.ref.serviceId,
+                    _serviceType: 'contacts',
+                    __typename: 'RemoteContact',
+                    name: contact.name,
+                    email: contact.email,
+                    phone: contact.phone
+                  }
+                ];
+                cache.writeQuery({
+                  query: GET_ALL_REMOTE_CONTACTS,
+                  context: {
+                    serviceType: 'contacts',
+                    useNetworkStatusNotifier: false
+                  },
+                  data: {
+                    contacts
+                  }
+                });
+              }
+            }
           });
         }
       };
     }
   }),
   graphql(UPDATE_CONTACT, {
-    options: {
-      refetchQueries: [
-        {
-          query: GET_ALL_ORGANIZATIONS
-        }
-      ]
-    },
     props({ mutate }) {
       return {
         updateContact: variables => {
           return mutate({
-            variables
+            variables,
+            update(
+              cache,
+              {
+                data: { contact }
+              }
+            ) {
+              let { contacts: remoteContacts = [] } = cache.readQuery({
+                query: GET_ALL_REMOTE_CONTACTS,
+                context: {
+                  serviceType: 'contacts',
+                  useNetworkStatusNotifier: false
+                }
+              });
+
+              let { organizations = [], ...dataOrgs } = cache.readQuery({
+                query: GET_ALL_ORGANIZATIONS
+              });
+
+              const mutate = produce(draft => {
+                const updateContactList = list => {
+                  const idx = list.findIndex(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId);
+                  if (idx === -1) {
+                    return list;
+                  }
+                  list[idx] = Object.assign({}, list[idx], {
+                    name: contact.name,
+                    email: contact.email,
+                    phone: contact.phone
+                  });
+                  return list;
+                };
+
+                draft.remoteContacts = updateContactList(draft.remoteContacts);
+
+                for (const organization of draft.organizations) {
+                  organization.contacts = updateContactList(organization.contacts);
+                }
+
+                return draft;
+              });
+
+              const newData = mutate({ remoteContacts, organizations });
+
+              cache.writeQuery({
+                query: GET_ALL_REMOTE_CONTACTS,
+                context: {
+                  serviceType: 'contacts',
+                  useNetworkStatusNotifier: false
+                },
+                data: {
+                  contacts: newData.remoteContacts
+                }
+              });
+
+              cache.writeQuery({
+                query: GET_ALL_ORGANIZATIONS,
+                data: { organizations: newData.organizations, ...dataOrgs }
+              });
+            }
           });
         }
       };
@@ -456,6 +547,21 @@ export default compose(
               useNetworkStatusNotifier: false
             },
             optimisticResponse: updateContactToOrganizationOtimistic({ organizations }, variables)
+          });
+        }
+      };
+    }
+  }),
+  graphql(DELETE_CONTACT_FROM_ORGANIZATION, {
+    props({ mutate, ownProps: { organizations } }) {
+      return {
+        deleteContactFromOrganization: variables => {
+          return mutate({
+            variables,
+            context: {
+              useNetworkStatusNotifier: false
+            },
+            optimisticResponse: deleteContactFromOrganizationOtimistic({ organizations }, variables)
           });
         }
       };

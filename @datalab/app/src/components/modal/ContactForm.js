@@ -147,10 +147,11 @@ class ContactForm extends Component {
   render() {
     const { open, organization, contact, remoteContacts, classes } = this.props;
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
+    const isEdit = !!contact.id;
 
     return (
       <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">{contact ? 'Edit contact' : 'New contact'}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{isEdit ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik
           initialValues={initialValues({ organization, contact, refOptions })}
@@ -164,25 +165,27 @@ class ContactForm extends Component {
               <Fragment>
                 <DialogContent className={classes.dialogContent}>
                   <form onSubmit={props.handleSubmit}>
+                    {!isEdit && (
+                      <Field
+                        name="ref"
+                        component={Autocomplete}
+                        className={classes.autocomplete}
+                        options={refOptions}
+                        placeholder="Search for contacts..."
+                        textFieldProps={{ margin: 'dense' }}
+                        onAfterChange={(value, { form }) => {
+                          if (value && value.remoteContact) {
+                            const { remoteContact } = value;
+                            form.setFieldValue('name', remoteContact.name);
+                            form.setFieldValue('email', remoteContact.email || '');
+                            form.setFieldValue('phone', remoteContact.phone || '');
+                          }
+                        }}
+                        isClearable
+                      />
+                    )}
                     <Field
-                      name="ref"
-                      component={Autocomplete}
-                      className={classes.autocomplete}
-                      options={refOptions}
-                      placeholder="Search for contacts..."
-                      textFieldProps={{ margin: 'dense' }}
-                      onAfterChange={(value, { form }) => {
-                        if (value && value.remoteContact) {
-                          const { remoteContact } = value;
-                          form.setFieldValue('name', remoteContact.name);
-                          form.setFieldValue('email', remoteContact.email || '');
-                          form.setFieldValue('phone', remoteContact.phone || '');
-                        }
-                      }}
-                      isClearable
-                    />
-                    <Field
-                      disabled={!!ref}
+                      disabled={!isEdit && !!ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"
@@ -190,7 +193,7 @@ class ContactForm extends Component {
                       label="Name"
                     />
                     <Field
-                      disabled={!!ref}
+                      disabled={!isEdit && !!ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"
@@ -199,7 +202,7 @@ class ContactForm extends Component {
                       label="Email"
                     />
                     <Field
-                      disabled={!!ref}
+                      disabled={!isEdit && !!ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"

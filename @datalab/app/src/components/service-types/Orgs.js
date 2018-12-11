@@ -48,10 +48,10 @@ class Orgs extends Component {
   };
 
   handleDeleteContact = contact => {
-    const { onDeleteColumn } = this.props;
+    const { onDeleteContact, id: organizationId } = this.props;
     this.close(() => {
-      if (onDeleteColumn) {
-        onDeleteColumn(contact);
+      if (onDeleteContact) {
+        onDeleteContact(contact, organizationId);
       }
     });
   };

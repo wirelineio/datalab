@@ -2,188 +2,117 @@ import gql from 'graphql-tag';
 import get from 'lodash.get';
 import { produce } from 'immer';
 
+export const FragmentStageFields = gql`
+  fragment StageFields on Stage {
+    id
+    name
+  }
+`;
+
+export const FragmentContactFields = gql`
+  fragment ContactFields on Contact {
+    id
+    name
+    email
+    phone
+    ref {
+      id
+      serviceId
+    }
+  }
+`;
+
+export const FragmentOrganizationFields = gql`
+  fragment OrganizationFields on Organization {
+    id
+    name
+    url
+    goals
+    stage {
+      ...StageFields
+    }
+    contacts {
+      ...ContactFields
+    }
+  }
+  ${FragmentStageFields}
+  ${FragmentContactFields}
+`;
+
 export const GET_ALL_ORGANIZATIONS = gql`
   query GetAllOrganizations {
     organizations: getAllOrganizations {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+      ...OrganizationFields
     }
     stages: getAllStages {
-      id
-      name
+      ...StageFields
     }
   }
+  ${FragmentOrganizationFields}
+  ${FragmentStageFields}
 `;
 
 export const CREATE_CONTACT = gql`
   mutation CreateContact($ref: InputRemoteReference!, $data: InputRemoteContact) {
     contact: createContact(ref: $ref, data: $data) {
-      id
-      name
-      email
-      phone
-      ref {
-        id
-        serviceId
-      }
+      ...ContactFields
     }
   }
+  ${FragmentContactFields}
 `;
 
 export const UPDATE_CONTACT = gql`
-  mutation UpdateContact($id: ID!, $name: String, $email: String, $phone: String, $ref: InputRemoteReference) {
-    contact: updateContact(id: $id, name: $name, email: $email, phone: $phone, ref: $ref) {
-      id
-      name
-      email
-      phone
-      ref {
-        id
-        serviceId
-      }
+  mutation UpdateContact($id: ID!, $data: InputRemoteContact!) {
+    contact: updateContact(id: $id, data: $data) {
+      ...ContactFields
     }
   }
+  ${FragmentContactFields}
 `;
 
 export const CREATE_ORGANIZATION = gql`
   mutation CreateOrganization($name: String!, $url: String, $goals: String, $stageId: ID) {
     organization: createOrganization(name: $name, url: $url, goals: $goals, stageId: $stageId) {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+      ...OrganizationFields
     }
   }
+  ${FragmentOrganizationFields}
 `;
 
 export const UPDATE_ORGANIZATION = gql`
   mutation UpdateOrganization($id: ID!, $name: String, $url: String, $goals: String, $stageId: ID) {
     organization: updateOrganization(id: $id, name: $name, url: $url, goals: $goals, stageId: $stageId) {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+      ...OrganizationFields
     }
   }
+  ${FragmentOrganizationFields}
 `;
 
 export const ADD_CONTACT_TO_ORGANIZATION = gql`
   mutation AddContactToOrganization($id: ID!, $contactId: ID!) {
     organization: addContactToOrganization(id: $id, contactId: $contactId) {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+      ...OrganizationFields
     }
   }
+  ${FragmentOrganizationFields}
 `;
 
-export const DELETE_CONTACT_TO_ORGANIZATION = gql`
-  mutation DeleteContactToOrganization($id: ID!, $contactId: ID!) {
-    organization: deleteContactToOrganization(id: $id, contactId: $contactId) {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+export const DELETE_CONTACT_FROM_ORGANIZATION = gql`
+  mutation DeleteContactFromOrganization($id: ID!, $contactId: ID!) {
+    organization: deleteContactFromOrganization(id: $id, contactId: $contactId) {
+      ...OrganizationFields
     }
   }
+  ${FragmentOrganizationFields}
 `;
 
 export const MOVE_CONTACT_TO_ORGANIZATION = gql`
   mutation MoveContactToOrganization($id: ID!, $toOrganization: ID!, $contactId: ID!) {
     organizations: moveContactToOrganization(id: $id, toOrganization: $toOrganization, contactId: $contactId) {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-        ref {
-          id
-          serviceId
-        }
-      }
+      ...OrganizationFields
     }
   }
+  ${FragmentOrganizationFields}
 `;
 
 export const DELETE_ORGANIZATION = gql`
@@ -195,19 +124,19 @@ export const DELETE_ORGANIZATION = gql`
 export const CREATE_STAGE = gql`
   mutation CreateStage($name: String!) {
     stage: createStage(name: $name) {
-      id
-      name
+      ...StageFields
     }
   }
+  ${FragmentStageFields}
 `;
 
 export const UPDATE_STAGE = gql`
   mutation UpdateStage($id: ID!, $name: String!) {
     stage: updateStage(id: $id, name: $name) {
-      id
-      name
+      ...StageFields
     }
   }
+  ${FragmentStageFields}
 `;
 
 export const DELETE_STAGE = gql`
@@ -249,7 +178,9 @@ export const updateContactToOrganizationOtimistic = ({ organizations }, variable
     // delete old
     oldOrganization.contacts = oldOrganization.contacts.filter(c => c.id !== contactId);
 
-    const newOrganization = organizations.find(p => p.id === toOrganization && !p.contacts.find(c => c.id === contactId));
+    const newOrganization = organizations.find(
+      p => p.id === toOrganization && !p.contacts.find(c => c.id === contactId)
+    );
 
     // check if the contact is not already there
     if (newOrganization) {
@@ -260,6 +191,18 @@ export const updateContactToOrganizationOtimistic = ({ organizations }, variable
   return {
     organizations: mutate(organizations)
   };
+};
+
+export const deleteContactFromOrganizationOtimistic = ({ organizations }, variables) => {
+  const { id, contactId } = variables;
+  const organization = organizations.find(o => o.id === id);
+
+  const mutate = produce(organization => {
+    organization.contacts = organization.contacts.filter(c => c.id !== contactId);
+    return organization;
+  });
+
+  return { organization: mutate(organization) };
 };
 
 export const updateKanban = ({ organizations, stages }) => {
