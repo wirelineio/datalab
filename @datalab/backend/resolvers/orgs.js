@@ -1,4 +1,3 @@
-import { request } from 'graphql-request';
 import hyperid from 'hyperid';
 
 const uuid = hyperid({
@@ -6,12 +5,12 @@ const uuid = hyperid({
   urlSafe: true
 });
 
-export const addRelationsToOrganization = ({ store, getAllEnabledServices }) => async record => {
+export const addRelationsToOrganization = ({ store, executeInService }) => async record => {
   let [{ stages = [] }, { contacts = [] }] = await Promise.all([store.get('stages'), store.get('contacts')]);
 
-  contacts = (await Promise.all(
-    contacts.map(contact => checkRemoteContact({ contact, getAllEnabledServices }))
-  )).filter(Boolean);
+  contacts = (await Promise.all(contacts.map(contact => checkRemoteContact({ contact, executeInService })))).filter(
+    Boolean
+  );
 
   if (Array.isArray(record)) {
     return record.map(r => {
@@ -26,12 +25,21 @@ export const addRelationsToOrganization = ({ store, getAllEnabledServices }) => 
   return record;
 };
 
-export const checkRemoteContact = async ({ contact, getAllEnabledServices }) => {
+const mapRemoteContact = (contact, remoteContact) => ({
+  ...contact,
+  name: remoteContact.name,
+  email: remoteContact.email,
+  phone: remoteContact.phone
+});
+
+export const checkRemoteContact = async ({ contact, refContact, executeInService }) => {
   if (!contact || !contact.ref) {
     return contact;
   }
 
-  const services = await getAllEnabledServices({ cache: true });
+  if (refContact) {
+    return mapRemoteContact(contact, refContact);
+  }
 
   const query = `
     query GetContact($id: ID!) {
@@ -47,20 +55,14 @@ export const checkRemoteContact = async ({ contact, getAllEnabledServices }) => 
     id: contact.ref.id
   };
 
-  const service = services.find(s => s.id === contact.ref.serviceId);
-  if (!service) {
-    return null;
-  }
-
   try {
-    const { contact: remoteContact } = await request(`${service.url}/gql`, query, variables);
+    const { contact: remoteContact } = await executeInService({ query, variables, serviceId: contact.ref.serviceId });
 
-    return {
-      ...contact,
-      name: remoteContact.name,
-      email: remoteContact.email,
-      phone: remoteContact.phone
-    };
+    if (!remoteContact) {
+      return null;
+    }
+
+    return mapRemoteContact(contact, remoteContact);
   } catch (err) {
     console.log(err.message);
   }
@@ -80,34 +82,94 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, { ref, ...args }, { store, getAllEnabledServices }) {
+  async createContact(obj, { ref, data }, { store, executeInService }) {
     const { contacts = [] } = await store.get('contacts');
-    let contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
+    let contact;
 
-    if (!contact) {
-      contact = Object.assign({}, args, { id: uuid(), ref });
-      contacts.push(contact);
-      await store.set('contacts', contacts);
+    if (ref.id) {
+      contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
+      if (!contact) {
+        contact = { id: uuid(), ref };
+        contacts.push(contact);
+        await store.set('contacts', contacts);
+      }
     }
 
-    return checkRemoteContact({ contact, getAllEnabledServices });
-  },
-  async updateContact(obj, { id, ref, ...args }, { store, getAllEnabledServices }) {
-    const { contacts = [] } = await store.get('contacts');
-    const idx = contacts.findIndex(c => c.id === id);
+    if (contact) {
+      return checkRemoteContact({ contact, executeInService });
+    }
 
-    if (idx === -1) {
+    if (!data) {
       return null;
     }
 
-    contacts[idx] = {
-      ...contacts[idx],
-      ...args,
-      ref
-    };
+    const query = `
+      mutation CreateContact($name: String!, $email: String, $phone: String) {
+        contact: createContact(name: $name, email: $email, phone: $phone) {
+          id
+          name
+          email
+          phone
+        }
+      }
+    `;
 
-    await store.set('contacts', contacts);
-    return checkRemoteContact({ contact: contacts[idx], getAllEnabledServices });
+    try {
+      const { contact: newContact } = await executeInService({ query, variables: data, serviceId: ref.serviceId });
+
+      if (!newContact) {
+        return null;
+      }
+
+      contact = { id: uuid(), ref: { id: newContact.id, serviceId: ref.serviceId } };
+      contacts.push(contact);
+      await store.set('contacts', contacts);
+      return mapRemoteContact(contact, newContact);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    return null;
+  },
+  async updateContact(obj, { id, data }, { store, executeInService }) {
+    const { contacts = [] } = await store.get('contacts');
+    const contact = contacts.find(c => c.id === id);
+
+    if (!contact) {
+      return null;
+    }
+
+    const query = `
+      mutation UpdateContact($id: ID!, $name: String!, $email: String, $phone: String) {
+        contact: updateContact(id: $id, name: $name, email: $email, phone: $phone) {
+          id
+          name
+          email
+          phone
+        }
+      }
+    `;
+
+    try {
+      const { contact: updatedContact } = await executeInService({
+        query,
+        variables: {
+          id: contact.ref.id,
+          ...data
+        },
+        serviceId: contact.ref.serviceId
+      });
+
+      if (!updatedContact) {
+        return null;
+      }
+
+      return mapRemoteContact(contact, updatedContact);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    return null;
   },
   async createOrganization(obj, args, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');
@@ -155,7 +217,7 @@ export const mutation = {
 
     return addRelationsToOrganization(organization);
   },
-  async deleteContactToOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
+  async deleteContactFromOrganization(obj, { id, contactId }, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');
     const organization = organizations.find(p => p.id === id);
 
