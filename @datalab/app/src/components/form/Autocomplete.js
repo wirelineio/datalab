@@ -12,6 +12,8 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Popper from '@material-ui/core/Popper';
+import RootRef from '@material-ui/core/RootRef';
 
 const styles = theme => ({
   input: {
@@ -42,12 +44,8 @@ const styles = theme => ({
     left: 2,
     fontSize: 16
   },
-  paper: {
-    position: 'absolute',
-    zIndex: 100,
-    marginTop: theme.spacing.unit,
-    left: 0,
-    right: 0
+  popper: {
+    zIndex: 2000
   },
   divider: {
     height: theme.spacing.unit * 2
@@ -69,24 +67,26 @@ function inputComponent({ inputRef, ...props }) {
 function Control(props) {
   const { loading, ...textFieldProps } = props.selectProps.textFieldProps;
   return (
-    <TextField
-      fullWidth
-      InputProps={{
-        inputComponent,
-        inputProps: {
-          className: props.selectProps.classes.input,
-          inputRef: props.innerRef,
-          children: props.children,
-          ...props.innerProps
-        },
-        startAdornment: loading && (
-          <InputAdornment position="start">
-            <CircularProgress size={24} />
-          </InputAdornment>
-        )
-      }}
-      {...textFieldProps}
-    />
+    <RootRef rootRef={props.selectProps.popperRef}>
+      <TextField
+        fullWidth
+        InputProps={{
+          inputComponent,
+          inputProps: {
+            className: props.selectProps.classes.input,
+            inputRef: props.innerRef,
+            children: props.children,
+            ...props.innerProps
+          },
+          startAdornment: loading && (
+            <InputAdornment position="start">
+              <CircularProgress size={24} />
+            </InputAdornment>
+          )
+        }}
+        {...textFieldProps}
+      />
+    </RootRef>
   );
 }
 
@@ -141,10 +141,13 @@ function MultiValue(props) {
 }
 
 function Menu(props) {
+  const { classes, popperNode } = props.selectProps;
   return (
-    <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
-      {props.children}
-    </Paper>
+    <Popper open={true} className={classes.popper} anchorEl={popperNode}>
+      <Paper square {...props.innerProps} style={{ marginTop: 8, width: popperNode ? popperNode.clientWidth : null }}>
+        {props.children}
+      </Paper>
+    </Popper>
   );
 }
 
@@ -160,6 +163,14 @@ const components = {
 };
 
 class Autocomplete extends Component {
+  state = {
+    popperNode: null
+  };
+
+  handlePopper = el => {
+    this.setState({ popperNode: el });
+  };
+
   handleChange = value => {
     const { field, form, onBeforeChange, onAfterChange } = this.props;
 
@@ -194,6 +205,7 @@ class Autocomplete extends Component {
       isCreatable,
       ...props
     } = this.props;
+    const { popperNode } = this.state;
 
     const selectStyles = {
       ...styles,
@@ -230,6 +242,8 @@ class Autocomplete extends Component {
     if (isCreatable) {
       return (
         <Creatable
+          popperRef={this.handlePopper}
+          popperNode={popperNode}
           isDisabled={isSubmitting}
           classes={classes}
           styles={selectStyles}
@@ -245,6 +259,8 @@ class Autocomplete extends Component {
 
     return (
       <Select
+        popperRef={this.handlePopper}
+        popperNode={popperNode}
         isDisabled={isSubmitting}
         classes={classes}
         styles={selectStyles}
