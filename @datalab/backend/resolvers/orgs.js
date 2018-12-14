@@ -25,8 +25,10 @@ export const addRelationsToOrganization = ({ store, executeInService }) => async
   }
 
   record = await checkRemoteOrganization({ organization: record, executeInService });
-  record.stage = stages.find(stage => stage.id === record.stageId);
-  record.contacts = contacts.filter(c => record.contactIds && record.contactIds.includes(c.id));
+  if (record) {
+    record.stage = stages.find(stage => stage.id === record.stageId);
+    record.contacts = contacts.filter(c => record.contactIds && record.contactIds.includes(c.id));
+  }
   return record;
 };
 
@@ -83,7 +85,7 @@ const mapRemoteOrganization = (organization, remoteOrganization) => ({
 });
 
 export const checkRemoteOrganization = async ({ organization, refOrganization, executeInService }) => {
-  if (!organization || !organization.ref) {
+  if (!organization || !organization.ref || organization.name) {
     return organization;
   }
 
@@ -251,7 +253,7 @@ export const mutation = {
         organization: createOrganization(name: $name, url: $url, goals: $goals) {
           id
           name
-          email
+          url
           goals
         }
       }
@@ -271,6 +273,8 @@ export const mutation = {
       organization = { id: uuid(), contactIds: [], stageId, ref: { id: newOrganization.id, serviceId: ref.serviceId } };
       organizations.push(organization);
       await store.set('organizations', organizations);
+
+      organization = mapRemoteOrganization(organization, newOrganization);
       return addRelationsToOrganization(organization);
     } catch (err) {
       console.log(err.message);
@@ -278,22 +282,46 @@ export const mutation = {
 
     return null;
   },
-  async updateOrganization(obj, { id, ...args }, { store, addRelationsToOrganization }) {
+  async updateOrganization(obj, { id, data }, { store, addRelationsToOrganization, executeInService }) {
     const { organizations = [] } = await store.get('organizations');
-    const idx = organizations.findIndex(p => p.id === id);
+    let organization = organizations.find(o => o.id === id);
 
-    if (idx === -1) {
+    if (!organization) {
       return null;
     }
 
-    organizations[idx] = {
-      ...organizations[idx],
-      ...args
-    };
+    const query = `
+      mutation UpdateOrganization($id: ID!, $name: String!, $url: String, $goals: String) {
+        organization: updateOrganization(id: $id, name: $name, url: $url, goals: $goals) {
+          id
+          name
+          url
+          goals
+        }
+      }
+    `;
 
-    await store.set('organizations', organizations);
+    try {
+      const { organization: updatedOrganization } = await executeInService({
+        query,
+        variables: {
+          id: organization.ref.id,
+          ...data
+        },
+        serviceId: organization.ref.serviceId
+      });
 
-    return addRelationsToOrganization(organizations[idx]);
+      if (!updatedOrganization) {
+        return null;
+      }
+
+      organization = mapRemoteOrganization(organization, updatedOrganization);
+      return addRelationsToOrganization(organization);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    return null;
   },
   async deleteOrganization(obj, { id }, { store }) {
     let { organizations = [] } = await store.get('organizations');

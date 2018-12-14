@@ -140,29 +140,29 @@ class Organizations extends Component {
         await createOrganization(data);
       }
 
-      const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
+      //const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
 
-      const data = {
-        name: result.name,
-        email: result.email.length > 0 ? result.email : null,
-        phone: result.phone.length > 0 ? result.phone : null
-      };
+      //const data = {
+        //name: result.name,
+        //email: result.email.length > 0 ? result.email : null,
+        //phone: result.phone.length > 0 ? result.phone : null
+      //};
 
-      if (result.id) {
-        await updateContact({ id: result.id, data });
-      } else {
-        const {
-          data: { contact }
-        } = await createContact({
-          data,
-          ref: {
-            id: remoteContact.id,
-            serviceId: remoteContact._serviceId
-          }
-        });
+      //if (result.id) {
+        //await updateContact({ id: result.id, data });
+      //} else {
+        //const {
+          //data: { contact }
+        //} = await createContact({
+          //data,
+          //ref: {
+            //id: remoteContact.id,
+            //serviceId: remoteContact._serviceId
+          //}
+        //});
 
-        await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
-      }
+        //await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
+      //}
 
     }
 

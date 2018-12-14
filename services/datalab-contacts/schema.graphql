@@ -6,7 +6,7 @@ type RemoteOrganization {
   name: String!
   url: String
   goals: String
-  contacts: [Contact]
+  contacts: [RemoteContact]
 }
 
 type RemoteContact {
