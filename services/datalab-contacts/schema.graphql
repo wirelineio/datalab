@@ -1,6 +1,14 @@
 #
 # Types
 #
+type RemoteOrganization {
+  id: ID!
+  name: String!
+  url: String
+  goals: String
+  contacts: [Contact]
+}
+
 type RemoteContact {
   id: ID!
   name: String!
@@ -13,16 +21,20 @@ type RemoteContact {
 #
 
 type Query {
+  getAllOrganizations: [RemoteOrganization!]
+
+  getOrganization(id: ID!): RemoteOrganization
 
   getAllContacts: [RemoteContact!]
 
   getContact(id: ID!): RemoteContact
-
-  search(value: String!): [RemoteContact!]
-
 }
 
 type Mutation {
+  createOrganization(name: String!, url: String, goals: String): RemoteOrganization
+
+  updateOrganization(id: ID!, name: String, url: String, goals: String): RemoteOrganization
+
   createContact(name: String, email: String, phone: String): RemoteContact
 
   updateContact(id: ID!, name: String, email: String, phone: String): RemoteContact

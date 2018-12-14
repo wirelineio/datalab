@@ -16,31 +16,9 @@ type Service {
 
 ### ORGS
 
-type Stage {
-  id: ID!
-  name: String!
-}
-
-type Organization {
-  id: ID!
-  name: String!
-  url: String
-  goals: String
-  stage: Stage
-  contacts: [Contact!]
-}
-
 type RemoteReference {
   id: ID!
   serviceId: ID!
-}
-
-type Contact {
-  id: ID!
-  name: String
-  email: String
-  phone: String
-  ref: RemoteReference
 }
 
 input InputRemoteReference {
@@ -48,8 +26,38 @@ input InputRemoteReference {
   serviceId: ID!
 }
 
+type Stage {
+  id: ID!
+  name: String!
+}
+
+type Organization {
+  id: ID!
+  stage: Stage
+  name: String!
+  url: String
+  goals: String
+  ref: RemoteReference!
+  contacts: [Contact!]
+}
+
+input InputRemoteOrganization {
+  name: String!
+  url: String
+  goals: String
+}
+
+type Contact {
+  id: ID!
+  name: String!
+  email: String
+  phone: String
+  ref: RemoteReference!
+}
+
+
 input InputRemoteContact {
-  name: String
+  name: String!
   email: String
   phone: String
 }
@@ -88,9 +96,9 @@ type Mutation {
 
   updateContact(id: ID!, data: InputRemoteContact!): Contact
 
-  createOrganization(name: String!, url: String, goals: String, stageId: ID): Organization
+  createOrganization(ref: InputRemoteReference!, data: InputRemoteOrganization, stageId: ID): Organization
 
-  updateOrganization(id: ID!, name: String, url: String, goals: String, stageId: ID): Organization
+  updateOrganization(id: ID!, data: InputRemoteOrganization!, stageId: ID): Organization
 
   addContactToOrganization(id: ID!, contactId: ID!): Organization
 

@@ -13,6 +13,10 @@ export const addRelationsToOrganization = ({ store, executeInService }) => async
   );
 
   if (Array.isArray(record)) {
+    record = (await Promise.all(
+      record.map(organization => checkRemoteOrganization({ organization, executeInService }))
+    )).filter(Boolean);
+
     return record.map(r => {
       r.stage = stages.find(stage => stage.id === r.stageId);
       r.contacts = contacts.filter(c => r.contactIds && r.contactIds.includes(c.id));
@@ -20,6 +24,7 @@ export const addRelationsToOrganization = ({ store, executeInService }) => async
     });
   }
 
+  record = await checkRemoteOrganization({ organization: record, executeInService });
   record.stage = stages.find(stage => stage.id === record.stageId);
   record.contacts = contacts.filter(c => record.contactIds && record.contactIds.includes(c.id));
   return record;
@@ -63,6 +68,55 @@ export const checkRemoteContact = async ({ contact, refContact, executeInService
     }
 
     return mapRemoteContact(contact, remoteContact);
+  } catch (err) {
+    console.log(err.message);
+  }
+
+  return null;
+};
+
+const mapRemoteOrganization = (organization, remoteOrganization) => ({
+  ...organization,
+  name: remoteOrganization.name,
+  url: remoteOrganization.url,
+  goals: remoteOrganization.goals
+});
+
+export const checkRemoteOrganization = async ({ organization, refOrganization, executeInService }) => {
+  if (!organization || !organization.ref) {
+    return organization;
+  }
+
+  if (refOrganization) {
+    return mapRemoteOrganization(organization, refOrganization);
+  }
+
+  const query = `
+    query GetOrganization($id: ID!) {
+      organization: getOrganization(id: $id) {
+        name
+        url
+        goals
+      }
+    }
+  `;
+
+  const variables = {
+    id: organization.ref.id
+  };
+
+  try {
+    const { organization: remoteOrganization } = await executeInService({
+      query,
+      variables,
+      serviceId: organization.ref.serviceId
+    });
+
+    if (!remoteOrganization) {
+      return null;
+    }
+
+    return mapRemoteOrganization(organization, remoteOrganization);
   } catch (err) {
     console.log(err.message);
   }
@@ -171,12 +225,58 @@ export const mutation = {
 
     return null;
   },
-  async createOrganization(obj, args, { store, addRelationsToOrganization }) {
+  async createOrganization(obj, { ref, data, stageId }, { store, addRelationsToOrganization, executeInService }) {
     const { organizations = [] } = await store.get('organizations');
-    const organization = Object.assign({}, args, { id: uuid(), contactIds: [] });
-    organizations.push(organization);
-    await store.set('organizations', organizations);
-    return addRelationsToOrganization(organization);
+    let organization;
+
+    if (ref.id) {
+      organization = organizations.find(o => o.ref && ref && o.ref.id === ref.id && o.ref.serviceId === ref.serviceId);
+      if (!organization) {
+        organization = { id: uuid(), contactIds: [], stageId, ref };
+        organizations.push(organization);
+        await store.set('organizations', organizations);
+      }
+    }
+
+    if (organization) {
+      return checkRemoteOrganization({ organization, executeInService });
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    const query = `
+      mutation CreateOrganization($name: String!, $url: String, $goals: String) {
+        organization: createOrganization(name: $name, url: $url, goals: $goals) {
+          id
+          name
+          email
+          goals
+        }
+      }
+    `;
+
+    try {
+      const { organization: newOrganization } = await executeInService({
+        query,
+        variables: data,
+        serviceId: ref.serviceId
+      });
+
+      if (!newOrganization) {
+        return null;
+      }
+
+      organization = { id: uuid(), contactIds: [], stageId, ref: { id: newOrganization.id, serviceId: ref.serviceId } };
+      organizations.push(organization);
+      await store.set('organizations', organizations);
+      return addRelationsToOrganization(organization);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    return null;
   },
   async updateOrganization(obj, { id, ...args }, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');

@@ -27,6 +27,14 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
+      async getAllOrganizations(obj, args, { store }) {
+        const { organizations = [] } = await store.get('organizations');
+        return organizations;
+      },
+      async getOrganization(obj, { id }, { store }) {
+        const { organizations = [] } = await store.get('organizations');
+        return organizations.find(o => o.id === id);
+      },
       async getAllContacts(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
         return contacts;
@@ -34,13 +42,34 @@ const schema = makeExecutableSchema({
       async getContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         return contacts.find(c => c.id === id);
-      },
-      async search(obj, { value }, { store }) {
-        const { contacts = [] } = await store.get('contacts');
-        return contacts.filter(c => c.name.toLowerCase().includes(value.toLowerCase()));
       }
     },
     Mutation: {
+      async createOrganization(obj, args, { store }) {
+        const { organizations = [] } = await store.get('organizations');
+
+        const organization = Object.assign({}, args, { id: uuid() });
+        organizations.push(organization);
+        await store.set('organizations', organizations);
+
+        return organization;
+      },
+      async updateOrganization(obj, { id, ...args }, { store }) {
+        const { organizations = [] } = await store.get('organizations');
+        const idx = organizations.findIndex(o => o.id === id);
+
+        if (idx === -1) {
+          return null;
+        }
+
+        organizations[idx] = {
+          ...organizations[idx],
+          ...args
+        };
+
+        await store.set('organizations', organizations);
+        return organizations[idx];
+      },
       async createContact(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
 
@@ -82,9 +111,9 @@ module.exports = {
     };
 
     //await store.set('contacts', [
-      //{ id: 'contact-1', name: 'Martin Acosta', email: 'martin@geut.com', phone: '33333' },
-      //{ id: 'contact-2', name: 'Esteban Primost', email: 'esteban@geut.com', phone: '2222' },
-      //{ id: 'contact-3', name: 'Maximiliano Fierro', email: 'max@geut.com', phone: '5555' }
+    //{ id: 'contact-1', name: 'Martin Acosta', email: 'martin@geut.com', phone: '33333' },
+    //{ id: 'contact-2', name: 'Esteban Primost', email: 'esteban@geut.com', phone: '2222' },
+    //{ id: 'contact-3', name: 'Maximiliano Fierro', email: 'max@geut.com', phone: '5555' }
     //]);
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
