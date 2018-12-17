@@ -8,24 +8,35 @@
       "type": "node",
       "request": "launch",
       "name": "stack: @datalab",
-      // "program": "/Users/elmasse/Services/wireline/darkstar/sub/cli/bin/wire.js",
       "program": "${workspaceRoot}/node_modules/.bin/wire",
       "args": [
         "dev",
         "stack",
         "-d",
-        "--stack", "${workspaceFolder}/ops/faas/stack.yml",
+        "--stack", "${workspaceFolder}/ops/fass/stack.yml",
         "--services", "${workspaceFolder}",
         "--endpoint", "https://dev.wireline.ninja/svc/registry" 
       ],
       "cwd": "${workspaceFolder}",
       "autoAttachChildProcesses": true,
       "sourceMaps": true,
-      // "env": {
-      //   "WRL_REGISTRY_URL": "https://dev.wireline.ninja/svc/registry",
-      //   "WRL_COMPUTE_URL": "https://dev.wireline.ninja/svc/compute",
-      //   // "WRL_SERVICES_WIRELINE.IO/STORE": "{ \"name\": \"wireline.io/store\", \"wrn\": \"wrn::dev.wireline.io/wireline/store\"}"
-      // }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "stack: @datalab-dev",
+      "program": "${workspaceRoot}/node_modules/.bin/wire",
+      "args": [
+        "dev",
+        "stack",
+        "-d",
+        "--stack", "${workspaceFolder}/ops/stack-dev.yml",
+        "--services", "${workspaceFolder}",
+        "--endpoint", "https://dev.wireline.ninja/svc/registry" 
+      ],
+      "cwd": "${workspaceFolder}",
+      "autoAttachChildProcesses": true,
+      "sourceMaps": true,
     },
     {
       "type": "node",
