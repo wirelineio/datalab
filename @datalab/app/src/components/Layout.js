@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import classNames from 'classnames';
 import { compose } from 'react-apollo';
 
@@ -82,7 +82,7 @@ const styles = theme => ({
   }
 });
 
-class Layout extends React.Component {
+class Layout extends Component {
   state = {
     open: false
   };

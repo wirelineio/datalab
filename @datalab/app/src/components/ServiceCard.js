@@ -1,7 +1,6 @@
-import React from 'react';
-
-import { withStyles } from '@material-ui/core/styles';
+import React, { Component } from 'react';
 import classnames from 'classnames';
+
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -14,6 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { withStyles } from '@material-ui/core/styles';
 
 import { ButtonLoader } from './Loader';
 
@@ -54,7 +54,7 @@ const TYPES = {
   contacts: 'Contacts & Organizations'
 };
 
-class ServiceCard extends React.Component {
+class ServiceCard extends Component {
   state = {
     expanded: false,
     switching: false

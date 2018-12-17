@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -14,7 +14,7 @@ const styles = theme => ({
   }
 });
 
-class Tasks extends React.Component {
+class Tasks extends Component {
   static defaultProps = {
     tasks: []
   };
