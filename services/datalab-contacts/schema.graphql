@@ -21,23 +21,23 @@ type RemoteContact {
 #
 
 type Query {
-  getAllOrganizations: [RemoteOrganization!]
+  getAllRemoteOrganizations: [RemoteOrganization!]
 
-  getOrganization(id: ID!): RemoteOrganization
+  getRemoteOrganization(id: ID!): RemoteOrganization
 
-  getAllContacts: [RemoteContact!]
+  getAllRemoteContacts: [RemoteContact!]
 
-  getContact(id: ID!): RemoteContact
+  getRemoteContact(id: ID!): RemoteContact
 }
 
 type Mutation {
-  createOrganization(name: String!, url: String, goals: String): RemoteOrganization
+  createRemoteOrganization(name: String!, url: String, goals: String): RemoteOrganization
 
-  updateOrganization(id: ID!, name: String, url: String, goals: String): RemoteOrganization
+  updateRemoteOrganization(id: ID!, name: String, url: String, goals: String): RemoteOrganization
 
-  createContact(name: String, email: String, phone: String): RemoteContact
+  createRemoteContact(name: String, email: String, phone: String): RemoteContact
 
-  updateContact(id: ID!, name: String, email: String, phone: String): RemoteContact
+  updateRemoteContact(id: ID!, name: String, email: String, phone: String): RemoteContact
 }
 
 #

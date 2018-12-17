@@ -61,6 +61,15 @@ class Column extends Component {
     });
   };
 
+  handleImportOrganization = () => {
+    const { onImportOrganization } = this.props;
+    this.close(() => {
+      if (onImportOrganization) {
+        onImportOrganization();
+      }
+    });
+  };
+
   handleEditColumn = () => {
     const { onEditColumn } = this.props;
     this.close(() => {
@@ -91,7 +100,8 @@ class Column extends Component {
           <MoreVertIcon />
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
-          <MenuItem onClick={this.handleAddCard}>Add record</MenuItem>
+          <MenuItem onClick={this.handleImportOrganization}>Import organization</MenuItem>
+          <MenuItem onClick={this.handleAddCard}>Add organization</MenuItem>
           {!isUncategorized(id) && <MenuItem onClick={this.handleEditColumn}>Edit column</MenuItem>}
           {!isUncategorized(id) && <MenuItem onClick={this.handleDeleteColumn}>Delete column</MenuItem>}
         </Menu>

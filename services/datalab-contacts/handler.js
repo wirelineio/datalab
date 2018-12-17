@@ -27,25 +27,25 @@ const schema = makeExecutableSchema({
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
     Query: {
-      async getAllOrganizations(obj, args, { store }) {
+      async getAllRemoteOrganizations(obj, args, { store }) {
         const { organizations = [] } = await store.get('organizations');
         return organizations;
       },
-      async getOrganization(obj, { id }, { store }) {
+      async getRemoteOrganization(obj, { id }, { store }) {
         const { organizations = [] } = await store.get('organizations');
         return organizations.find(o => o.id === id);
       },
-      async getAllContacts(obj, args, { store }) {
+      async getAllRemoteContacts(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
         return contacts;
       },
-      async getContact(obj, { id }, { store }) {
+      async getRemoteContact(obj, { id }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         return contacts.find(c => c.id === id);
       }
     },
     Mutation: {
-      async createOrganization(obj, args, { store }) {
+      async createRemoteOrganization(obj, args, { store }) {
         const { organizations = [] } = await store.get('organizations');
 
         const organization = Object.assign({}, args, { id: uuid() });
@@ -54,7 +54,7 @@ const schema = makeExecutableSchema({
 
         return organization;
       },
-      async updateOrganization(obj, { id, ...args }, { store }) {
+      async updateRemoteOrganization(obj, { id, ...args }, { store }) {
         const { organizations = [] } = await store.get('organizations');
         const idx = organizations.findIndex(o => o.id === id);
 
@@ -70,7 +70,7 @@ const schema = makeExecutableSchema({
         await store.set('organizations', organizations);
         return organizations[idx];
       },
-      async createContact(obj, args, { store }) {
+      async createRemoteContact(obj, args, { store }) {
         const { contacts = [] } = await store.get('contacts');
 
         const contact = Object.assign({}, args, { id: uuid() });
@@ -79,7 +79,7 @@ const schema = makeExecutableSchema({
 
         return contact;
       },
-      async updateContact(obj, { id, ...args }, { store }) {
+      async updateRemoteContact(obj, { id, ...args }, { store }) {
         const { contacts = [] } = await store.get('contacts');
         const idx = contacts.findIndex(c => c.id === id);
 

@@ -33,12 +33,13 @@ import {
 } from '../stores/organizations';
 
 // remote services
-import { GET_ALL_REMOTE_CONTACTS } from '../stores/contacts';
+import { GET_ALL_REMOTE_CONTACTS, GET_ALL_REMOTE_ORGANIZATIONS } from '../stores/contacts';
 import { SPELLCHECK } from '../stores/spellcheck';
 
 import StageForm from '../components/modal/StageForm';
 import OrganizationForm from '../components/modal/OrganizationForm';
 import ContactForm from '../components/modal/ContactForm';
+import ImportOrganizationForm from '../components/modal/ImportOrganizationForm';
 
 import Graph from '../components/organizations/Graph';
 import Kanban from '../components/organizations/Kanban';
@@ -61,6 +62,7 @@ class Organizations extends Component {
     openStageForm: false,
     openOrganizationForm: false,
     openContactForm: false,
+    openImportOrganizationForm: false,
     selectedStage: undefined,
     selectedOrganization: undefined,
     selectedContact: undefined
@@ -123,47 +125,44 @@ class Organizations extends Component {
     this.setState({ openOrganizationForm: true, selectedOrganization: organization });
   };
 
-  handleOrganizationFormResult = async result => {
+  handleImportOrganization = stage => {
+    this.setState({ openImportOrganizationForm: true, selectedStage: stage });
+  };
+
+  handleImportOrganizationFormResult = async result => {
+    const { createOrganization } = this.props;
+    const { selectedStage } = this.state;
+
+    if (result) {
+      await createOrganization({
+        ref: {
+          id: result.ref.value,
+          serviceId: result.ref.serviceId
+        },
+        stageId: selectedStage ? selectedStage.id : null
+      });
+    }
+
+    this.setState({ openImportOrganizationForm: false, selectedStage: undefined });
+  };
+
+  handleOrganizationFormResult = async (result, serviceId) => {
     const { createOrganization, updateOrganization } = this.props;
 
     if (result) {
       const data = {
         name: result.name,
         url: result.url.length > 0 ? result.url : null,
-        goals: result.goals.length > 0 ? result.goals : null,
-        stageId: result.stage || null
+        goals: result.goals.length > 0 ? result.goals : null
       };
 
+      const stageId = result.stage || null;
+
       if (result.id) {
-        await updateOrganization({ id: result.id, ...data });
+        await updateOrganization({ id: result.id, data, stageId });
       } else {
-        await createOrganization(data);
+        await createOrganization({ ref: { serviceId }, data, stageId });
       }
-
-      //const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
-
-      //const data = {
-        //name: result.name,
-        //email: result.email.length > 0 ? result.email : null,
-        //phone: result.phone.length > 0 ? result.phone : null
-      //};
-
-      //if (result.id) {
-        //await updateContact({ id: result.id, data });
-      //} else {
-        //const {
-          //data: { contact }
-        //} = await createContact({
-          //data,
-          //ref: {
-            //id: remoteContact.id,
-            //serviceId: remoteContact._serviceId
-          //}
-        //});
-
-        //await addContactToOrganization({ id: result.organizationId, contactId: contact.id });
-      //}
-
     }
 
     this.setState({ openOrganizationForm: false, selectedStage: undefined, selectedOrganization: undefined });
@@ -259,7 +258,8 @@ class Organizations extends Component {
       remoteContacts = [],
       updateOrganization,
       moveContactToOrganization,
-      contactServices
+      contactServices,
+      remoteOrganizations = []
     } = this.props;
     const {
       selectedView,
@@ -268,7 +268,8 @@ class Organizations extends Component {
       openOrganizationForm,
       selectedOrganization,
       openContactForm,
-      selectedContact
+      selectedContact,
+      openImportOrganizationForm
     } = this.state;
     const selectedViewCfg = this.views[selectedView];
     const SelectedView = selectedViewCfg.Component;
@@ -300,6 +301,7 @@ class Organizations extends Component {
         <SelectedView
           organizations={organizations}
           stages={stages}
+          onImportOrganization={this.handleImportOrganization}
           onAddOrganization={this.handleAddOrganization}
           onEditOrganization={this.handleEditOrganization}
           onDeleteOrganization={this.handleDeleteOrganization}
@@ -321,6 +323,7 @@ class Organizations extends Component {
           stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
           onClose={this.handleOrganizationFormResult}
           onSpellcheck={this.handleSpellcheck}
+          services={contactServices}
         />
         <ContactForm
           open={openContactForm}
@@ -329,6 +332,11 @@ class Organizations extends Component {
           remoteContacts={remoteContacts}
           onClose={this.handleContactFormResult}
           contactServices={contactServices}
+        />
+        <ImportOrganizationForm
+          open={openImportOrganizationForm}
+          remoteOrganizations={remoteOrganizations}
+          onClose={this.handleImportOrganizationFormResult}
         />
       </div>
     );
@@ -372,8 +380,22 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { contacts = [] } }) {
-      return { remoteContacts: contacts };
+    props({ data: { remoteContacts = [] } }) {
+      return { remoteContacts };
+    }
+  }),
+  graphql(GET_ALL_REMOTE_ORGANIZATIONS, {
+    skip({ services = [] }) {
+      return !services.find(s => s.type === 'contacts');
+    },
+    options: {
+      context: {
+        serviceType: 'contacts',
+        useNetworkStatusNotifier: false
+      }
+    },
+    props({ data: { remoteOrganizations = [] } }) {
+      return { remoteOrganizations };
     }
   }),
   graphql(CREATE_ORGANIZATION, {

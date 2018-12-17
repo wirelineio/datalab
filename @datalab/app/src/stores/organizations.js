@@ -83,8 +83,8 @@ export const CREATE_ORGANIZATION = gql`
 `;
 
 export const UPDATE_ORGANIZATION = gql`
-  mutation UpdateOrganization($id: ID!, $name: String, $url: String, $goals: String, $stageId: ID) {
-    organization: updateOrganization(id: $id, name: $name, url: $url, goals: $goals, stageId: $stageId) {
+  mutation UpdateOrganization($id: ID!, $data: InputRemoteOrganization, $stageId: ID) {
+    organization: updateOrganization(id: $id, data: $data, stageId: $stageId) {
       ...OrganizationFields
     }
   }
