@@ -21,7 +21,7 @@ A Wireline Demo
 We are using `wire` to run the datalab stack locally. From the datalab root run:
 
 ```
-$ wire dev stack --stack ./ops/fass/stack.yml --services . --endpoint https://dev.wireline.ninja/svc/registry
+$ wire dev stack --stack ./ops/faas/stack.yml --services . --endpoint https://dev.wireline.ninja/svc/registry
 
 ```
 
@@ -30,7 +30,7 @@ $ wire dev stack --stack ./ops/fass/stack.yml --services . --endpoint https://de
 In order to enable debugging we need to add `-d` param to `wire dev stack`:
 
 ```
-$ wire dev stack -d --stack ./ops/fass/stack.yml --services . --endpoint https://dev.wireline.ninja/svc/registry
+$ wire dev stack -d --stack ./ops/faas/stack.yml --services . --endpoint https://dev.wireline.ninja/svc/registry
 
 ```
 
@@ -42,7 +42,7 @@ Then open a debugger (chrome://inspect) and attach all processes.
 
 We provided a `launch.json` to include a set of configurations to facilitate running datalab locally:
 
-- `stack: @datalab`: Run the entire stack and auto attach debug processes. It will use `ops/fass/stack.yml`
+- `stack: @datalab`: Run the entire stack and auto attach debug processes. It will use `ops/faas/stack.yml`
 - `stack: @datalab-dev`: Run the entire stack with you own store from `ops/stack-dev.yml` (see next section)
 
 ### Use your own store deployemnt
