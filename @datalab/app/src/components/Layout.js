@@ -1,32 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'react-apollo';
 
-import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-
-import ScreenLoader from './ScreenLoader';
+import { withStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
-
-const theme = createMuiTheme({
-  typography: {
-    useNextVariants: true
-  }
-});
 
 const styles = theme => ({
   root: {
@@ -109,38 +95,11 @@ class Layout extends React.Component {
     this.setState({ open: false });
   };
 
-  getRoute() {
-    const {
-      routes,
-      match: { path }
-    } = this.props;
-    return routes.find(r => r.path === path);
-  }
-
-  renderSidebar() {
-    const { routes } = this.props;
-
-    return (
-      <List component="nav">
-        {routes.map(({ path, icon, title }, key) => (
-          <ListItem key={key} button component={Link} to={path}>
-            <ListItemIcon>{React.createElement(icon)}</ListItemIcon>
-            <ListItemText primary={title} />
-          </ListItem>
-        ))}
-      </List>
-    );
-  }
-
   render() {
     const { open } = this.state;
-    const { classes, children, NetworkStatusNotifier } = this.props;
-    const { title } = this.getRoute();
+    const { title, sidebar, classes, children } = this.props;
 
     return (
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <NetworkStatusNotifier render={({ loading }) => <ScreenLoader open={loading} />} />
         <div className={classes.root}>
           <AppBar position="absolute" className={classNames(classes.appBar, open && classes.appBarShift)}>
             <Toolbar disableGutters={!open} className={classes.toolbar}>
@@ -170,16 +129,14 @@ class Layout extends React.Component {
               </IconButton>
             </div>
             <Divider />
-            {this.renderSidebar()}
+            {sidebar}
           </Drawer>
           <main className={classes.content}>{children}</main>
         </div>
-      </MuiThemeProvider>
     );
   }
 }
 
 export default compose(
-  withRouter,
   withStyles(styles)
 )(Layout);

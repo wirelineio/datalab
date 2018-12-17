@@ -6,11 +6,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 import AddIcon from '@material-ui/icons/Add';
 
-import { updateKanban } from '../../stores/orgs';
-
-import GridColumn from '../../components/dnd/GridColumn';
-import Column from '../../components/dnd/Column';
-import Card from '../../components/dnd/Card';
+import GridColumn from '../dnd/GridColumn';
+import Column from '../dnd/Column';
+import Card from '../dnd/Card';
 
 const styles = theme => ({
   root: {
@@ -66,6 +64,7 @@ class Kanban extends Component {
       onAddStage,
       onEditStage,
       onDeleteStage,
+      updateKanban,
       classes
     } = this.props;
     const columns = updateKanban({ organizations, stages });

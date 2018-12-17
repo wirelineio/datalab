@@ -29,8 +29,9 @@ import {
   DELETE_STAGE,
   updateOrganizationOptimistic,
   updateContactToOrganizationOtimistic,
-  deleteContactFromOrganizationOtimistic
-} from '../stores/orgs';
+  deleteContactFromOrganizationOtimistic,
+  updateKanban
+} from '../stores/organizations';
 
 // remote services
 import { GET_ALL_REMOTE_CONTACTS } from '../stores/contacts';
@@ -284,9 +285,10 @@ class Organizations extends Component {
           onAddStage={this.handleAddStage}
           onEditStage={this.handleEditStage}
           onDeleteStage={this.handleDeleteStage}
-          // TODO(elmasse): Review these 2 used by handleOrder in Kanban view.
+          // TODO(elmasse): Review these used in Kanban view.
           moveContactToOrganization={moveContactToOrganization}
           updateOrganization={updateOrganization}
+          updateKanban={updateKanban}
         />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
         <OrganizationForm
