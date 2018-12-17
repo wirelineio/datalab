@@ -1,0 +1,11 @@
+name: datalab-store
+domain: # Use your own domain
+stage: dev
+provider:
+  name: openfaas
+  region: us-east-1
+stack:
+  store:
+    deployment:
+      image: 'wrn::wireline.io/wireline/store'
+      version: 0.0.1
