@@ -117,6 +117,15 @@ type Mutation {
   updateStage(id: ID!, name: String!): Stage
 
   deleteStage(id: ID!): ID
+
+  ## CONTACTS
+
+  createContact(ref: InputRemoteReference!, data: InputRemoteContact): Contact
+
+  updateContact(id: ID!, data: InputRemoteContact!): Contact
+
+  deleteContact(id: ID!): ID
+
 }
 
 #

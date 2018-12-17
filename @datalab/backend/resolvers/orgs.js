@@ -1,5 +1,5 @@
 import hyperid from 'hyperid';
-import { checkRemoteContact, mapRemoteContact } from './contacts';
+import { checkRemoteContact } from './contacts';
 
 const uuid = hyperid({
   fixedLength: true,
@@ -38,95 +38,6 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, { ref, data }, { store, executeInService }) {
-    const { contacts = [] } = await store.get('contacts');
-    let contact;
-
-    if (ref.id) {
-      contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
-      if (!contact) {
-        contact = { id: uuid(), ref };
-        contacts.push(contact);
-        await store.set('contacts', contacts);
-      }
-    }
-
-    if (contact) {
-      return checkRemoteContact({ contact, executeInService });
-    }
-
-    if (!data) {
-      return null;
-    }
-
-    const query = `
-      mutation CreateContact($name: String!, $email: String, $phone: String) {
-        contact: createContact(name: $name, email: $email, phone: $phone) {
-          id
-          name
-          email
-          phone
-        }
-      }
-    `;
-
-    try {
-      const { contact: newContact } = await executeInService({ query, variables: data, serviceId: ref.serviceId });
-
-      if (!newContact) {
-        return null;
-      }
-
-      contact = { id: uuid(), ref: { id: newContact.id, serviceId: ref.serviceId } };
-      contacts.push(contact);
-      await store.set('contacts', contacts);
-      return mapRemoteContact(contact, newContact);
-    } catch (err) {
-      console.log(err.message);
-    }
-
-    return null;
-  },
-  async updateContact(obj, { id, data }, { store, executeInService }) {
-    const { contacts = [] } = await store.get('contacts');
-    const contact = contacts.find(c => c.id === id);
-
-    if (!contact) {
-      return null;
-    }
-
-    const query = `
-      mutation UpdateContact($id: ID!, $name: String!, $email: String, $phone: String) {
-        contact: updateContact(id: $id, name: $name, email: $email, phone: $phone) {
-          id
-          name
-          email
-          phone
-        }
-      }
-    `;
-
-    try {
-      const { contact: updatedContact } = await executeInService({
-        query,
-        variables: {
-          id: contact.ref.id,
-          ...data
-        },
-        serviceId: contact.ref.serviceId
-      });
-
-      if (!updatedContact) {
-        return null;
-      }
-
-      return mapRemoteContact(contact, updatedContact);
-    } catch (err) {
-      console.log(err.message);
-    }
-
-    return null;
-  },
   async createOrganization(obj, args, { store, addRelationsToOrganization }) {
     const { organizations = [] } = await store.get('organizations');
     const organization = Object.assign({}, args, { id: uuid(), contactIds: [] });

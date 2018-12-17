@@ -23,3 +23,18 @@ export const GET_ALL_REMOTE_ORGANIZATIONS = gql`
     }
   }
 `;
+
+export const GET_ALL_CONTACTS = gql`
+  query GetAllContacts {
+    contacts: getAllContacts {
+      id
+      name
+      email
+      phone
+      ref {
+        id
+        serviceId
+      }
+    }
+  }
+`;

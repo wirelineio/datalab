@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 
 import Organizations from './Organizations';
+import Contacts from './Contacts';
 
 const styles = theme => ({
   root: {
@@ -33,7 +34,7 @@ class Dashboard extends Component {
         </Tabs>
         <Switch>
           <Route path={ORGANIZATIONS_URL} component={Organizations} />
-          <Route path={CONTACTS_URL} component={() => <div />} />
+          <Route path={CONTACTS_URL} component={Contacts} />
           <Redirect from="/" exact to={ORGANIZATIONS_URL} />
         </Switch>
       </div>

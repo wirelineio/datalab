@@ -38,6 +38,8 @@ type Mutation {
   createRemoteContact(name: String, email: String, phone: String): RemoteContact
 
   updateRemoteContact(id: ID!, name: String, email: String, phone: String): RemoteContact
+
+  deleteContact(id: ID!): ID
 }
 
 #

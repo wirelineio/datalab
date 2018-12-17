@@ -5,12 +5,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
 import { withStyles } from '@material-ui/core/styles';
 
 import { Formik, Field } from 'formik';
@@ -76,10 +70,11 @@ class ContactForm extends Component {
     onClose(false);
   };
 
-  handleAccept = (values, actions) => {
+  handleAccept = async (values, actions) => {
+    actions.setSubmitting(true);
     const { onClose } = this.props;
     const { serviceId } = this.state;
-    onClose(values, serviceId);
+    await onClose(values, serviceId);
     actions.setSubmitting(false);
   };
 
@@ -90,11 +85,10 @@ class ContactForm extends Component {
   };
 
   render() {
-    const { organization, contact, remoteContacts, classes, contactServices } = this.props;
-    const { serviceId } = this.state;
-
+    const { organization, contact, remoteContacts, classes, contactServices, disableImport = false } = this.props;
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
     const isEdit = !!contact.id;
+    const { serviceId } = this.state;
 
     return (
       <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
@@ -105,14 +99,12 @@ class ContactForm extends Component {
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => {
-            const {
-              values: { ref }
-            } = props;
+            const { handleSubmit, isSubmitting, values } = props;
             return (
               <Fragment>
                 <DialogContent className={classes.dialogContent}>
-                  <form onSubmit={props.handleSubmit}>
-                    {!isEdit && (
+                  <form onSubmit={handleSubmit}>
+                    {!isEdit && !disableImport && (
                       <Field
                         name="ref"
                         component={Autocomplete}
@@ -132,7 +124,7 @@ class ContactForm extends Component {
                       />
                     )}
                     <Field
-                      disabled={!isEdit && !!ref}
+                      disabled={!isEdit && !!values.ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"
@@ -140,7 +132,7 @@ class ContactForm extends Component {
                       label="Name"
                     />
                     <Field
-                      disabled={!isEdit && !!ref}
+                      disabled={!isEdit && !!values.ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"
@@ -149,7 +141,7 @@ class ContactForm extends Component {
                       label="Email"
                     />
                     <Field
-                      disabled={!isEdit && !!ref}
+                      disabled={!isEdit && !!values.ref}
                       component={TextField}
                       className={classes.textField}
                       margin="dense"
@@ -159,7 +151,7 @@ class ContactForm extends Component {
                   </form>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.handleClose} color="primary">
+                  <Button onClick={this.handleClose} color="primary" disabled={isSubmitting}>
                     Cancel
                   </Button>
                   <SubmitServices
