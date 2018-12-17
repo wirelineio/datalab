@@ -78,6 +78,10 @@ type Query {
 
   getAllStages: [Stage]!
 
+  ### CONTACTS
+
+  getAllContacts: [Contact]!
+
 }
 
 #
