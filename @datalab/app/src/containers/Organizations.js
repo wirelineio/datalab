@@ -29,8 +29,7 @@ import {
   DELETE_STAGE,
   updateOrganizationOptimistic,
   updateContactToOrganizationOtimistic,
-  deleteContactFromOrganizationOtimistic,
-  updateKanban
+  deleteContactFromOrganizationOtimistic
 } from '../stores/organizations';
 
 // remote services
@@ -288,7 +287,6 @@ class Organizations extends Component {
           // TODO(elmasse): Review these used in Kanban view.
           moveContactToOrganization={moveContactToOrganization}
           updateOrganization={updateOrganization}
-          updateKanban={updateKanban}
         />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
         <OrganizationForm

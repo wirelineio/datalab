@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import get from 'lodash.get';
 
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -51,6 +52,63 @@ class Kanban extends Component {
     }
   };
 
+  updateKanban = ({ organizations, stages }) => {
+    let columns = stages.reduce(
+      (result, next) => {
+        const id = get(next, 'id', 'uncategorized');
+  
+        if (!result[id]) {
+          const title = get(next, 'name');
+  
+          result[id] = {
+            id,
+            title,
+            data: next,
+            cards: []
+          };
+        }
+  
+        return result;
+      },
+      { uncategorized: { id: 'uncategorized', title: 'Uncategorized', cards: [], index: 0, data: null } }
+    );
+  
+    columns = organizations.reduce((result, next) => {
+      let id = get(next, 'stage.id', 'uncategorized');
+  
+      if (!result[id]) {
+        // missing stage
+        id = 'uncategorized';
+      }
+  
+      const cardId = get(next, 'id');
+      const cardTitle = get(next, 'name');
+      const card = {
+        id: cardId,
+        title: cardTitle,
+        data: next,
+        index: result[id].cards.length
+      };
+  
+      result[id].cards.push(card);
+  
+      return result;
+    }, columns);
+  
+    columns = Object.keys(columns).map(key => columns[key]);
+    columns.sort((a, b) => {
+      a = a.title.toLowerCase();
+      b = b.title.toLowerCase();
+  
+      return a > b ? -1 : b > a ? 1 : 0;
+    });
+  
+    const first = columns.filter(c => c.id === 'uncategorized');
+    const second = columns.filter(c => c.id !== 'uncategorized');
+  
+    return [...first, ...second];
+  };  
+
   render() {
     const {
       organizations,
@@ -64,10 +122,9 @@ class Kanban extends Component {
       onAddStage,
       onEditStage,
       onDeleteStage,
-      updateKanban,
       classes
     } = this.props;
-    const columns = updateKanban({ organizations, stages });
+    const columns = this.updateKanban({ organizations, stages });
 
     return (
       <div className={classes.root}>
