@@ -98,7 +98,7 @@ type Mutation {
 
   createOrganization(ref: InputRemoteReference!, data: InputRemoteOrganization, stageId: ID): Organization
 
-  updateOrganization(id: ID!, data: InputRemoteOrganization!, stageId: ID): Organization
+  updateOrganization(id: ID!, data: InputRemoteOrganization, stageId: ID): Organization
 
   addContactToOrganization(id: ID!, contactId: ID!): Organization
 

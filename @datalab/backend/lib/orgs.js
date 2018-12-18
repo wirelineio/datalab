@@ -94,10 +94,7 @@ export default class Orgs {
   }
 
   async addRelationsToOrganization(organization) {
-    let [{ stages = [] }, { contacts = [] }] = await Promise.all([
-      this.store.get('stages'),
-      this.store.get('contacts')
-    ]);
+    let [stages, contacts] = await Promise.all([this.store.scan('stages'), this.store.scan('contacts')]);
 
     if (Array.isArray(organization)) {
       return organization.map(r => {
@@ -215,7 +212,13 @@ export default class Orgs {
     return this.syncOrganization(organization, newOrganization);
   }
 
-  async updateOrganization({ organization, data }) {
+  async updateOrganization({ organization, data, stageId }) {
+    organization.stageId = stageId;
+
+    if (!data) {
+      return organization;
+    }
+
     const query = `
       mutation UpdateRemoteOrganization($id: ID!, $name: String!, $url: String, $goals: String) {
         organization: updateRemoteOrganization(id: $id, name: $name, url: $url, goals: $goals) {

@@ -62,6 +62,22 @@ module.exports = {
     let queryRoot = {};
 
     const store = new Store(context);
+    store.oldscan = store.scan;
+    store.scan = async key => {
+      const result = await store.oldscan(key);
+      return result.map(r => r.value);
+    };
+    store.oldget = store.get;
+    store.get = async (key, defaultTo) => {
+      const result = await store.oldget(key);
+
+      if (result[key] !== undefined) {
+        return result[key];
+      }
+
+      return defaultTo === undefined ? null : defaultTo;
+    };
+
     const registry = new Registry({
       endpoint: Registry.getEndpoint(),
       accessKey: context.wireline.accessKey

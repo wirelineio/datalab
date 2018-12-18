@@ -51,6 +51,7 @@ class SubmitServices extends Component {
     return (
       <Fragment>
         <Button
+          disabled={services.length === 0}
           buttonRef={node => {
             this.submitAnchorEl = node;
           }}

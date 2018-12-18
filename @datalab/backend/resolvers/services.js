@@ -12,17 +12,17 @@ const serviceTypeByLabel = label => {
 let init = false;
 export const initServices = async store => {
   if (!init) {
-    const { profiles: oldProfiles } = await store.get('profiles');
-    if (!oldProfiles) {
-      await store.set('profiles', profiles);
+    const admin = await store.get('profiles/admin');
+    if (!admin) {
+      await store.set('profiles/admin', profiles[0]);
     }
-    await store.set('services', services);
+    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
     init = true;
   }
 };
 
 export const mapProfiles = store => async services => {
-  const { profiles } = await store.get('profiles');
+  const profile = await store.get('profiles/admin');
 
   let onlyFirst = false;
 
@@ -30,8 +30,6 @@ export const mapProfiles = store => async services => {
     services = [services];
     onlyFirst = true;
   }
-
-  const profile = profiles[0]; // admin
 
   const result = services.map(s => {
     s.enabled = !!profile.services.find(ps => ps.id === s.id && ps.enabled);
@@ -178,9 +176,7 @@ export const query = {
 
 export const mutation = {
   async switchService(obj, { id }, { store, mapProfiles, getAllServices }) {
-    const [services, { profiles }] = await Promise.all([getAllServices(), store.get('profiles')]);
-
-    const profile = profiles[0]; // admin
+    const [services, profile] = await Promise.all([getAllServices(), store.get('profiles/admin')]);
 
     const service = profile.services.find(s => s.id === id);
 
@@ -190,7 +186,7 @@ export const mutation = {
       profile.services.push({ id, enabled: true });
     }
 
-    await store.set('profiles', profiles);
+    await store.set('profiles/admin', profile);
 
     return mapProfiles(services.find(s => s.id === id));
   }

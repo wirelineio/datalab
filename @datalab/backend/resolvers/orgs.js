@@ -1,17 +1,16 @@
 export const query = {
   async getAllOrganizations(obj, args, { store, orgs }) {
-    const { organizations = [] } = await store.get('organizations');
+    const organizations = await store.scan('organizations');
     return orgs.addRelationsToOrganization(organizations);
   },
   async getAllStages(obj, args, { store }) {
-    const { stages = [] } = await store.get('stages');
-    return stages;
+    return store.scan('stages');
   }
 };
 
 export const mutation = {
   async createContact(obj, { ref, data }, { store, orgs }) {
-    const { contacts = [] } = await store.get('contacts');
+    const contacts = await store.scan('contacts');
     let contact;
 
     if (ref.id) {
@@ -27,13 +26,11 @@ export const mutation = {
       return null;
     }
 
-    contacts.push(contact);
-    await store.set('contacts', contacts);
+    await store.set(`contacts/${contact.id}`, contact);
     return contact;
   },
   async updateContact(obj, { id, data }, { store, orgs }) {
-    const { contacts = [] } = await store.get('contacts');
-    let contact = contacts.find(c => c.id === id);
+    let contact = await store.get(`contacts/${id}`);
 
     if (!contact) {
       return null;
@@ -45,12 +42,11 @@ export const mutation = {
       return null;
     }
 
-    contacts[contacts.findIndex(c => c.id === id)] = contact;
-    await store.set('contacts', contacts);
+    await store.set(`contacts/${id}`, contact);
     return contact;
   },
   async createOrganization(obj, { ref, data, stageId }, { orgs, store }) {
-    const { organizations = [] } = await store.get('organizations');
+    const organizations = await store.scan('organizations');
     let organization;
 
     if (ref.id) {
@@ -66,37 +62,31 @@ export const mutation = {
       return null;
     }
 
-    organizations.push(organization);
-    await store.set('organizations', organizations);
+    await store.set(`organizations/${organization.id}`, organization);
     return orgs.addRelationsToOrganization(organization);
   },
-  async updateOrganization(obj, { id, data }, { store, orgs }) {
-    const { organizations = [] } = await store.get('organizations');
-    let organization = organizations.find(c => c.id === id);
+  async updateOrganization(obj, { id, data, stageId }, { store, orgs }) {
+    let organization = await store.get(`organizations/${id}`);
 
     if (!organization) {
       return null;
     }
 
-    organization = await orgs.updateOrganization({ organization, data });
+    organization = await orgs.updateOrganization({ organization, data, stageId });
 
     if (!organization) {
       return null;
     }
 
-    organizations[organizations.findIndex(c => c.id === id)] = organization;
-    await store.set('organizations', organizations);
+    await store.set(`organizations/${id}`, organization);
     return orgs.addRelationsToOrganization(organization);
   },
   async deleteOrganization(obj, { id }, { store }) {
-    let { organizations = [] } = await store.get('organizations');
-    organizations = organizations.filter(p => p.id !== id);
-    await store.set('organizations', organizations);
+    await store.del(`organizations/${id}`);
     return id;
   },
   async addContactToOrganization(obj, { id, contactId }, { store, orgs }) {
-    const { organizations = [] } = await store.get('organizations');
-    const organization = organizations.find(p => p.id === id);
+    const organization = await store.get(`organizations/${id}`);
 
     if (!organization) {
       return null;
@@ -106,13 +96,11 @@ export const mutation = {
       organization.contactIds.push(contactId);
     }
 
-    await store.set('organizations', organizations);
-
+    await store.set(`organizations/${id}`, organization);
     return orgs.addRelationsToOrganization(organization);
   },
   async deleteContactFromOrganization(obj, { id, contactId }, { store, orgs }) {
-    const { organizations = [] } = await store.get('organizations');
-    const organization = organizations.find(p => p.id === id);
+    const organization = await store.get(`organizations/${id}`);
 
     if (!organization) {
       return null;
@@ -120,14 +108,14 @@ export const mutation = {
 
     organization.contactIds = organization.contactIds.filter(id => id !== contactId);
 
-    await store.set('organizations', organizations);
-
+    await store.set(`organizations/${id}`, organization);
     return orgs.addRelationsToOrganization(organization);
   },
   async moveContactToOrganization(obj, { id, toOrganization, contactId }, { store, orgs }) {
-    const { organizations = [] } = await store.get('organizations');
-    const organizationFrom = organizations.find(p => p.id === id);
-    const organizationTo = organizations.find(p => p.id === toOrganization);
+    const [organizationFrom, organizationTo] = await Promise.all([
+      store.get(`organizations/${id}`),
+      store.get(`organizations/${toOrganization}`)
+    ]);
 
     if (!organizationFrom || !organizationTo) {
       return null;
@@ -138,37 +126,30 @@ export const mutation = {
       organizationTo.contactIds.push(contactId);
     }
 
-    await store.set('organizations', organizations);
-
+    await Promise.all([
+      store.set(`organizations/${id}`, organizationFrom),
+      store.set(`organizations/${toOrganization}`, organizationTo)
+    ]);
     return orgs.addRelationsToOrganization([organizationFrom, organizationTo]);
   },
   async createStage(obj, { name }, { store, orgs }) {
-    const { stages = [] } = await store.get('stages');
     const stage = orgs.createStage({ name });
-    stages.push(stage);
-    await store.set('stages', stages);
+    await store.set(`stages/${stage.id}`, stage);
     return stage;
   },
   async updateStage(obj, { id, name }, { store }) {
-    const { stages = [] } = await store.get('stages');
-    const idx = stages.findIndex(s => s.id === id);
+    let stage = await store.get(`stages/${id}`);
 
-    stages[idx] = {
-      id,
+    stage = {
+      ...stage,
       name
     };
 
-    await store.set('stages', stages);
-
-    return stages[idx];
+    await store.set(`stages/${id}`, stage);
+    return stage;
   },
   async deleteStage(obj, { id }, { store }) {
-    let { stages = [] } = await store.get('stages');
-
-    stages = stages.filter(s => s.id !== id);
-
-    await store.set('stages', stages);
-
+    await store.del(`stages/${id}`);
     return id;
   }
 };

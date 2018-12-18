@@ -397,8 +397,16 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { remoteOrganizations = [] } }) {
-      return { remoteOrganizations };
+    props({ data: { remoteOrganizations = [] }, ownProps: { organizations = [] } }) {
+      if (organizations.length > 0) {
+        remoteOrganizations = remoteOrganizations.filter(ro =>
+          organizations.find(o => !(o.ref.id === ro.id && o.ref.serviceId === ro._serviceId))
+        );
+      }
+
+      return {
+        remoteOrganizations
+      };
     }
   }),
   graphql(CREATE_ORGANIZATION, {
