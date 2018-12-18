@@ -18,11 +18,11 @@ import SubmitServices from '../form/SubmitServices';
 import RichText from '../editor/RichText';
 
 const initialValues = (organization, stage) => ({
-  id: organization ? organization.id : null,
-  name: organization ? organization.name : '',
-  stage: organization && organization.stage ? organization.stage.id : stage && stage.id ? stage.id : '',
-  url: organization ? organization.url || '' : '',
-  goals: organization ? organization.goals || '' : ''
+  id: organization.id || null,
+  name: organization.name || '',
+  stage: organization.stage ? organization.stage.id : stage && stage.id ? stage.id : '',
+  url: organization.url || '',
+  goals: organization.goals || ''
 });
 
 const validationSchema = Yup.object().shape({
@@ -43,11 +43,22 @@ const styles = theme => ({
 class OrganizationForm extends Component {
   static defaultProps = {
     services: [],
-    stages: []
+    stages: [],
+    organization: {}
   };
 
+  constructor(props) {
+    super(props);
+
+    const { organization } = props;
+
+    if (organization.ref) {
+      this.state.serviceId = organization.ref.serviceId;
+    }
+  }
+
   state = {
-    serviceId: null
+    serviceId: undefined
   };
 
   handleClose = () => {
@@ -62,19 +73,19 @@ class OrganizationForm extends Component {
     actions.setSubmitting(false);
   };
 
-  handleSubmit = (submitForm, serviceId) => {
+  handleSubmit = (serviceId, { submitForm }) => {
     this.setState({ serviceId }, () => {
       submitForm();
     });
   };
 
   render() {
-    const { open, organization, stage, stages, services, onSpellcheck, classes } = this.props;
+    const { organization, stage, stages, services, onSpellcheck, classes } = this.props;
     const { serviceId } = this.state;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">{organization ? 'Edit organization' : 'New organization'}</DialogTitle>
+      <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
+        <DialogTitle id="form-dialog-title">{organization.id ? 'Edit organization' : 'New organization'}</DialogTitle>
         <Divider />
         <Formik
           initialValues={initialValues(organization, stage)}
@@ -121,7 +132,7 @@ class OrganizationForm extends Component {
                 <SubmitServices
                   services={services}
                   serviceId={serviceId}
-                  submitForm={serviceId => this.handleSubmit(props.submitForm, serviceId)}
+                  submitForm={serviceId => this.handleSubmit(serviceId, props)}
                 />
               </DialogActions>
             </Fragment>

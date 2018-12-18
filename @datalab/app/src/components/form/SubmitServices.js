@@ -32,7 +32,7 @@ class SubmitServices extends Component {
   };
 
   render() {
-    const { services, serviceId, submitForm } = this.props;
+    const { services, serviceId } = this.props;
     const { openMenu } = this.state;
 
     let service;
@@ -40,9 +40,11 @@ class SubmitServices extends Component {
 
     if (serviceId) {
       service = services.find(s => s.id === serviceId);
-      handle = submitForm;
     } else if (services.length === 1) {
       service = services[0];
+    }
+
+    if (service) {
       handle = () => this.handleMenuSubmit(service.id);
     }
 

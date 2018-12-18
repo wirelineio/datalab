@@ -316,23 +316,26 @@ class Organizations extends Component {
           updateOrganization={updateOrganization}
         />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
-        <OrganizationForm
-          open={openOrganizationForm}
-          organization={selectedOrganization}
-          stage={selectedStage}
-          stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
-          onClose={this.handleOrganizationFormResult}
-          onSpellcheck={this.handleSpellcheck}
-          services={contactServices}
-        />
-        <ContactForm
-          open={openContactForm}
-          organization={selectedOrganization}
-          contact={selectedContact}
-          remoteContacts={remoteContacts}
-          onClose={this.handleContactFormResult}
-          contactServices={contactServices}
-        />
+        {openOrganizationForm && (
+          <OrganizationForm
+            open={openOrganizationForm}
+            organization={selectedOrganization}
+            stage={selectedStage}
+            stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
+            onClose={this.handleOrganizationFormResult}
+            onSpellcheck={this.handleSpellcheck}
+            services={contactServices}
+          />
+        )}
+        {openContactForm && (
+          <ContactForm
+            organization={selectedOrganization}
+            contact={selectedContact}
+            remoteContacts={remoteContacts}
+            onClose={this.handleContactFormResult}
+            contactServices={contactServices}
+          />
+        )}
         <ImportOrganizationForm
           open={openImportOrganizationForm}
           remoteOrganizations={remoteOrganizations}
@@ -448,16 +451,16 @@ export default compose(
                 data: { contact }
               }
             ) {
-              let { contacts = [] } = cache.readQuery({
+              let { remoteContacts = [] } = cache.readQuery({
                 query: GET_ALL_REMOTE_CONTACTS,
                 context: {
                   serviceType: 'contacts',
                   useNetworkStatusNotifier: false
                 }
               });
-              if (!contacts.find(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId)) {
-                contacts = [
-                  ...contacts,
+              if (!remoteContacts.find(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId)) {
+                remoteContacts = [
+                  ...remoteContacts,
                   {
                     id: contact.ref.id,
                     _serviceId: contact.ref.serviceId,
@@ -475,7 +478,7 @@ export default compose(
                     useNetworkStatusNotifier: false
                   },
                   data: {
-                    contacts
+                    remoteContacts
                   }
                 });
               }
@@ -497,7 +500,7 @@ export default compose(
                 data: { contact }
               }
             ) {
-              let { contacts: remoteContacts = [] } = cache.readQuery({
+              let { remoteContacts = [] } = cache.readQuery({
                 query: GET_ALL_REMOTE_CONTACTS,
                 context: {
                   serviceType: 'contacts',
@@ -541,7 +544,7 @@ export default compose(
                   useNetworkStatusNotifier: false
                 },
                 data: {
-                  contacts: newData.remoteContacts
+                  remoteContacts: newData.remoteContacts
                 }
               });
 

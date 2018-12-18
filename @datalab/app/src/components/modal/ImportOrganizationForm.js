@@ -18,11 +18,13 @@ const initialValues = () => ({
 });
 
 const validationSchema = Yup.object().shape({
-  ref: Yup.object().shape({
-    label: Yup.string().required(),
-    value: Yup.string().required(),
-    serviceId: Yup.string().required()
-  })
+  ref: Yup.object()
+    .shape({
+      label: Yup.string().required(),
+      value: Yup.string().required(),
+      serviceId: Yup.string().required()
+    })
+    .nullable()
 });
 
 const styles = theme => ({
@@ -36,7 +38,8 @@ class ImportOrganizationForm extends Component {
     remoteOrganizations: []
   };
 
-  handleClose = () => {
+  handleClose = e => {
+    e.preventDefault();
     const { onClose } = this.props;
     onClose(false);
   };

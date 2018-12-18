@@ -136,8 +136,8 @@ class Card extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleAddContact}>Add contact</MenuItem>
-          <MenuItem onClick={this.handleEditCard}>Edit record</MenuItem>
-          <MenuItem onClick={this.handleDeleteCard}>Delete record</MenuItem>
+          <MenuItem onClick={this.handleEditCard}>Edit organization</MenuItem>
+          <MenuItem onClick={this.handleDeleteCard}>Delete organization</MenuItem>
         </Menu>
       </Fragment>
     );
@@ -158,7 +158,6 @@ class Card extends Component {
               raised={snapshot.isDragging}
             >
               <CardHeader
-                // onClick={this.handleExpandClick}
                 avatar={
                   <IconButton
                     className={classnames(classes.expand, {

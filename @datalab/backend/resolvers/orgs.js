@@ -53,6 +53,13 @@ export const mutation = {
     const { organizations = [] } = await store.get('organizations');
     let organization;
 
+    if (ref.id) {
+      const used = organizations.find(o => o.ref && ref && o.ref.id === ref.id && o.ref.serviceId === ref.serviceId);
+      if (used) {
+        return null;
+      }
+    }
+
     organization = await orgs.createOrganization({ ref, data, stageId });
 
     if (!organization) {
@@ -60,7 +67,7 @@ export const mutation = {
     }
 
     organizations.push(organization);
-    await store.set('organization', organization);
+    await store.set('organizations', organizations);
     return orgs.addRelationsToOrganization(organization);
   },
   async updateOrganization(obj, { id, data }, { store, orgs }) {
