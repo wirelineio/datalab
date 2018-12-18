@@ -26,7 +26,7 @@ import {
 } from './resolvers/services';
 import { query as queryOrgs, mutation as mutationOrgs } from './resolvers/orgs';
 
-import Orgs from './services/orgs';
+import Orgs from './lib/orgs';
 
 const schema = makeExecutableSchema({
   // Schema types.
