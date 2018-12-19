@@ -70,11 +70,11 @@ class ImportContactForm extends Component {
   };
 
   render() {
-    const { open, classes } = this.props;
+    const { classes } = this.props;
     const options = this.buildOptions();
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-import-contact" fullWidth>
+      <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-import-contact" fullWidth>
         <DialogTitle id="form-dialog-import-contact">Import contact</DialogTitle>
         <Divider />
         <Formik

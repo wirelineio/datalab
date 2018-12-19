@@ -49,8 +49,6 @@ class Contacts extends Component {
     const { createContact, updateContact } = this.props;
 
     if (result) {
-      const { remoteContact = { _serviceId: serviceId } } = result.ref || {};
-
       const data = {
         name: result.name,
         email: result.email.length > 0 ? result.email : null,
@@ -61,17 +59,13 @@ class Contacts extends Component {
         await updateContact({
           id: result.id,
           data,
-          ref: {
-            id: remoteContact.id,
-            serviceId: remoteContact._serviceId
-          }
+          ref: result.ref
         });
       } else {
         await createContact({
           data,
           ref: {
-            id: remoteContact.id,
-            serviceId: remoteContact._serviceId
+            serviceId
           }
         });
       }
@@ -107,19 +101,21 @@ class Contacts extends Component {
           onAddContact={this.handleAddContact}
           onImportContact={this.handleImportContact}
         />
-        <ContactForm
-          open={openContactForm}
-          contact={selectedContact}
-          onClose={this.handleContactFormResult}
-          contactServices={contactServices}
-          disableImport
-        />
-        <ImportContactForm
-          open={openImportContactForm}
-          onClose={this.handleImportContactFormResult}
-          contactServices={contactServices}
-          remoteContacts={remoteContacts}
-        />
+        {openContactForm && (
+          <ContactForm
+            contact={selectedContact}
+            onClose={this.handleContactFormResult}
+            contactServices={contactServices}
+            disableImport
+          />
+        )}
+        {openImportContactForm && (
+          <ImportContactForm
+            onClose={this.handleImportContactFormResult}
+            contactServices={contactServices}
+            remoteContacts={remoteContacts}
+          />
+        )}
       </div>
     );
   }

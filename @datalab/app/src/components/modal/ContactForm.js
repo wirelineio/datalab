@@ -14,13 +14,13 @@ import TextField from '../form/TextField';
 import Autocomplete from '../form/Autocomplete';
 import SubmitServices from '../form/SubmitServices';
 
-const initialValues = ({ organization, contact, refOptions }) => ({
+const initialValues = ({ organization, contact }) => ({
   id: contact.id,
   name: contact.name || '',
   email: contact.email || '',
   phone: contact.phone || '',
   organizationId: organization ? organization.id : null,
-  ref: contact.ref ? refOptions.find(o => o.value === contact.ref.id) : null
+  ref: contact.ref || undefined
 });
 
 const validationSchema = Yup.object().shape({
@@ -78,7 +78,8 @@ class ContactForm extends Component {
     actions.setSubmitting(false);
   };
 
-  handleSubmit = (serviceId, { submitForm }) => {
+  handleSubmit = (serviceId, { submitForm, setSubmitting }) => {
+    setSubmitting(true);
     this.setState({ serviceId }, () => {
       submitForm();
     });
@@ -89,17 +90,19 @@ class ContactForm extends Component {
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
     const isEdit = !!contact.id;
     const { serviceId } = this.state;
+    const contactInitialValues = initialValues({ organization, contact });
 
     return (
       <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{isEdit ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik
-          initialValues={initialValues({ organization, contact, refOptions })}
+          initialValues={contactInitialValues}
           validationSchema={validationSchema}
           onSubmit={this.handleAccept}
           render={props => {
             const { handleSubmit, isSubmitting, values } = props;
+
             return (
               <Fragment>
                 <DialogContent className={classes.dialogContent}>
@@ -155,6 +158,7 @@ class ContactForm extends Component {
                     Cancel
                   </Button>
                   <SubmitServices
+                    isSubmitting={isSubmitting}
                     services={contactServices}
                     serviceId={serviceId}
                     submitForm={serviceId => this.handleSubmit(serviceId, props)}
