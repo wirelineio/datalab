@@ -9,18 +9,6 @@ const serviceTypeByLabel = label => {
   return SERVICE_TYPES.find(t => t === type);
 };
 
-let init = false;
-export const initServices = async store => {
-  if (!init) {
-    const admin = await store.get('profiles/admin');
-    if (!admin) {
-      await store.set('profiles/admin', profiles[0]);
-    }
-    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
-    init = true;
-  }
-};
-
 export const mapProfiles = store => async services => {
   const profile = await store.get('profiles/admin');
 
@@ -175,6 +163,11 @@ export const query = {
 };
 
 export const mutation = {
+  async resetStore(obj, args, { store }) {
+    await store.clear();
+    await store.set('profiles/admin', profiles[0]);
+    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
+  },
   async switchService(obj, { id }, { store, mapProfiles, getAllServices }) {
     const [services, profile] = await Promise.all([getAllServices(), store.get('profiles/admin')]);
 
