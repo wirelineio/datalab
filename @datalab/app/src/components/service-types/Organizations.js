@@ -20,7 +20,7 @@ const styles = theme => ({
   }
 });
 
-class Orgs extends Component {
+class Organizations extends Component {
   state = {
     anchorEl: null,
     menuId: null
@@ -101,4 +101,4 @@ class Orgs extends Component {
   }
 }
 
-export default withStyles(styles)(Orgs);
+export default withStyles(styles)(Organizations);

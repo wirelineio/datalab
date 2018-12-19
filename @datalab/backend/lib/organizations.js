@@ -5,7 +5,7 @@ const uuid = hyperid({
   urlSafe: true
 });
 
-export default class Orgs {
+export default class Organizations {
   constructor({ store, executeInService }) {
     this.store = store;
     this.executeInService = executeInService;

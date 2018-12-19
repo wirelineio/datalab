@@ -24,9 +24,9 @@ import {
   query as queryServices,
   mutation as mutationServices
 } from './resolvers/services';
-import { query as queryOrgs, mutation as mutationOrgs } from './resolvers/orgs';
+import { query as queryOrgs, mutation as mutationOrgs } from './resolvers/organizations';
 
-import Orgs from './lib/orgs';
+import Organizations from './lib/organizations';
 
 const schema = makeExecutableSchema({
   // Schema types.
@@ -94,7 +94,7 @@ module.exports = {
 
     let queryContext = {
       mapProfiles: mapProfiles(store),
-      orgs: new Orgs({
+      orgs: new Organizations({
         store,
         executeInService: _executeInService
       }),

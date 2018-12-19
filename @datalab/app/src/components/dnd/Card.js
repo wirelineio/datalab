@@ -18,7 +18,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import blue from '@material-ui/core/colors/blue';
 
-import Orgs from '../service-types/Orgs';
+import Organizations from '../service-types/Organizations';
 
 const styles = theme => ({
   card: {
@@ -199,7 +199,7 @@ class Card extends Component {
                     {data.goals}
                   </Typography>
                   <FormLabel className={classes.formLabel}>Contacts</FormLabel>
-                  <Orgs
+                  <Organizations
                     id={id}
                     contacts={data.contacts}
                     onEditContact={onEditContact}
