@@ -516,7 +516,7 @@ export default compose(
                 }
               });
 
-              let { organizations = [], ...dataOrgs } = cache.readQuery({
+              let { organizations = [], ...dataOrganizations } = cache.readQuery({
                 query: GET_ALL_ORGANIZATIONS
               });
 
@@ -558,7 +558,7 @@ export default compose(
 
               cache.writeQuery({
                 query: GET_ALL_ORGANIZATIONS,
-                data: { organizations: newData.organizations, ...dataOrgs }
+                data: { organizations: newData.organizations, ...dataOrganizations }
               });
             }
           });
