@@ -28,78 +28,58 @@ const schema = makeExecutableSchema({
   resolvers: {
     Query: {
       async getAllRemoteOrganizations(obj, args, { store }) {
-        const { organizations = [] } = await store.get('organizations');
-        return organizations;
+        return store.scan('organizations');
       },
       async getRemoteOrganization(obj, { id }, { store }) {
-        const { organizations = [] } = await store.get('organizations');
-        return organizations.find(o => o.id === id);
+        return store.get(`organizations/${id}`);
       },
       async getAllRemoteContacts(obj, args, { store }) {
-        const { contacts = [] } = await store.get('contacts');
-        return contacts;
+        return store.scan('contacts');
       },
       async getRemoteContact(obj, { id }, { store }) {
-        const { contacts = [] } = await store.get('contacts');
-        return contacts.find(c => c.id === id);
+        return store.get(`contacts/${id}`);
       }
     },
     Mutation: {
       async createRemoteOrganization(obj, args, { store }) {
-        const { organizations = [] } = await store.get('organizations');
-
         const organization = Object.assign({}, args, { id: uuid() });
-        organizations.push(organization);
-        await store.set('organizations', organizations);
-
+        await store.set(`organizations/${organization.id}`, organization);
         return organization;
       },
       async updateRemoteOrganization(obj, { id, ...args }, { store }) {
-        const { organizations = [] } = await store.get('organizations');
-        const idx = organizations.findIndex(o => o.id === id);
+        let organization = await store.get(`organizations/${id}`);
 
-        if (idx === -1) {
+        if (!organization) {
           return null;
         }
 
-        organizations[idx] = {
-          ...organizations[idx],
+        organization = {
+          ...organization,
           ...args
         };
 
-        await store.set('organizations', organizations);
-        return organizations[idx];
+        await store.set(`organizations/${id}`, organization);
+        return organization;
       },
       async createRemoteContact(obj, args, { store }) {
-        const { contacts = [] } = await store.get('contacts');
-
         const contact = Object.assign({}, args, { id: uuid() });
-        contacts.push(contact);
-        await store.set('contacts', contacts);
-
+        await store.set(`contacts/${contact.id}`, contact);
         return contact;
       },
       async updateRemoteContact(obj, { id, ...args }, { store }) {
-        const { contacts = [] } = await store.get('contacts');
-        const idx = contacts.findIndex(c => c.id === id);
+        let contact = await store.get(`contacts/${id}`);
 
-        if (idx === -1) {
+        if (!contact) {
           return null;
         }
 
-        contacts[idx] = {
-          ...contacts[idx],
+        contact = {
+          ...contact,
           ...args
         };
 
-        await store.set('contacts', contacts);
-        return contacts[idx];
-      },
-      async deleteContact(obj, { id }, { store }) {
-        let { contacts = [] } = await store.get('contacts');
-        contacts = contacts.filter(c => c.id !== id);
-        await store.set('contacts', contacts);
-        return id;
+        await store.set(`contacts/${contact.id}`, contact);
+        return contact;
       }
     }
   }
@@ -112,15 +92,25 @@ module.exports = {
 
     let queryRoot = {};
     const store = new Store(context, { bucket: 'datalab-contacts' });
+    store.oldscan = store.scan;
+    store.scan = async key => {
+      const result = await store.oldscan(key);
+      return result.map(r => r.value);
+    };
+    store.oldget = store.get;
+    store.get = async (key, defaultTo) => {
+      const result = await store.oldget(key);
+
+      if (result[key] !== undefined) {
+        return result[key];
+      }
+
+      return defaultTo === undefined ? null : defaultTo;
+    };
+
     let queryContext = {
       store
     };
-
-    //await store.set('contacts', [
-    //{ id: 'contact-1', name: 'Martin Acosta', email: 'martin@geut.com', phone: '33333' },
-    //{ id: 'contact-2', name: 'Esteban Primost', email: 'esteban@geut.com', phone: '2222' },
-    //{ id: 'contact-3', name: 'Maximiliano Fierro', email: 'max@geut.com', phone: '5555' }
-    //]);
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });

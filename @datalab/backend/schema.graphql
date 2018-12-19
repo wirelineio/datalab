@@ -94,6 +94,8 @@ type Mutation {
 
   switchService(id: ID!): Service!
 
+  resetStore: Boolean
+
   ### ORGS
 
   createOrganization(ref: InputRemoteReference!, data: InputRemoteOrganization, stageId: ID): Organization

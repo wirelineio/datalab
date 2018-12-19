@@ -16,7 +16,6 @@ import { Kind } from 'graphql/language';
 import SourceSchema from './schema.graphql';
 
 import {
-  initServices,
   mapProfiles,
   getAllServices,
   getAllEnabledServices,
@@ -107,8 +106,6 @@ module.exports = {
       compute,
       wrnServices
     };
-
-    await initServices(store);
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });
