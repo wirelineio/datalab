@@ -25,6 +25,7 @@ import {
   mutation as mutationServices
 } from './resolvers/services';
 import { query as queryOrganizations, mutation as mutationOrganizations } from './resolvers/organizations';
+import { query as queryContacts, mutation as mutationContacts } from './resolvers/contacts';
 
 import Organizations from './lib/organizations';
 
@@ -34,8 +35,8 @@ const schema = makeExecutableSchema({
 
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
-    Query: { ...queryServices, ...queryOrganizations },
-    Mutation: { ...mutationServices, ...mutationOrganizations },
+    Query: { ...queryServices, ...queryOrganizations, ...queryContacts },
+    Mutation: { ...mutationServices, ...mutationOrganizations, ...mutationContacts },
     Date: new GraphQLScalarType({
       name: 'Date',
       description: 'Date custom scalar type',

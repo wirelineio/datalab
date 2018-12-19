@@ -9,42 +9,6 @@ export const query = {
 };
 
 export const mutation = {
-  async createContact(obj, { ref, data }, { store, orgs }) {
-    const contacts = await store.scan('contacts');
-    let contact;
-
-    if (ref.id) {
-      contact = contacts.find(c => c.ref && ref && c.ref.id === ref.id && c.ref.serviceId === ref.serviceId);
-      if (contact) {
-        return contact;
-      }
-    }
-
-    contact = await orgs.createContact({ ref, data });
-
-    if (!contact) {
-      return null;
-    }
-
-    await store.set(`contacts/${contact.id}`, contact);
-    return contact;
-  },
-  async updateContact(obj, { id, data }, { store, orgs }) {
-    let contact = await store.get(`contacts/${id}`);
-
-    if (!contact) {
-      return null;
-    }
-
-    contact = await orgs.updateContact({ contact, data });
-
-    if (!contact) {
-      return null;
-    }
-
-    await store.set(`contacts/${id}`, contact);
-    return contact;
-  },
   async createOrganization(obj, { ref, data, stageId }, { orgs, store }) {
     const organizations = await store.scan('organizations');
     let organization;
