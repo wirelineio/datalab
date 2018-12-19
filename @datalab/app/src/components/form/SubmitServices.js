@@ -32,7 +32,7 @@ class SubmitServices extends Component {
   };
 
   render() {
-    const { services, serviceId } = this.props;
+    const { services, serviceId, isSubmitting } = this.props;
     const { openMenu } = this.state;
 
     let service;
@@ -51,7 +51,7 @@ class SubmitServices extends Component {
     return (
       <Fragment>
         <Button
-          disabled={services.length === 0}
+          disabled={services.length === 0 || isSubmitting}
           buttonRef={node => {
             this.submitAnchorEl = node;
           }}

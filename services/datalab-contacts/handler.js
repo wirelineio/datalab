@@ -94,6 +94,12 @@ const schema = makeExecutableSchema({
 
         await store.set('contacts', contacts);
         return contacts[idx];
+      },
+      async deleteContact(obj, { id }, { store }) {
+        let { contacts = [] } = await store.get('contacts');
+        contacts = contacts.filter(c => c.id !== id);
+        await store.set('contacts', contacts);
+        return id;
       }
     }
   }
