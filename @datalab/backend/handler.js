@@ -24,7 +24,9 @@ import {
   query as queryServices,
   mutation as mutationServices
 } from './resolvers/services';
-import { addRelationsToOrganization, query as queryOrgs, mutation as mutationOrgs } from './resolvers/orgs';
+import { query as queryOrganizations, mutation as mutationOrganizations } from './resolvers/organizations';
+
+import Organizations from './lib/organizations';
 
 const schema = makeExecutableSchema({
   // Schema types.
@@ -32,8 +34,8 @@ const schema = makeExecutableSchema({
 
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
-    Query: { ...queryServices, ...queryOrgs },
-    Mutation: { ...mutationServices, ...mutationOrgs },
+    Query: { ...queryServices, ...queryOrganizations },
+    Mutation: { ...mutationServices, ...mutationOrganizations },
     Date: new GraphQLScalarType({
       name: 'Date',
       description: 'Date custom scalar type',
@@ -60,6 +62,22 @@ module.exports = {
     let queryRoot = {};
 
     const store = new Store(context);
+    store.oldscan = store.scan;
+    store.scan = async key => {
+      const result = await store.oldscan(key);
+      return result.map(r => r.value);
+    };
+    store.oldget = store.get;
+    store.get = async (key, defaultTo) => {
+      const result = await store.oldget(key);
+
+      if (result[key] !== undefined) {
+        return result[key];
+      }
+
+      return defaultTo === undefined ? null : defaultTo;
+    };
+
     const registry = new Registry({
       endpoint: Registry.getEndpoint(),
       accessKey: context.wireline.accessKey
@@ -76,7 +94,7 @@ module.exports = {
 
     let queryContext = {
       mapProfiles: mapProfiles(store),
-      addRelationsToOrganization: addRelationsToOrganization({
+      orgs: new Organizations({
         store,
         executeInService: _executeInService
       }),

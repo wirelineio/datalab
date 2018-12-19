@@ -18,7 +18,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import blue from '@material-ui/core/colors/blue';
 
-import Orgs from '../service-types/Orgs';
+import Organizations from '../service-types/Organizations';
 
 const styles = theme => ({
   card: {
@@ -136,8 +136,8 @@ class Card extends Component {
         </IconButton>
         <Menu id={menuId} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           <MenuItem onClick={this.handleAddContact}>Add contact</MenuItem>
-          <MenuItem onClick={this.handleEditCard}>Edit record</MenuItem>
-          <MenuItem onClick={this.handleDeleteCard}>Delete record</MenuItem>
+          <MenuItem onClick={this.handleEditCard}>Edit organization</MenuItem>
+          <MenuItem onClick={this.handleDeleteCard}>Delete organization</MenuItem>
         </Menu>
       </Fragment>
     );
@@ -158,7 +158,6 @@ class Card extends Component {
               raised={snapshot.isDragging}
             >
               <CardHeader
-                // onClick={this.handleExpandClick}
                 avatar={
                   <IconButton
                     className={classnames(classes.expand, {
@@ -200,7 +199,7 @@ class Card extends Component {
                     {data.goals}
                   </Typography>
                   <FormLabel className={classes.formLabel}>Contacts</FormLabel>
-                  <Orgs
+                  <Organizations
                     id={id}
                     contacts={data.contacts}
                     onEditContact={onEditContact}

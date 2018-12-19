@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Content, Spinner } from 'native-base';
 
-import { GET_ALL_ORGANIZATIONS } from '../../stores/orgs';
+import { GET_ALL_ORGANIZATIONS } from '../../stores/organizations';
 import { GET_SERVICES, getType } from '../../stores/services';
 import List from '../../components/organizations/List';
 

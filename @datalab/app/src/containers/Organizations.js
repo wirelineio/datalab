@@ -33,12 +33,13 @@ import {
 } from '../stores/organizations';
 
 // remote services
-import { GET_ALL_REMOTE_CONTACTS } from '../stores/contacts';
+import { GET_ALL_REMOTE_CONTACTS, GET_ALL_REMOTE_ORGANIZATIONS } from '../stores/contacts';
 import { SPELLCHECK } from '../stores/spellcheck';
 
 import StageForm from '../components/modal/StageForm';
 import OrganizationForm from '../components/modal/OrganizationForm';
 import ContactForm from '../components/modal/ContactForm';
+import ImportOrganizationForm from '../components/modal/ImportOrganizationForm';
 
 import Graph from '../components/organizations/Graph';
 import Kanban from '../components/organizations/Kanban';
@@ -61,6 +62,7 @@ class Organizations extends Component {
     openStageForm: false,
     openOrganizationForm: false,
     openContactForm: false,
+    openImportOrganizationForm: false,
     selectedStage: undefined,
     selectedOrganization: undefined,
     selectedContact: undefined
@@ -123,21 +125,43 @@ class Organizations extends Component {
     this.setState({ openOrganizationForm: true, selectedOrganization: organization });
   };
 
-  handleOrganizationFormResult = async result => {
+  handleImportOrganization = stage => {
+    this.setState({ openImportOrganizationForm: true, selectedStage: stage });
+  };
+
+  handleImportOrganizationFormResult = async result => {
+    const { createOrganization } = this.props;
+    const { selectedStage } = this.state;
+
+    if (result) {
+      await createOrganization({
+        ref: {
+          id: result.ref.value,
+          serviceId: result.ref.serviceId
+        },
+        stageId: selectedStage ? selectedStage.id : null
+      });
+    }
+
+    this.setState({ openImportOrganizationForm: false, selectedStage: undefined });
+  };
+
+  handleOrganizationFormResult = async (result, serviceId) => {
     const { createOrganization, updateOrganization } = this.props;
 
     if (result) {
       const data = {
         name: result.name,
         url: result.url.length > 0 ? result.url : null,
-        goals: result.goals.length > 0 ? result.goals : null,
-        stageId: result.stage || null
+        goals: result.goals.length > 0 ? result.goals : null
       };
 
+      const stageId = result.stage || null;
+
       if (result.id) {
-        await updateOrganization({ id: result.id, ...data });
+        await updateOrganization({ id: result.id, data, stageId });
       } else {
-        await createOrganization(data);
+        await createOrganization({ ref: { serviceId }, data, stageId });
       }
     }
 
@@ -234,7 +258,8 @@ class Organizations extends Component {
       remoteContacts = [],
       updateOrganization,
       moveContactToOrganization,
-      contactServices
+      contactServices,
+      remoteOrganizations = []
     } = this.props;
     const {
       selectedView,
@@ -243,7 +268,8 @@ class Organizations extends Component {
       openOrganizationForm,
       selectedOrganization,
       openContactForm,
-      selectedContact
+      selectedContact,
+      openImportOrganizationForm
     } = this.state;
     const selectedViewCfg = this.views[selectedView];
     const SelectedView = selectedViewCfg.Component;
@@ -275,6 +301,7 @@ class Organizations extends Component {
         <SelectedView
           organizations={organizations}
           stages={stages}
+          onImportOrganization={this.handleImportOrganization}
           onAddOrganization={this.handleAddOrganization}
           onEditOrganization={this.handleEditOrganization}
           onDeleteOrganization={this.handleDeleteOrganization}
@@ -289,21 +316,30 @@ class Organizations extends Component {
           updateOrganization={updateOrganization}
         />
         <StageForm open={openStageForm} stage={selectedStage} onClose={this.handleStageFormResult} />
-        <OrganizationForm
-          open={openOrganizationForm}
-          organization={selectedOrganization}
-          stage={selectedStage}
-          stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
-          onClose={this.handleOrganizationFormResult}
-          onSpellcheck={this.handleSpellcheck}
-        />
-        <ContactForm
-          open={openContactForm}
-          organization={selectedOrganization}
-          contact={selectedContact}
-          remoteContacts={remoteContacts}
-          onClose={this.handleContactFormResult}
-          contactServices={contactServices}
+        {openOrganizationForm && (
+          <OrganizationForm
+            open={openOrganizationForm}
+            organization={selectedOrganization}
+            stage={selectedStage}
+            stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
+            onClose={this.handleOrganizationFormResult}
+            onSpellcheck={this.handleSpellcheck}
+            services={contactServices}
+          />
+        )}
+        {openContactForm && (
+          <ContactForm
+            organization={selectedOrganization}
+            contact={selectedContact}
+            remoteContacts={remoteContacts}
+            onClose={this.handleContactFormResult}
+            contactServices={contactServices}
+          />
+        )}
+        <ImportOrganizationForm
+          open={openImportOrganizationForm}
+          remoteOrganizations={remoteOrganizations}
+          onClose={this.handleImportOrganizationFormResult}
         />
       </div>
     );
@@ -347,8 +383,30 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { contacts = [] } }) {
-      return { remoteContacts: contacts };
+    props({ data: { remoteContacts = [] } }) {
+      return { remoteContacts };
+    }
+  }),
+  graphql(GET_ALL_REMOTE_ORGANIZATIONS, {
+    skip({ services = [] }) {
+      return !services.find(s => s.type === 'contacts');
+    },
+    options: {
+      context: {
+        serviceType: 'contacts',
+        useNetworkStatusNotifier: false
+      }
+    },
+    props({ data: { remoteOrganizations = [] }, ownProps: { organizations = [] } }) {
+      if (organizations.length > 0) {
+        remoteOrganizations = remoteOrganizations.filter(ro =>
+          organizations.find(o => !(o.ref.id === ro.id && o.ref.serviceId === ro._serviceId))
+        );
+      }
+
+      return {
+        remoteOrganizations
+      };
     }
   }),
   graphql(CREATE_ORGANIZATION, {
@@ -401,16 +459,16 @@ export default compose(
                 data: { contact }
               }
             ) {
-              let { contacts = [] } = cache.readQuery({
+              let { remoteContacts = [] } = cache.readQuery({
                 query: GET_ALL_REMOTE_CONTACTS,
                 context: {
                   serviceType: 'contacts',
                   useNetworkStatusNotifier: false
                 }
               });
-              if (!contacts.find(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId)) {
-                contacts = [
-                  ...contacts,
+              if (!remoteContacts.find(c => c.id === contact.ref.id && c._serviceId === contact.ref.serviceId)) {
+                remoteContacts = [
+                  ...remoteContacts,
                   {
                     id: contact.ref.id,
                     _serviceId: contact.ref.serviceId,
@@ -428,7 +486,7 @@ export default compose(
                     useNetworkStatusNotifier: false
                   },
                   data: {
-                    contacts
+                    remoteContacts
                   }
                 });
               }
@@ -450,7 +508,7 @@ export default compose(
                 data: { contact }
               }
             ) {
-              let { contacts: remoteContacts = [] } = cache.readQuery({
+              let { remoteContacts = [] } = cache.readQuery({
                 query: GET_ALL_REMOTE_CONTACTS,
                 context: {
                   serviceType: 'contacts',
@@ -458,7 +516,7 @@ export default compose(
                 }
               });
 
-              let { organizations = [], ...dataOrgs } = cache.readQuery({
+              let { organizations = [], ...dataOrganizations } = cache.readQuery({
                 query: GET_ALL_ORGANIZATIONS
               });
 
@@ -494,13 +552,13 @@ export default compose(
                   useNetworkStatusNotifier: false
                 },
                 data: {
-                  contacts: newData.remoteContacts
+                  remoteContacts: newData.remoteContacts
                 }
               });
 
               cache.writeQuery({
                 query: GET_ALL_ORGANIZATIONS,
-                data: { organizations: newData.organizations, ...dataOrgs }
+                data: { organizations: newData.organizations, ...dataOrganizations }
               });
             }
           });

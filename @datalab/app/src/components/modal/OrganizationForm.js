@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,20 +7,22 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
+import { withStyles } from '@material-ui/core/styles';
 
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
+import SubmitServices from '../form/SubmitServices';
 // import Autocomplete from '../form/Autocomplete';
 import RichText from '../editor/RichText';
 
 const initialValues = (organization, stage) => ({
-  id: organization ? organization.id : null,
-  name: organization ? organization.name : '',
-  stage: organization && organization.stage ? organization.stage.id : stage && stage.id ? stage.id : '',
-  url: organization ? organization.url || '' : '',
-  goals: organization ? organization.goals || '' : ''
+  id: organization.id || null,
+  name: organization.name || '',
+  stage: organization.stage ? organization.stage.id : stage && stage.id ? stage.id : '',
+  url: organization.url || '',
+  goals: organization.goals || ''
 });
 
 const validationSchema = Yup.object().shape({
@@ -40,6 +41,26 @@ const styles = theme => ({
 });
 
 class OrganizationForm extends Component {
+  static defaultProps = {
+    services: [],
+    stages: [],
+    organization: {}
+  };
+
+  constructor(props) {
+    super(props);
+
+    const { organization } = props;
+
+    if (organization.ref) {
+      this.state.serviceId = organization.ref.serviceId;
+    }
+  }
+
+  state = {
+    serviceId: undefined
+  };
+
   handleClose = () => {
     const { onClose } = this.props;
     onClose(false);
@@ -47,16 +68,24 @@ class OrganizationForm extends Component {
 
   handleAccept = (values, actions) => {
     const { onClose } = this.props;
-    onClose(values);
+    const { serviceId } = this.state;
+    onClose(values, serviceId);
     actions.setSubmitting(false);
   };
 
+  handleSubmit = (serviceId, { submitForm }) => {
+    this.setState({ serviceId }, () => {
+      submitForm();
+    });
+  };
+
   render() {
-    const { open, organization, stage, stages = [], onSpellcheck, classes } = this.props;
+    const { organization, stage, stages, services, onSpellcheck, classes } = this.props;
+    const { serviceId } = this.state;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
-        <DialogTitle id="form-dialog-title">{organization ? 'Edit organization' : 'New organization'}</DialogTitle>
+      <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
+        <DialogTitle id="form-dialog-title">{organization.id ? 'Edit organization' : 'New organization'}</DialogTitle>
         <Divider />
         <Formik
           initialValues={initialValues(organization, stage)}
@@ -100,9 +129,11 @@ class OrganizationForm extends Component {
                 <Button onClick={this.handleClose} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={props.submitForm} color="primary">
-                  Save
-                </Button>
+                <SubmitServices
+                  services={services}
+                  serviceId={serviceId}
+                  submitForm={serviceId => this.handleSubmit(serviceId, props)}
+                />
               </DialogActions>
             </Fragment>
           )}

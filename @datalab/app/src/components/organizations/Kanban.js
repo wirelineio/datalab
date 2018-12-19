@@ -122,6 +122,7 @@ class Kanban extends Component {
       onAddStage,
       onEditStage,
       onDeleteStage,
+      onImportOrganization,
       classes
     } = this.props;
     const columns = this.updateKanban({ organizations, stages });
@@ -139,6 +140,7 @@ class Kanban extends Component {
                 onEditColumn={() => onEditStage(data)}
                 onDeleteColumn={() => onDeleteStage(data)}
                 onAddCard={() => onAddOrganization(data)}
+                onImportOrganization={() => onImportOrganization(data)}
               >
                 {({ item: { id, title, index, data } }) => {
                   return (

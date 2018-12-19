@@ -33,6 +33,10 @@ export const FragmentOrganizationFields = gql`
     contacts {
       ...ContactFields
     }
+    ref {
+      id
+      serviceId
+    }
   }
   ${FragmentStageFields}
   ${FragmentContactFields}
@@ -70,8 +74,8 @@ export const UPDATE_CONTACT = gql`
 `;
 
 export const CREATE_ORGANIZATION = gql`
-  mutation CreateOrganization($name: String!, $url: String, $goals: String, $stageId: ID) {
-    organization: createOrganization(name: $name, url: $url, goals: $goals, stageId: $stageId) {
+  mutation CreateOrganization($ref: InputRemoteReference!, $data: InputRemoteOrganization, $stageId: ID) {
+    organization: createOrganization(ref: $ref, data: $data, stageId: $stageId) {
       ...OrganizationFields
     }
   }
@@ -79,8 +83,8 @@ export const CREATE_ORGANIZATION = gql`
 `;
 
 export const UPDATE_ORGANIZATION = gql`
-  mutation UpdateOrganization($id: ID!, $name: String, $url: String, $goals: String, $stageId: ID) {
-    organization: updateOrganization(id: $id, name: $name, url: $url, goals: $goals, stageId: $stageId) {
+  mutation UpdateOrganization($id: ID!, $data: InputRemoteOrganization, $stageId: ID) {
+    organization: updateOrganization(id: $id, data: $data, stageId: $stageId) {
       ...OrganizationFields
     }
   }

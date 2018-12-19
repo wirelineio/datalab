@@ -18,6 +18,7 @@ import * as Yup from 'yup';
 
 import TextField from '../form/TextField';
 import Autocomplete from '../form/Autocomplete';
+import SubmitServices from '../form/SubmitServices';
 
 const initialValues = ({ organization, contact, refOptions }) => ({
   id: contact.id,
@@ -56,9 +57,18 @@ class ContactForm extends Component {
     remoteContacts: []
   };
 
+  constructor(props) {
+    super(props);
+
+    const { contact } = props;
+
+    if (contact.ref) {
+      this.state.serviceId = contact.ref.serviceId;
+    }
+  }
+
   state = {
-    openMenu: false,
-    serviceId: null
+    serviceId: undefined
   };
 
   handleClose = () => {
@@ -73,84 +83,21 @@ class ContactForm extends Component {
     actions.setSubmitting(false);
   };
 
-  handleMenuToggle = () => {
-    this.setState(state => ({
-      openMenu: !state.openMenu
-    }));
-  };
-
-  handleMenuSubmit = ({ serviceId, submitForm }) => {
-    this.setState(
-      {
-        openMenu: false,
-        serviceId
-      },
-      () => {
-        submitForm();
-      }
-    );
-  };
-
-  renderMenu = ({ submitForm, values }) => {
-    const { contactServices } = this.props;
-    const { openMenu } = this.state;
-
-    let service;
-    let handle = this.handleMenuToggle;
-    if (values.ref) {
-      const { remoteContact } = values.ref;
-      service = contactServices.find(s => s.id === remoteContact._serviceId);
-      handle = submitForm;
-    } else if (contactServices.length === 1) {
-      service = contactServices[0];
-      handle = this.handleMenuSubmit.bind(this, { serviceId: service.id, submitForm });
-    }
-
-    return (
-      <Fragment>
-        <Button
-          buttonRef={node => {
-            this.submitAnchorEl = node;
-          }}
-          aria-owns={openMenu ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handle}
-          color="primary"
-        >
-          Save in{service && ` ${service.name}`}
-        </Button>
-        <Popper open={openMenu} anchorEl={this.submitAnchorEl} transition disablePortal>
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              id="menu-list-grow"
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleMenuToggle}>
-                  <MenuList>
-                    {contactServices.map(s => (
-                      <MenuItem key={s.id} onClick={this.handleMenuSubmit.bind(this, { serviceId: s.id, submitForm })}>
-                        {s.name}
-                      </MenuItem>
-                    ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </Fragment>
-    );
+  handleSubmit = (serviceId, { submitForm }) => {
+    this.setState({ serviceId }, () => {
+      submitForm();
+    });
   };
 
   render() {
-    const { open, organization, contact, remoteContacts, classes } = this.props;
+    const { organization, contact, remoteContacts, classes, contactServices } = this.props;
+    const { serviceId } = this.state;
+
     const refOptions = remoteContacts.map(c => ({ label: c.name, value: c.id, remoteContact: c }));
     const isEdit = !!contact.id;
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
+      <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{isEdit ? 'Edit contact' : 'New contact'}</DialogTitle>
         <Divider />
         <Formik
@@ -215,7 +162,11 @@ class ContactForm extends Component {
                   <Button onClick={this.handleClose} color="primary">
                     Cancel
                   </Button>
-                  {this.renderMenu({ submitForm: props.submitForm, values: props.values })}
+                  <SubmitServices
+                    services={contactServices}
+                    serviceId={serviceId}
+                    submitForm={serviceId => this.handleSubmit(serviceId, props)}
+                  />
                 </DialogActions>
               </Fragment>
             );
