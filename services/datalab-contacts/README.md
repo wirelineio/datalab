@@ -9,6 +9,14 @@
   #
   # Types
   #
+  type RemoteOrganization {
+    id: ID!
+    name: String!
+    url: String
+    goals: String
+    contacts: [RemoteContact]
+  }
+
   type RemoteContact {
     id: ID!
     name: String!
@@ -21,13 +29,25 @@
   #
 
   type Query {
+    getAllRemoteOrganizations: [RemoteOrganization!]
 
-    getAllContacts: [RemoteContact!]
+    getRemoteOrganization(id: ID!): RemoteOrganization
 
-    getContact(id: ID!): RemoteContact
+    getAllRemoteContacts: [RemoteContact!]
 
-    search(value: String!): [RemoteContact!]
+    getRemoteContact(id: ID!): RemoteContact
+  }
 
+  type Mutation {
+    createRemoteOrganization(name: String!, url: String, goals: String): RemoteOrganization
+
+    updateRemoteOrganization(id: ID!, name: String, url: String, goals: String): RemoteOrganization
+
+    createRemoteContact(name: String, email: String, phone: String): RemoteContact
+
+    updateRemoteContact(id: ID!, name: String, email: String, phone: String): RemoteContact
+
+    deleteContact(id: ID!): ID
   }
 
   #
@@ -35,5 +55,6 @@
   #
   schema {
     query: Query
+    mutation: Mutation
   }
   ```

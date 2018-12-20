@@ -40,6 +40,11 @@ type Mutation {
   updateRemoteContact(id: ID!, name: String, email: String, phone: String): RemoteContact
 
   deleteContact(id: ID!): ID
+
+
+  # ignore
+
+  resetStore: Boolean
 }
 
 #

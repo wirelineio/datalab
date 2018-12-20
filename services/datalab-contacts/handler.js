@@ -80,6 +80,9 @@ const schema = makeExecutableSchema({
 
         await store.set(`contacts/${contact.id}`, contact);
         return contact;
+      },
+      async resetStore(obj, args, { store }) {
+        await store.clear();
       }
     }
   }
