@@ -14,6 +14,19 @@ export const stackNavigation = {
     headerLeftContainerStyle: {
       padding: 16
     },
-    headerLeft: <Icon name="group" onPress={navigation.openDrawer} color="#fff" size={24} />
+    headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" size={24} />
   })
+};
+
+export const goBack = navigation => {
+  let backKey = navigation.getParam('backKey', false);
+  if (backKey) {
+    // clear backKey so navigation doesnt break
+    navigation.setParams({ backKey: null });
+    // navigate back to other stack navigator
+    navigation.navigate(backKey);
+  } else {
+    // regular go back
+    navigation.goBack();
+  }
 };

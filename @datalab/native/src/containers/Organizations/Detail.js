@@ -10,7 +10,7 @@ export default props => {
     <Content>
       <OrganizationsDetail
         organization={organization}
-        onContactPress={contact => navigation.navigate('ContactsDetail', { contact })}
+        onContactPress={contact => navigation.navigate('ContactsDetail', { contact, backKey: 'OrganizationsDetail' })}
       />
     </Content>
   );
