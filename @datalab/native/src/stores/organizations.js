@@ -1,26 +1,55 @@
 import gql from 'graphql-tag';
 
+export const FragmentStageFields = gql`
+  fragment StageFields on Stage {
+    id
+    name
+  }
+`;
+
+export const FragmentContactFields = gql`
+  fragment ContactFields on Contact {
+    id
+    name
+    email
+    phone
+    ref {
+      id
+      serviceId
+    }
+  }
+`;
+
+export const FragmentOrganizationFields = gql`
+  fragment OrganizationFields on Organization {
+    id
+    name
+    url
+    goals
+    stage {
+      ...StageFields
+    }
+    contacts {
+      ...ContactFields
+    }
+    ref {
+      id
+      serviceId
+    }
+  }
+  ${FragmentStageFields}
+  ${FragmentContactFields}
+`;
+
 export const GET_ALL_ORGANIZATIONS = gql`
   query GetAllOrganizations {
     organizations: getAllOrganizations {
-      id
-      name
-      url
-      goals
-      stage {
-        id
-        name
-      }
-      contacts {
-        id
-        name
-        email
-        phone
-      }
+      ...OrganizationFields
     }
     stages: getAllStages {
-      id
-      name
+      ...StageFields
     }
   }
+  ${FragmentOrganizationFields}
+  ${FragmentStageFields}
 `;

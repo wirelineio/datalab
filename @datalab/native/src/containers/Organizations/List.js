@@ -3,7 +3,7 @@ import { compose, graphql, withApollo } from 'react-apollo';
 import { Content, Spinner } from 'native-base';
 
 import { GET_ALL_ORGANIZATIONS } from '../../stores/organizations';
-import { GET_SERVICES, getType } from '../../stores/services';
+import { GET_SERVICES } from '../../stores/services';
 import List from '../../components/organizations/List';
 
 const Organizations = props => {
@@ -32,7 +32,9 @@ const Organizations = props => {
     <Content>
       <List
         data={organizations}
-        onItemPress={id => navigation.navigate('OrganizationsDetail', { organization: organizations.find(p => id === p.id) })}
+        onItemPress={id =>
+          navigation.navigate('OrganizationsDetail', { organization: organizations.find(p => id === p.id) })
+        }
       />
     </Content>
   );
@@ -47,16 +49,16 @@ export default compose(
       }
     },
     props({ data: { services = [] }, ownProps: { client } }) {
-      services = services.map(s => ({ ...s, type: getType(s) }));
-
+      // return for now only the enabled services
       client.updateServices(services);
-      return { services: services.filter(s => s.enabled) };
+      const servicesEnabled = services.filter(s => s.enabled);
+      return {
+        services: servicesEnabled,
+        contactServices: servicesEnabled.filter(s => s.type === 'contacts')
+      };
     }
   }),
   graphql(GET_ALL_ORGANIZATIONS, {
-    options: {
-      pollInterval: 30000
-    },
     props({ data: { organizations = [], stages = [], loading } }) {
       return {
         organizations,
