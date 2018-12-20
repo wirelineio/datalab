@@ -14,6 +14,7 @@ import List from '../components/contacts/List';
 import ContactForm from '../components/modal/ContactForm';
 import { UPDATE_CONTACT, CREATE_CONTACT } from '../stores/organizations';
 import ImportContactForm from '../components/modal/ImportContactForm';
+import { ContentLoader } from '../components/Loader';
 
 const styles = theme => ({
   root: {},
@@ -90,17 +91,21 @@ class Contacts extends Component {
   };
 
   render() {
-    const { classes, contacts = [], remoteContacts = [], contactServices } = this.props;
+    const { classes, contacts = [], remoteContacts = [], contactServices = [], contactsLoading = true } = this.props;
     const { openContactForm, openImportContactForm, selectedContact } = this.state;
 
     return (
       <div className={classes.root}>
-        <List
-          contacts={contacts}
-          onEditContact={this.handleEditContact}
-          onAddContact={this.handleAddContact}
-          onImportContact={this.handleImportContact}
-        />
+        {contactsLoading ? (
+          <ContentLoader loading={true} />
+        ) : (
+          <List
+            contacts={contacts}
+            onEditContact={this.handleEditContact}
+            onAddContact={this.handleAddContact}
+            onImportContact={this.handleImportContact}
+          />
+        )}
         {openContactForm && (
           <ContactForm
             contact={selectedContact}
@@ -145,8 +150,8 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { contacts = [] } }) {
-      return { contacts };
+    props({ data: { contacts = [], loading } }) {
+      return { contacts, contactsLoading: loading };
     }
   }),
   graphql(GET_ALL_REMOTE_CONTACTS, {
@@ -160,8 +165,16 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { remoteContacts = [] } }) {
-      return { remoteContacts };
+    props({ data: { remoteContacts = [] }, ownProps: { contacts = [] } }) {
+      if (contacts.length > 0) {
+        remoteContacts = remoteContacts.filter(ro =>
+          contacts.find(o => !(o.ref.id === ro.id && o.ref.serviceId === ro._serviceId))
+        );
+      }
+
+      return {
+        remoteContacts
+      };
     }
   }),
   graphql(CREATE_CONTACT, {
