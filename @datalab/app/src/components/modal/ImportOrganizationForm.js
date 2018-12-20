@@ -51,12 +51,12 @@ class ImportOrganizationForm extends Component {
   };
 
   render() {
-    const { open, remoteOrganizations, classes } = this.props;
+    const { remoteOrganizations, classes } = this.props;
 
     const refOptions = remoteOrganizations.map(o => ({ label: o.name, value: o.id, serviceId: o._serviceId }));
 
     return (
-      <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
+      <Dialog open={true} onClose={this.handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">Import Organization</DialogTitle>
         <Divider />
         <Formik

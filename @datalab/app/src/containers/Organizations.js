@@ -336,11 +336,12 @@ class Organizations extends Component {
             contactServices={contactServices}
           />
         )}
-        <ImportOrganizationForm
-          open={openImportOrganizationForm}
-          remoteOrganizations={remoteOrganizations}
-          onClose={this.handleImportOrganizationFormResult}
-        />
+        {openImportOrganizationForm && (
+          <ImportOrganizationForm
+            remoteOrganizations={remoteOrganizations}
+            onClose={this.handleImportOrganizationFormResult}
+          />
+        )}
       </div>
     );
   }

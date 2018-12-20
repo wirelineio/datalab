@@ -14,6 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import ImportIcon from '@material-ui/icons/ImportContacts';
 
 const styles = theme => ({
   root: {},
@@ -32,13 +33,25 @@ const styles = theme => ({
   addOrganizationButton: {
     position: 'absolute',
     bottom: 20,
-    left: '50%'
+    left: '48%'
+  },
+  importOrganizationButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: '52%'
   }
 });
 
 class List extends Component {
   render() {
-    const { organizations, classes, onAddOrganization, onEditOrganization, onDeleteOrganization } = this.props;
+    const {
+      organizations,
+      classes,
+      onAddOrganization,
+      onEditOrganization,
+      onDeleteOrganization,
+      onImportOrganization
+    } = this.props;
 
     return (
       <div>
@@ -83,6 +96,16 @@ class List extends Component {
         <Tooltip title="Add Organization">
           <Fab color="primary" aria-label="Add" className={classes.addOrganizationButton} onClick={onAddOrganization}>
             <AddIcon />
+          </Fab>
+        </Tooltip>
+        <Tooltip title="Import Organization">
+          <Fab
+            color="primary"
+            aria-label="Import"
+            className={classes.importOrganizationButton}
+            onClick={onImportOrganization}
+          >
+            <ImportIcon />
           </Fab>
         </Tooltip>
       </div>
