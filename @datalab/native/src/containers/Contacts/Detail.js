@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
 
-import { Content, Card, CardItem, Text, Left, Body, Icon as NativeBaseIcon, Button } from 'native-base';
+import { Card, CardItem, Text, Left, Body, Icon as NativeBaseIcon, Button } from 'native-base';
 
 import { material } from '../../style/variables';
 import Icon from '../../components/Icon';
+import { Col } from '../../components/Layout';
 
 const OrganizationsDetail = props => {
   const { name, email, phone } = props.navigation.getParam('contact');
   return (
-    <Content>
+    <Col>
       <Card style={styles.card}>
         <CardItem>
           <Left>
@@ -33,7 +34,7 @@ const OrganizationsDetail = props => {
           </Left>
         </CardItem>
       </Card>
-    </Content>
+    </Col>
   );
 };
 

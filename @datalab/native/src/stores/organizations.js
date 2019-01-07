@@ -53,3 +53,21 @@ export const GET_ALL_ORGANIZATIONS = gql`
   ${FragmentOrganizationFields}
   ${FragmentStageFields}
 `;
+
+export const GET_ALL_STAGES = gql`
+  query GetAllStages {
+    stages: getAllStages {
+      ...StageFields
+    }
+  }
+  ${FragmentStageFields}
+`;
+
+export const CREATE_ORGANIZATION = gql`
+  mutation CreateOrganization($ref: InputRemoteReference!, $data: InputRemoteOrganization, $stageId: ID) {
+    organization: createOrganization(ref: $ref, data: $data, stageId: $stageId) {
+      ...OrganizationFields
+    }
+  }
+  ${FragmentOrganizationFields}
+`;

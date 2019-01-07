@@ -1,10 +1,11 @@
 import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
-import { Content, Spinner } from 'native-base';
+import { Spinner } from 'native-base';
 
 import { GET_SERVICES } from '../../stores/services';
 import List from '../../components/contacts/List';
 import { GET_ALL_CONTACTS } from '../../stores/contacts';
+import { Screen } from '../../components/Layout';
 
 const Contacts = props => {
   const { contacts = [], loading, navigation } = props;
@@ -23,12 +24,12 @@ const Contacts = props => {
   }
 
   return (
-    <Content>
+    <Screen>
       <List
         data={contacts}
         onItemPress={id => navigation.push('ContactsDetail', { contact: contacts.find(c => id === c.id) })}
       />
-    </Content>
+    </Screen>
   );
 };
 

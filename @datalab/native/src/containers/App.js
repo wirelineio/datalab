@@ -18,7 +18,7 @@ if (Platform.OS === 'android') {
 export default class App extends React.Component {
   state = {
     ready: false,
-    showingSplash: true
+    showingSplash: false
   };
 
   componentDidMount() {
@@ -26,7 +26,7 @@ export default class App extends React.Component {
   }
 
   onHideSplash = () => {
-    this.setState({ showingSplash: false });
+    // this.setState({ showingSplash: false });
   };
 
   render() {

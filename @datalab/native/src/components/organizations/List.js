@@ -2,29 +2,40 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { List as NativeBaseList, ListItem, Left, Body, Right, Text } from 'native-base';
 import { material } from '../../style/variables';
-import Icon from '../Icon';
+import { RoundedIcon } from '../Icon';
+import { ScrollView } from 'react-native';
+import { InfoText } from '../Text';
 
 const List = props => {
   const { data, onItemPress } = props;
   return (
-    <NativeBaseList>
-      {data.map(({ id, stage, name, goals }, index) => (
-        <ListItem key={index} avatar onPress={() => onItemPress(id)}>
-          <Left style={styles.itemLeft}>
-            <Icon name="group" size={16} color="#fff" style={styles.itemLeftIcon} />
-          </Left>
-          <Body>
-            <Text>{name}</Text>
-            <Text note>{goals}</Text>
-          </Body>
-          <Right>
-            <Text note style={styles.itemRightText}>
-              {stage || 'Uncategorized'}
-            </Text>
-          </Right>
-        </ListItem>
-      ))}
-    </NativeBaseList>
+    <ScrollView>
+      <NativeBaseList>
+        {!data.length && (
+          <ListItem avatar>
+            <Body>
+              <InfoText>No organizations to show.</InfoText>
+            </Body>
+          </ListItem>
+        )}
+        {data.map(({ id, stage, name, goals }, index) => (
+          <ListItem key={index} avatar onPress={() => onItemPress(id)}>
+            <Left style={styles.itemLeft}>
+              <RoundedIcon name="group" size={32} backgroundColor={material.brandPrimary} color="#fff" />
+            </Left>
+            <Body>
+              <Text>{name}</Text>
+              <Text note>{goals}</Text>
+            </Body>
+            <Right>
+              <Text note style={styles.itemRightText}>
+                {stage ? stage.name : 'Uncategorized'}
+              </Text>
+            </Right>
+          </ListItem>
+        ))}
+      </NativeBaseList>
+    </ScrollView>
   );
 };
 
@@ -45,11 +56,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  itemLeftIcon: {
-    padding: 8,
-    borderRadius: 16,
-    backgroundColor: '#3f51b5'
   }
 });
 
