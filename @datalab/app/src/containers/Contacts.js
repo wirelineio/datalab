@@ -14,7 +14,7 @@ import List from '../components/contacts/List';
 import ContactForm from '../components/modal/ContactForm';
 import { UPDATE_CONTACT, CREATE_CONTACT } from '../stores/organizations';
 import ImportContactForm from '../components/modal/ImportContactForm';
-import { ContentLoader } from '../components/Loader';
+import { tryFunctionOrLogError } from 'apollo-utilities';
 
 const styles = theme => ({
   root: {},
@@ -91,21 +91,17 @@ class Contacts extends Component {
   };
 
   render() {
-    const { classes, contacts = [], remoteContacts = [], contactServices = [], contactsLoading = true } = this.props;
+    const { classes, contacts = [], remoteContacts = [], contactServices = [] } = this.props;
     const { openContactForm, openImportContactForm, selectedContact } = this.state;
 
     return (
       <div className={classes.root}>
-        {contactsLoading ? (
-          <ContentLoader loading={true} />
-        ) : (
-          <List
-            contacts={contacts}
-            onEditContact={this.handleEditContact}
-            onAddContact={this.handleAddContact}
-            onImportContact={this.handleImportContact}
-          />
-        )}
+        <List
+          contacts={contacts}
+          onEditContact={this.handleEditContact}
+          onAddContact={this.handleAddContact}
+          onImportContact={this.handleImportContact}
+        />
         {openContactForm && (
           <ContactForm
             contact={selectedContact}
@@ -147,11 +143,11 @@ export default compose(
     options: {
       // fetchPolicy: 'no-cache',
       context: {
-        useNetworkStatusNotifier: false
+        useNetworkStatusNotifier: tryFunctionOrLogError
       }
     },
     props({ data: { contacts = [], loading } }) {
-      return { contacts, contactsLoading: loading };
+      return { contacts, loading };
     }
   }),
   graphql(GET_ALL_REMOTE_CONTACTS, {
@@ -213,7 +209,7 @@ export default compose(
                 cache.writeQuery({
                   query: GET_ALL_CONTACTS,
                   context: {
-                    useNetworkStatusNotifier: false
+                    useNetworkStatusNotifier: true
                   },
                   data: {
                     contacts
