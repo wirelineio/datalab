@@ -1,6 +1,6 @@
-import Organizations from './Organizations';
-import Contacts from './Contacts';
-import Services from './Services';
+import Organizations from './containers/Organizations';
+import Contacts from './containers/Contacts';
+import Services from './containers/Services';
 
 import ContactsIcon from '@material-ui/icons/Contacts';
 import OrganizationsIcon from '@material-ui/icons/GroupWork';

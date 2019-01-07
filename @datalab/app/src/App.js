@@ -4,9 +4,9 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import ScreenLoader from '../components/ScreenLoader';
-import Layout from '../components/Layout';
-import Sidebar from '../components/Sidebar';
+import ScreenLoader from './components/ScreenLoader';
+import Layout from './components/Layout';
+import Sidebar from './components/Sidebar';
 import { routes } from './routes';
 
 const theme = createMuiTheme({

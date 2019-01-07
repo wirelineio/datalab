@@ -7,7 +7,7 @@ import { createNetworkStatusNotifier } from 'react-apollo-network-status';
 import ApolloConfig from '@datalab/apollo-config';
 
 // Ours
-import App from './containers/App';
+import App from './App';
 
 const { link: networkStatusNotifierLink, NetworkStatusNotifier } = createNetworkStatusNotifier();
 
