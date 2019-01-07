@@ -13,6 +13,7 @@ export const routes = [
     title: 'Organizations',
     component: Organizations,
     icon: OrganizationsIcon,
+    default: true,
     sidebar: true
   },
   {

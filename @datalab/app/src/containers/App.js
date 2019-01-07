@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -36,6 +36,11 @@ class App extends Component {
                     </Layout>
                   )}
                 />
+              ))}
+            {routes
+              .filter(r => r.default)
+              .map(({ path }, key) => (
+                <Redirect to={path} key={`redirect-${key}`} />
               ))}
           </Switch>
         </MuiThemeProvider>
