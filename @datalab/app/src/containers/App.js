@@ -27,12 +27,12 @@ class App extends Component {
             {routes
               .filter(r => r.sidebar)
               .map(({ component: Main, title, ...rest }, key) => (
-                <Route 
+                <Route
                   key={key}
                   {...rest}
-                  render={(props) => (
-                    <Layout title={title} sidebar={<Sidebar routes={routes}/>}>
-                      <Main {...props}/>
+                  render={props => (
+                    <Layout title={title} sidebar={<Sidebar routes={routes} {...props} />}>
+                      <Main {...props} />
                     </Layout>
                   )}
                 />
