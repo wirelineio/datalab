@@ -1,5 +1,5 @@
 import React from 'react';
-import OrganizationsDetail from '../../../containers/Organizations/Detail';
+import OrganizationsDetail from '../../../containers/Organization';
 import Icon from '../../../components/Icon';
 import { goBack } from '../../common';
 

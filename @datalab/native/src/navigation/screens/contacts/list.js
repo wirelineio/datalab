@@ -1,4 +1,4 @@
-import ContactsList from '../../../containers/Contacts/List';
+import ContactsList from '../../../containers/Contacts';
 
 export default {
   screen: ContactsList,

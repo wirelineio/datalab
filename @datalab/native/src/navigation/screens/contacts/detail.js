@@ -1,4 +1,4 @@
-import ContactsDetail from '../../../containers/Contacts/Detail';
+import ContactsDetail from '../../../containers/Contact';
 import Icon from '../../../components/Icon';
 import React from 'react';
 import { goBack } from '../../common';

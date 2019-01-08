@@ -1,4 +1,4 @@
-import OrganizationsList from '../../../containers/Organizations/List';
+import OrganizationsList from '../../../containers/Organizations';
 
 export default {
   screen: OrganizationsList,

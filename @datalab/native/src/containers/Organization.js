@@ -1,7 +1,7 @@
 import React from 'react';
 
-import OrganizationsDetail from '../../components/organizations/Detail';
-import { Screen } from '../../components/Layout';
+import OrganizationsDetail from '../components/organizations/Detail';
+import { Screen } from '../components/Layout';
 
 export default props => {
   const { navigation } = props;

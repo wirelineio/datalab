@@ -1,8 +1,8 @@
 import React from 'react';
 import { Linking } from 'react-native';
 
-import { Screen } from '../../components/Layout';
-import ContactsDetail from '../../components/contacts/Detail';
+import { Screen } from '../components/Layout';
+import ContactsDetail from '../components/contacts/Detail';
 
 export default props => {
   const contact = props.navigation.getParam('contact');

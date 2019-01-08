@@ -2,10 +2,10 @@ import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Spinner } from 'native-base';
 
-import { GET_SERVICES } from '../../stores/services';
-import List from '../../components/contacts/List';
-import { GET_ALL_CONTACTS } from '../../stores/contacts';
-import { Screen } from '../../components/Layout';
+import { GET_SERVICES } from '../stores/services';
+import List from '../components/contacts/List';
+import { GET_ALL_CONTACTS } from '../stores/contacts';
+import { Screen } from '../components/Layout';
 
 const Contacts = props => {
   const { contacts = [], loading, navigation } = props;

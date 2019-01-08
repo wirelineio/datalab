@@ -2,11 +2,11 @@ import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Spinner } from 'native-base';
 
-import { GET_ALL_ORGANIZATIONS } from '../../stores/organizations';
-import { GET_SERVICES } from '../../stores/services';
-import List from '../../components/organizations/List';
-import { FloattingButton } from '../../components/Button';
-import { Screen } from '../../components/Layout';
+import { GET_ALL_ORGANIZATIONS } from '../stores/organizations';
+import { GET_SERVICES } from '../stores/services';
+import List from '../components/organizations/List';
+import { FloattingButton } from '../components/Button';
+import { Screen } from '../components/Layout';
 
 const Organizations = props => {
   const { organizations = [], loading, navigation } = props;

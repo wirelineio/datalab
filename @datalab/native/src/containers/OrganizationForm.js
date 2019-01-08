@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Spinner, Toast } from 'native-base';
 
-import Form from '../../components/organizations/Form';
-import { Screen } from '../../components/Layout';
+import Form from '../components/organizations/Form';
+import { Screen } from '../components/Layout';
 import {
   GET_ALL_STAGES,
   CREATE_ORGANIZATION,
   GET_ALL_ORGANIZATIONS,
   UPDATE_ORGANIZATION,
   updateOrganizationOptimistic
-} from '../../stores/organizations';
-import { GET_SERVICES } from '../../stores/services';
+} from '../stores/organizations';
+import { GET_SERVICES } from '../stores/services';
 
 class OrganizationsForm extends Component {
   handleOrganizationFormResult = async (result, serviceId) => {

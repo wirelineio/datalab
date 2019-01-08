@@ -1,5 +1,5 @@
 import React from 'react';
-import OrganizationsForm from '../../../containers/Organizations/Form';
+import OrganizationsForm from '../../../containers/OrganizationForm';
 import Icon from '../../../components/Icon';
 import { goBack } from '../../common';
 
