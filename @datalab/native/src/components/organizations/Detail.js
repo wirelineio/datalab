@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, CardItem, Text, Left, Body, Badge } from 'native-base';
+import { Card, CardItem, Text, Left, Body } from 'native-base';
 
 import { material } from '../../style/variables';
 import Icon from '../Icon';
 import List from '../contacts/List';
 import { Row, Col } from '../Layout';
+import Badge from '../Badge';
 
 const OrganizationsDetail = props => {
   const {
@@ -35,8 +36,8 @@ const OrganizationsDetail = props => {
           </CardItem>
           <CardItem>
             <Left>
-              <Badge success>
-                <Text style={styles.stageText}>{stage ? stage.name : 'Uncategorized'}</Text>
+              <Badge success fontSize={16}>
+                {stage ? stage.name : 'Uncategorized'}
               </Badge>
             </Left>
           </CardItem>
@@ -68,9 +69,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 16,
     backgroundColor: material.brandInfo
-  },
-  stageText: {
-    fontSize: 16
   }
 });
 
