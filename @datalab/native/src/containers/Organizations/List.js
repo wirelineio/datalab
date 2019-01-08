@@ -6,7 +6,7 @@ import { GET_ALL_ORGANIZATIONS } from '../../stores/organizations';
 import { GET_SERVICES } from '../../stores/services';
 import List from '../../components/organizations/List';
 import { FloattingButton } from '../../components/Button';
-import { Screen, Col } from '../../components/Layout';
+import { Screen } from '../../components/Layout';
 
 const Organizations = props => {
   const { organizations = [], loading, navigation } = props;
@@ -52,7 +52,6 @@ export default compose(
       }
     },
     props({ data: { services = [] }, ownProps: { client } }) {
-      // return for now only the enabled services
       client.updateServices(services);
       const servicesEnabled = services.filter(s => s.enabled);
       return {

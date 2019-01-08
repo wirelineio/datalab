@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, CardItem, Text, Left, Body, Badge, H1 } from 'native-base';
+import { Card, CardItem, Text, Left, Body, Badge } from 'native-base';
 
 import { material } from '../../style/variables';
 import Icon from '../Icon';
@@ -42,12 +42,12 @@ const OrganizationsDetail = props => {
           </CardItem>
         </Card>
       </Row>
-      <Row style={{ flex: 1, flexShrink: 1 }}>
+      <Row style={{ flex: 0, flexShrink: 1 }}>
         <Card style={styles.card}>
           <CardItem>
             <Text>Contacts:</Text>
           </CardItem>
-          <List data={[]} onItemPress={id => onContactPress(contacts.find(c => c.id === id))} />
+          <List data={contacts} onItemPress={id => onContactPress(contacts.find(c => c.id === id))} />
         </Card>
       </Row>
     </Col>

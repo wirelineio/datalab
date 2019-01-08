@@ -34,7 +34,7 @@ class OrganizationsForm extends Component {
     }
 
     Toast.show({
-      text: `Organization ${result.id ? 'created' : 'updated'}!`,
+      text: `Organization ${result.id ? 'updated' : 'created'}!`,
       buttonText: 'OK',
       type: 'success',
       duration: 3000
@@ -49,8 +49,11 @@ class OrganizationsForm extends Component {
 
   render() {
     const { navigation, stages = [], loadingStages = true, contactServices = [] } = this.props;
-
     const organization = navigation.getParam('organization') || {};
+
+    const services = organization
+      ? contactServices.filter(cs => cs.id === organization.ref.serviceId)
+      : contactServices;
 
     return (
       <Screen>
@@ -61,7 +64,7 @@ class OrganizationsForm extends Component {
             stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
             onResult={this.handleOrganizationFormResult}
             onSpellcheck={this.handleSpellcheck}
-            services={contactServices}
+            services={services}
           />
         )}
       </Screen>

@@ -11,6 +11,7 @@
     "start:dev": "cross-env NODE_ENV=development npm start",
     "start:stg": "cross-env NODE_ENV=staging npm start",
     "start:prod": "cross-env NODE_ENV=production npm start",
+    "lint": "eslint src --fix",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject"
