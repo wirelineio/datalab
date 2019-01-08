@@ -4,12 +4,6 @@ import { Content, Text, H1 } from 'native-base';
 import { material } from '../style/variables';
 
 class Splash extends React.Component {
-  componentDidMount() {
-    setTimeout(() => {
-      this.props.onHide();
-    }, this.props.timeout || 2000);
-  }
-
   render() {
     return (
       <Content contentContainerStyle={styles.splash}>

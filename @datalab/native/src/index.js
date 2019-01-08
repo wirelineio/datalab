@@ -3,7 +3,6 @@ import { KeepAwake, registerRootComponent } from 'expo';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 
-// import { default as client } from './config/apollo';
 import App from './containers/App';
 
 import ApolloConfig from '@datalab/apollo-config';
