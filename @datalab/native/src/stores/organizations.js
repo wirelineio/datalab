@@ -71,3 +71,35 @@ export const CREATE_ORGANIZATION = gql`
   }
   ${FragmentOrganizationFields}
 `;
+
+export const UPDATE_ORGANIZATION = gql`
+  mutation UpdateOrganization($id: ID!, $data: InputRemoteOrganization, $stageId: ID) {
+    organization: updateOrganization(id: $id, data: $data, stageId: $stageId) {
+      ...OrganizationFields
+    }
+  }
+  ${FragmentOrganizationFields}
+`;
+
+export const updateOrganizationOptimistic = ({ organizations, stages }, variables) => {
+  const { id, stageId, ...args } = variables;
+
+  const organization = organizations.find(p => p.id === id);
+
+  const newOrganization = {
+    stage: null,
+    ...args
+  };
+
+  if (stageId) {
+    const stage = stages.find(a => a.id === stageId);
+    newOrganization.stage = stage ? stage : null;
+  }
+
+  return {
+    organization: {
+      ...organization,
+      ...newOrganization
+    }
+  };
+};

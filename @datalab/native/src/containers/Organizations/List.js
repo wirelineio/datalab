@@ -62,6 +62,9 @@ export default compose(
     }
   }),
   graphql(GET_ALL_ORGANIZATIONS, {
+    options: {
+      pollInterval: 30000
+    },
     props({ data: { organizations = [], stages = [], loading } }) {
       return {
         organizations,

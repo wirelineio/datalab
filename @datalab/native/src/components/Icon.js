@@ -1,31 +1,34 @@
 import React from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import styled from 'styled-components/native';
+import { prop, ifProp } from 'styled-tools';
 
-const ICON_PADDING = 8;
-const ICON_SIZE = 28;
+const ICON_PADDING = 16;
+const ICON_SIZE = 32;
 
-const Icon = styled(MaterialIcons)`
-  width: ${props => props.size || ICON_SIZE}px;
-  height: ${props => props.size || ICON_SIZE}px;
-  color: ${props => props.color || 'white'};
-  font-size: ${props => props.size || ICON_SIZE};
+const StyledIcon = styled(MaterialIcons)`
+  color: ${prop('color', 'white')};
+  border-radius: ${ifProp('rounded', prop('size', ICON_SIZE), 0)}px;
+  font-size: ${({ size = ICON_SIZE, padding = ICON_PADDING, rounded }) => size - (rounded ? padding / 2 : 0)};
 `;
 
-const RoundedIconWrapper = styled.View`
+const IconWrapper = styled.TouchableOpacity`
   display: flex;
   justify-content: center;
   align-content: center;
   align-items: center;
-  background-color: ${props => props.backgroundColor || 'transparent'};
-  border-radius: ${props => props.size || ICON_SIZE}px;
-  padding: ${ICON_PADDING}px;
+  background-color: ${prop('backgroundColor', 'transparent')};
+  border-radius: ${ifProp('rounded', prop('size', ICON_SIZE), 0)}px;
+  width: ${prop('size', ICON_SIZE)}px;
+  height: ${prop('size', ICON_SIZE)}px;
 `;
 
-export const RoundedIcon = props => (
-  <RoundedIconWrapper {...props}>
-    <Icon {...props} size={(props.size || ICON_SIZE) - ICON_PADDING} />
-  </RoundedIconWrapper>
+const Icon = ({ onPress, backgroundColor, ...rest }) => (
+  <IconWrapper onPress={onPress} backgroundColor={backgroundColor} size={rest.size} rounded={rest.rounded}>
+    <StyledIcon {...rest} />
+  </IconWrapper>
 );
+
+export const RoundedIcon = props => <Icon {...props} rounded />;
 
 export default Icon;

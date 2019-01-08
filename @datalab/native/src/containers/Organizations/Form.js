@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
-import { Spinner } from 'native-base';
+import { Spinner, Toast } from 'native-base';
 
 import Form from '../../components/organizations/Form';
-import { Screen, Col } from '../../components/Layout';
-import { GET_ALL_STAGES, CREATE_ORGANIZATION } from '../../stores/organizations';
+import { Screen } from '../../components/Layout';
+import {
+  GET_ALL_STAGES,
+  CREATE_ORGANIZATION,
+  GET_ALL_ORGANIZATIONS,
+  UPDATE_ORGANIZATION,
+  updateOrganizationOptimistic
+} from '../../stores/organizations';
 import { GET_SERVICES } from '../../stores/services';
 
 class OrganizationsForm extends Component {
@@ -12,8 +18,6 @@ class OrganizationsForm extends Component {
     const { createOrganization, updateOrganization, navigation } = this.props;
 
     if (result) {
-      console.log('handleOrganizationFormResult', result);
-
       const data = {
         name: result.name,
         url: result.url.length > 0 ? result.url : null,
@@ -28,6 +32,13 @@ class OrganizationsForm extends Component {
         await createOrganization({ ref: { serviceId }, data, stageId });
       }
     }
+
+    Toast.show({
+      text: `Organization ${result.id ? 'created' : 'updated'}!`,
+      buttonText: 'OK',
+      type: 'success',
+      duration: 3000
+    });
 
     navigation.navigate('OrganizationsList');
   };
@@ -83,12 +94,49 @@ export default compose(
       };
     }
   }),
+  graphql(GET_ALL_ORGANIZATIONS, {
+    options: {
+      pollInterval: 30000
+    },
+    props({ data: { organizations = [] } }) {
+      return {
+        organizations
+      };
+    }
+  }),
   graphql(CREATE_ORGANIZATION, {
     props({ mutate }) {
       return {
         createOrganization: variables => {
           return mutate({
-            variables
+            variables,
+            update(
+              cache,
+              {
+                data: { organization }
+              }
+            ) {
+              const { organizations, ...data } = cache.readQuery({ query: GET_ALL_ORGANIZATIONS });
+              cache.writeQuery({
+                query: GET_ALL_ORGANIZATIONS,
+                data: { ...data, organizations: organizations.concat([organization]) }
+              });
+            }
+          });
+        }
+      };
+    }
+  }),
+  graphql(UPDATE_ORGANIZATION, {
+    props({ mutate, ownProps: { organizations, stages } }) {
+      return {
+        updateOrganization: (variables, optimistic = true) => {
+          return mutate({
+            variables,
+            context: {
+              useNetworkStatusNotifier: false
+            },
+            optimisticResponse: optimistic ? updateOrganizationOptimistic({ organizations, stages }, variables) : null
           });
         }
       };

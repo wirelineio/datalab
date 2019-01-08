@@ -21,7 +21,7 @@ const List = props => {
         {data.map(({ id, stage, name, goals }, index) => (
           <ListItem key={index} avatar onPress={() => onItemPress(id)}>
             <Left style={styles.itemLeft}>
-              <RoundedIcon name="group" size={32} backgroundColor={material.brandPrimary} color="#fff" />
+              <RoundedIcon name="group" backgroundColor={material.brandPrimary} color="#fff" />
             </Left>
             <Body>
               <Text>{name}</Text>

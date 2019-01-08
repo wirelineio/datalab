@@ -18,7 +18,7 @@
   "dependencies": {
     "@babel/runtime": "^7.1.5",
     "@datalab/apollo-config": "0.0.1",
-    "expo": "^31.0.2",
+    "expo": "^32.0.0",
     "formik": "^1.4.1",
     "graphql-tag": "^2.10.0",
     "native-base": "^2.8.1",
@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
     "eslint-plugin-react-native": "^3.5.0",
-    "expo-cli": "^2.4.0",
+    "expo-cli": "^2.6.14",
     "schedule": "0.3.0"
   }
 }

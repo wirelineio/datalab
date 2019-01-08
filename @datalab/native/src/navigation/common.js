@@ -9,12 +9,15 @@ export const stackNavigation = {
     },
     headerTintColor: '#fff',
     headerTitleStyle: {
-      marginLeft: 0
+      marginLeft: 8
     },
     headerLeftContainerStyle: {
       padding: 16
     },
-    headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" size={24} />
+    headerRightContainerStyle: {
+      padding: 16
+    },
+    headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" />
   })
 };
 

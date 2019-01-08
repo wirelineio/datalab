@@ -16,6 +16,14 @@ const initialValues = organization => ({
   goals: organization.goals || ''
 });
 
+// const initialValues = organization => ({
+//   id: null,
+//   name: 'JCCC',
+//   stage: '',
+//   url: 'http://jc.com.ar',
+//   goals: 'Goltz Paolo'
+// });
+
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, 'Name must be at least 3 characters long.')
@@ -88,11 +96,16 @@ class SubmitButton extends Component {
   render() {
     const { services = [], isSubmitting } = this.props;
     const { showServices, selectedService } = this.state;
+    const noServices = services.length === 0;
 
     return (
       <Fragment>
-        <Button block onPress={this.submit} disabled={isSubmitting} margin={8}>
-          {isSubmitting ? 'Saving...' : `Save in ${selectedService ? selectedService.name : '...'}`}
+        <Button block onPress={this.submit} disabled={isSubmitting || noServices} margin={8}>
+          {noServices
+            ? 'No available services'
+            : isSubmitting
+            ? 'Saving...'
+            : `Save in ${selectedService ? selectedService.name : '...'}`}
         </Button>
         <Modal
           isVisible={showServices}
@@ -122,7 +135,6 @@ class OrganizationsForm extends Component {
     Keyboard.dismiss();
     actions.setSubmitting(true);
     await this.props.onResult(values, this.state.serviceId);
-    actions.setSubmitting(false);
   };
 
   onServiceSelected = serviceId => {
