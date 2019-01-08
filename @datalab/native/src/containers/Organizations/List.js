@@ -1,10 +1,12 @@
 import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
-import { Content, Spinner } from 'native-base';
+import { Spinner } from 'native-base';
 
 import { GET_ALL_ORGANIZATIONS } from '../../stores/organizations';
-import { GET_SERVICES, getType } from '../../stores/services';
+import { GET_SERVICES } from '../../stores/services';
 import List from '../../components/organizations/List';
+import { FloattingButton } from '../../components/Button';
+import { Screen } from '../../components/Layout';
 
 const Organizations = props => {
   const { organizations = [], loading, navigation } = props;
@@ -29,12 +31,15 @@ const Organizations = props => {
   }
 
   return (
-    <Content>
+    <Screen>
       <List
         data={organizations}
-        onItemPress={id => navigation.navigate('OrganizationsDetail', { organization: organizations.find(p => id === p.id) })}
+        onItemPress={id =>
+          navigation.navigate('OrganizationsDetail', { organization: organizations.find(p => id === p.id) })
+        }
       />
-    </Content>
+      <FloattingButton icon="add" onPress={() => navigation.navigate('OrganizationsForm')} />
+    </Screen>
   );
 };
 
@@ -47,10 +52,12 @@ export default compose(
       }
     },
     props({ data: { services = [] }, ownProps: { client } }) {
-      services = services.map(s => ({ ...s, type: getType(s) }));
-
       client.updateServices(services);
-      return { services: services.filter(s => s.enabled) };
+      const servicesEnabled = services.filter(s => s.enabled);
+      return {
+        services: servicesEnabled,
+        contactServices: servicesEnabled.filter(s => s.type === 'contacts')
+      };
     }
   }),
   graphql(GET_ALL_ORGANIZATIONS, {

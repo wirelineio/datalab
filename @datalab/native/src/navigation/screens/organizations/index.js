@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation';
 
 import OrganizationsListScreen from './list';
 import OrganizationsDetailScreen from './detail';
+import OrganizationsFormScreen from './form';
 
 import Icon from '../../../components/Icon';
 import { stackNavigation } from '../../common';
@@ -11,7 +12,8 @@ const OrganizationsScreen = {
   screen: createStackNavigator(
     {
       OrganizationsList: OrganizationsListScreen,
-      OrganizationsDetail: OrganizationsDetailScreen
+      OrganizationsDetail: OrganizationsDetailScreen,
+      OrganizationsForm: OrganizationsFormScreen
     },
     { defaultNavigationOptions: stackNavigation.defaultNavigationOptions }
   ),

@@ -1,9 +1,9 @@
 import React from 'react';
-import { AppLoading } from 'expo';
+import { AppLoading, Font } from 'expo';
 import { StyleSheet, Platform, View, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { useScreens } from 'react-native-screens';
-import { StyleProvider } from 'native-base';
+import { StyleProvider, Root } from 'native-base';
 
 import Navigation from '../navigation';
 import { buildTheme } from '../style/theme';
@@ -18,34 +18,45 @@ if (Platform.OS === 'android') {
 export default class App extends React.Component {
   state = {
     ready: false,
-    showingSplash: true
+    fontsReady: false,
+    showingSplash: false
   };
 
   componentDidMount() {
     this.setState({ ready: true });
   }
 
+  async componentWillMount() {
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf')
+    });
+    this.setState({ fontsReady: true });
+  }
+
   onHideSplash = () => {
-    this.setState({ showingSplash: false });
+    // this.setState({ showingSplash: false });
   };
 
   render() {
-    if (!this.state.ready) {
+    if (!this.state.ready || !this.state.fontsReady) {
       return <AppLoading />;
     }
 
     return (
-      <StyleProvider style={buildTheme()}>
-        <View style={styles.container}>
-          {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+      <Root>
+        <StyleProvider style={buildTheme()}>
+          <View style={styles.container}>
+            {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
 
-          {this.state.showingSplash && <Splash onHide={this.onHideSplash} />}
+            {this.state.showingSplash && <Splash onHide={this.onHideSplash} />}
 
-          {!this.state.showingSplash && <Navigation />}
+            {!this.state.showingSplash && <Navigation />}
 
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        </View>
-      </StyleProvider>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          </View>
+        </StyleProvider>
+      </Root>
     );
   }
 }

@@ -1,37 +1,47 @@
 import React from 'react';
-import { StyleSheet, Linking } from 'react-native';
+import { ScrollView, StyleSheet, Linking } from 'react-native';
 import { List as NativeBaseList, ListItem, Left, Body, Right, Text, Button } from 'native-base';
 import { material } from '../../style/variables';
-import Icon from '../Icon';
+import Icon, { RoundedIcon } from '../Icon';
+import { InfoText } from '../Text';
 
 const List = props => {
   const { data, onItemPress } = props;
 
   return (
-    <NativeBaseList>
-      {data.map(({ id, name, phone, email }, index) => (
-        <ListItem key={index} avatar onPress={() => onItemPress(id)}>
-          <Left style={[styles.centerFlex, styles.itemLeftAndRight]}>
-            <Icon name="person" size={16} color="#fff" style={styles.itemLeftAndRightIcon} />
-          </Left>
-          <Body>
-            <Text>{name}</Text>
-            <Text note>{email}</Text>
-          </Body>
-          <Right style={styles.centerFlex}>
-            <Button transparent rounded style={[styles.centerFlex, styles.callButton]}>
-              <Icon
-                name="call"
-                size={24}
-                color={material.brandPrimary}
-                style={[styles.itemLeftAndRightIcon, styles.callIcon]}
-                onPress={() => Linking.openURL(`tel:${phone}`)}
-              />
-            </Button>
-          </Right>
-        </ListItem>
-      ))}
-    </NativeBaseList>
+    <ScrollView>
+      <NativeBaseList>
+        {!data.length && (
+          <ListItem avatar>
+            <Body>
+              <InfoText>No contacts to show.</InfoText>
+            </Body>
+          </ListItem>
+        )}
+        {data.map(({ id, name, phone, email }, index) => (
+          <ListItem key={index} avatar onPress={() => onItemPress(id)}>
+            <Left style={[styles.centerFlex, styles.itemLeftAndRight]}>
+              <RoundedIcon name="person" backgroundColor={material.brandPrimary} color="#fff" />
+            </Left>
+            <Body>
+              <Text>{name}</Text>
+              <Text note>{email}</Text>
+            </Body>
+            <Right style={styles.centerFlex}>
+              <Button transparent rounded style={[styles.centerFlex, styles.callButton]}>
+                <Icon
+                  name="call"
+                  size={24}
+                  color={material.brandPrimary}
+                  style={[styles.itemLeftAndRightIcon, styles.callIcon]}
+                  onPress={() => Linking.openURL(`tel:${phone}`)}
+                />
+              </Button>
+            </Right>
+          </ListItem>
+        ))}
+      </NativeBaseList>
+    </ScrollView>
   );
 };
 

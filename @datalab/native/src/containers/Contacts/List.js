@@ -1,10 +1,11 @@
 import React from 'react';
 import { compose, graphql, withApollo } from 'react-apollo';
-import { Content, Spinner } from 'native-base';
+import { Spinner } from 'native-base';
 
-import { GET_SERVICES, getType } from '../../stores/services';
+import { GET_SERVICES } from '../../stores/services';
 import List from '../../components/contacts/List';
-import { GET_ALL_REMOTE_CONTACTS } from '../../stores/contacts';
+import { GET_ALL_CONTACTS } from '../../stores/contacts';
+import { Screen } from '../../components/Layout';
 
 const Contacts = props => {
   const { contacts = [], loading, navigation } = props;
@@ -23,12 +24,12 @@ const Contacts = props => {
   }
 
   return (
-    <Content>
+    <Screen>
       <List
         data={contacts}
         onItemPress={id => navigation.push('ContactsDetail', { contact: contacts.find(c => id === c.id) })}
       />
-    </Content>
+    </Screen>
   );
 };
 
@@ -41,24 +42,22 @@ export default compose(
       }
     },
     props({ data: { services = [] }, ownProps: { client } }) {
-      services = services.map(s => ({ ...s, type: getType(s) }));
-
       client.updateServices(services);
-      return { services: services.filter(s => s.enabled) };
+      const servicesEnabled = services.filter(s => s.enabled);
+      return {
+        services: servicesEnabled,
+        contactServices: servicesEnabled.filter(s => s.type === 'contacts')
+      };
     }
   }),
-  graphql(GET_ALL_REMOTE_CONTACTS, {
-    skip({ services = [] }) {
-      return !services.find(s => s.type === 'contacts');
-    },
+  graphql(GET_ALL_CONTACTS, {
     options: {
       pollInterval: 30000,
       context: {
-        serviceType: 'contacts',
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { contacts = [], loading } }) {
+    props({ data: { contacts = [], loading = false } }) {
       return { contacts, loading };
     }
   })

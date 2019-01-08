@@ -9,11 +9,27 @@ export const stackNavigation = {
     },
     headerTintColor: '#fff',
     headerTitleStyle: {
-      marginLeft: 0
+      marginLeft: 8
     },
     headerLeftContainerStyle: {
       padding: 16
     },
-    headerLeft: <Icon name="group" onPress={navigation.openDrawer} color="#fff" size={24} />
+    headerRightContainerStyle: {
+      padding: 16
+    },
+    headerLeft: <Icon name="menu" onPress={navigation.openDrawer} color="#fff" />
   })
+};
+
+export const goBack = navigation => {
+  let backKey = navigation.getParam('backKey', false);
+  if (backKey) {
+    // clear backKey so navigation doesnt break
+    navigation.setParams({ backKey: null });
+    // navigate back to other stack navigator
+    navigation.navigate(backKey);
+  } else {
+    // regular go back
+    navigation.goBack();
+  }
 };
