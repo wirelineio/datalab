@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Card, CardItem, Text, Left, Body } from 'native-base';
 
 import { material } from '../../style/variables';
-import Icon from '../Icon';
+import { RoundedIcon } from '../Icon';
 import List from '../contacts/List';
 import { Row, Col } from '../Layout';
 import Badge from '../Badge';
@@ -20,9 +20,7 @@ const OrganizationsDetail = props => {
         <Card style={styles.card}>
           <CardItem>
             <Left>
-              <View style={styles.iconContainer}>
-                <Icon name="person" size={16} style={styles.icon} />
-              </View>
+              <RoundedIcon name="person" backgroundColor={material.brandInfo} />
               <Body>
                 <Text>{name}</Text>
                 <Text note>{url}</Text>
@@ -58,17 +56,6 @@ const OrganizationsDetail = props => {
 const styles = StyleSheet.create({
   card: {
     flex: 1
-  },
-  icon: {
-    paddingTop: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  iconContainer: {
-    padding: 8,
-    borderRadius: 16,
-    backgroundColor: material.brandInfo
   }
 });
 

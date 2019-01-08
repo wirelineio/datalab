@@ -1,60 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Linking } from 'react-native';
+import { Linking } from 'react-native';
 
-import { Card, CardItem, Text, Left, Body, Icon as NativeBaseIcon, Button } from 'native-base';
+import { Screen } from '../../components/Layout';
+import ContactsDetail from '../../components/contacts/Detail';
 
-import { material } from '../../style/variables';
-import Icon from '../../components/Icon';
-import { Col } from '../../components/Layout';
-
-const OrganizationsDetail = props => {
-  const { name, email, phone } = props.navigation.getParam('contact');
+export default props => {
+  const contact = props.navigation.getParam('contact');
   return (
-    <Col>
-      <Card style={styles.card}>
-        <CardItem>
-          <Left>
-            <View style={styles.iconContainer}>
-              <Icon name="person" style={styles.icon} />
-            </View>
-            <Body>
-              <Text>{name}</Text>
-              <Text note onPress={() => Linking.openURL(`mailto:${email}`)}>
-                {email}
-              </Text>
-            </Body>
-          </Left>
-        </CardItem>
-        <CardItem>
-          <Left>
-            <Button transparent onPress={() => Linking.openURL(`tel:${phone}`)}>
-              <NativeBaseIcon active name="md-call" />
-              <Text>{phone}</Text>
-            </Button>
-          </Left>
-        </CardItem>
-      </Card>
-    </Col>
+    <Screen withPadding padding={8}>
+      <ContactsDetail
+        contact={contact}
+        onEmailPress={() => Linking.openURL(`mailto:${contact.email}`)}
+        onPhonePress={() => Linking.openURL(`tel:${contact.phone}`)}
+      />
+    </Screen>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    flex: 0,
-    marginLeft: 4,
-    marginRight: 4
-  },
-  icon: {
-    paddingTop: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  iconContainer: {
-    padding: 8,
-    borderRadius: 16,
-    backgroundColor: material.brandInfo
-  }
-});
-
-export default OrganizationsDetail;

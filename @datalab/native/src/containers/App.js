@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppLoading, Font } from 'expo';
+import { Font } from 'expo';
 import { StyleSheet, Platform, View, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { useScreens } from 'react-native-screens';
