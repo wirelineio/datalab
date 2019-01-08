@@ -1,31 +1,18 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Content, Text, H1 } from 'native-base';
-import { material } from '../style/variables';
+import React, { Component } from 'react';
+import { StatusBar } from 'react-native';
 
-class Splash extends React.Component {
+import { Screen } from '../components/Layout';
+import Welcome from '../components/Welcome';
+
+class Splash extends Component {
   render() {
     return (
-      <Content contentContainerStyle={styles.splash}>
-        <Text>Welcome to</Text>
-        <H1 style={styles.datalabText}>Datalab</H1>
-      </Content>
+      <Screen justifyContent="center" alignItems="center">
+        <StatusBar hidden={true} />
+        <Welcome />
+      </Screen>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  splash: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%'
-  },
-  datalabText: {
-    color: material.brandInfo,
-    fontWeight: 'bold'
-  }
-});
 
 export default Splash;

@@ -8,12 +8,15 @@ const StyledScreen = styled(RNEGGrid)`
   padding: ${ifProp('withPadding', prop('padding', 16), 0)}px;
 `;
 
-export const Col = styled(RNEGCol)``;
+export const Col = styled(RNEGCol)`
+  ${ifProp('justifyContent', ({ justifyContent }) => `justify-content: ${justifyContent}`)};
+  ${ifProp('alignItems', ({ alignItems }) => `align-items: ${alignItems}`)};
+`;
 
 export const Row = styled(RNEGRow)``;
 
 export const Screen = ({ withPadding = false, children, ...rest }) => (
   <StyledScreen withPadding={withPadding} {...rest}>
-    <Col>{children}</Col>
+    <Col {...rest}>{children}</Col>
   </StyledScreen>
 );
