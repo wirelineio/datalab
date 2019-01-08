@@ -100,43 +100,41 @@ class Layout extends Component {
     const { title, sidebar, classes, children } = this.props;
 
     return (
-        <div className={classes.root}>
-          <AppBar position="absolute" className={classNames(classes.appBar, open && classes.appBarShift)}>
-            <Toolbar disableGutters={!open} className={classes.toolbar}>
-              <IconButton
-                color="inherit"
-                aria-label="Open drawer"
-                onClick={this.handleDrawerOpen}
-                className={classNames(classes.menuButton, open && classes.menuButtonHidden)}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                {title}
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer
-            variant="permanent"
-            classes={{
-              paper: classNames(classes.drawerPaper, !open && classes.drawerPaperClose)
-            }}
-            open={open}
-          >
-            <div className={classes.toolbarIcon}>
-              <IconButton onClick={this.handleDrawerClose}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </div>
-            <Divider />
-            {sidebar}
-          </Drawer>
-          <main className={classes.content}>{children}</main>
-        </div>
+      <div className={classes.root}>
+        <AppBar position="absolute" className={classNames(classes.appBar, open && classes.appBarShift)}>
+          <Toolbar disableGutters={!open} className={classes.toolbar}>
+            <IconButton
+              color="inherit"
+              aria-label="Open drawer"
+              onClick={this.handleDrawerOpen}
+              className={classNames(classes.menuButton, open && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              {title}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: classNames(classes.drawerPaper, !open && classes.drawerPaperClose)
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={this.handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          {sidebar}
+        </Drawer>
+        <main className={classes.content}>{children}</main>
+      </div>
     );
   }
 }
 
-export default compose(
-  withStyles(styles)
-)(Layout);
+export default compose(withStyles(styles))(Layout);
