@@ -9,7 +9,7 @@ import ApolloConfig from '@datalab/apollo-config';
 
 const apolloConfig = new ApolloConfig({
   backendEndpoint: process.env.BACKEND_URL,
-  localhostServiceHost: process.env.LAN_IP
+  localhostServiceHost: process.env.LAN_HOST
 });
 
 const DatalabNative = () => (
