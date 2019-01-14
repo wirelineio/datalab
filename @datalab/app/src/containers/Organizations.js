@@ -366,6 +366,9 @@ export default compose(
     }
   }),
   graphql(GET_ALL_ORGANIZATIONS, {
+    options: {
+      fetchPolicy: 'cache-and-network'
+    },
     props({ data: { organizations = [], stages = [], loading } }) {
       return {
         organizations,
@@ -379,6 +382,7 @@ export default compose(
       return !services.find(s => s.type === 'contacts');
     },
     options: {
+      fetchPolicy: 'cache-and-network',
       context: {
         serviceType: 'contacts',
         useNetworkStatusNotifier: false
@@ -393,6 +397,7 @@ export default compose(
       return !services.find(s => s.type === 'contacts');
     },
     options: {
+      fetchPolicy: 'cache-and-network',
       context: {
         serviceType: 'contacts',
         useNetworkStatusNotifier: false

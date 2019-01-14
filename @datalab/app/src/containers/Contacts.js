@@ -141,7 +141,7 @@ export default compose(
   }),
   graphql(GET_ALL_CONTACTS, {
     options: {
-      // fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-and-network',
       context: {
         useNetworkStatusNotifier: tryFunctionOrLogError
       }
@@ -155,7 +155,7 @@ export default compose(
       return !services.find(s => s.type === 'contacts');
     },
     options: {
-      // fetchPolicy: 'no-cache', // Same name query collision fix
+      fetchPolicy: 'cache-and-network',
       context: {
         serviceType: 'contacts',
         useNetworkStatusNotifier: false
