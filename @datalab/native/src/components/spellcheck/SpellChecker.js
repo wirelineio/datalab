@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Spinner } from 'native-base';
+import { Spinner, View } from 'native-base';
+import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 import { Grid, Col } from 'react-native-easy-grid';
 import Popover from 'react-native-popover-view';
@@ -167,13 +168,13 @@ class SpellCheckerFixer extends Component {
     const { fixeableText, errors } = this.state;
 
     const lines = fixeableText.split(LINE_BREAK);
-    const replacedErrorLine = lines[error.line - 1];
+    let replacedErrorLine = lines[error.line - 1];
     const originalLine = replacedErrorLine;
 
-    lines[error.line - 1] = [
-      ...replacedErrorLine.slice(0, error.column - 1),
+    replacedErrorLine = [
+      ...originalLine.slice(0, error.column - 1),
       suggestion,
-      replacedErrorLine.slice(error.column + error.word.length - 1)
+      ...originalLine.slice(error.column + error.word.length - 1)
     ].join('');
 
     const filteredErrors = errors
@@ -185,6 +186,8 @@ class SpellCheckerFixer extends Component {
             ? e.column - (originalLine.length - replacedErrorLine.length)
             : e.column
       }));
+
+    lines[error.line - 1] = replacedErrorLine;
 
     this.setState({
       fixeableText: lines.join(LINE_BREAK),
@@ -223,23 +226,27 @@ class SpellCheckerFixer extends Component {
             fromView={showSuggestions ? currentWord.viewRef : undefined}
             showInModal={true}
           >
-            <Text fontWeight="bold">
-              Replace <Text color="red">{currentWord.error.word}</Text> with:
-            </Text>
-            {showSuggestions &&
-              currentWord.error.suggestions &&
-              currentWord.error.suggestions.map(s => (
-                <Text
-                  key={s}
-                  onPress={() => this.onPressSuggestion(s, currentWord.error)}
-                  padding="4px 8px"
-                  textDecorationLine="underline"
-                  fontSize="16px"
-                  color="#40a0ae"
-                >
-                  {s}
+            <ScrollView>
+              <View>
+                <Text fontWeight="bold">
+                  Replace <Text color="red">{currentWord.error.word}</Text> with:
                 </Text>
-              ))}
+                {showSuggestions &&
+                  currentWord.error.suggestions &&
+                  currentWord.error.suggestions.map(s => (
+                    <Text
+                      key={s}
+                      onPress={() => this.onPressSuggestion(s, currentWord.error)}
+                      padding="4px 8px"
+                      textDecorationLine="underline"
+                      fontSize="16px"
+                      color="#40a0ae"
+                    >
+                      {s}
+                    </Text>
+                  ))}
+              </View>
+            </ScrollView>
           </Popover>
         )}
       </Fragment>
