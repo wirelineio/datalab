@@ -10,7 +10,7 @@ const serviceTypeByLabel = label => {
 };
 
 export const mapProfiles = store => async services => {
-  const profile = await store.get('profiles/admin');
+  const profile = await store.get('admin', { bucket: 'profiles' });
 
   let onlyFirst = false;
 
@@ -165,11 +165,11 @@ export const query = {
 export const mutation = {
   async resetStore(obj, args, { store }) {
     await store.clear();
-    await store.set('profiles/admin', profiles[0]);
-    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
+    await store.set('admin', profiles[0], { bucket: 'profiles' });
+    await Promise.all(services.map(s => store.set(s.id, s, { bucket: 'services' })));
   },
   async switchService(obj, { id }, { store, mapProfiles, getAllServices }) {
-    const [services, profile] = await Promise.all([getAllServices(), store.get('profiles/admin')]);
+    const [services, profile] = await Promise.all([getAllServices(), store.get('admin', { bucket: 'profiles' })]);
 
     const service = profile.services.find(s => s.id === id);
 
@@ -179,7 +179,7 @@ export const mutation = {
       profile.services.push({ id, enabled: true });
     }
 
-    await store.set('profiles/admin', profile);
+    await store.set('admin', profile, { bucket: 'profiles' });
 
     return mapProfiles(services.find(s => s.id === id));
   }

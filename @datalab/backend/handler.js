@@ -63,19 +63,19 @@ module.exports = {
 
     const store = new Store(context);
     store.oldscan = store.scan;
-    store.scan = async key => {
-      const result = await store.oldscan(key);
+    store.scan = async (key, opts) => {
+      const result = await store.oldscan(key, opts);
       return result.map(r => r.value);
     };
     store.oldget = store.get;
-    store.get = async (key, defaultTo) => {
-      const result = await store.oldget(key);
+    store.get = async (key, opts) => {
+      const result = await store.oldget(key, opts);
 
       if (result[key] !== undefined) {
         return result[key];
       }
 
-      return defaultTo === undefined ? null : defaultTo;
+      return null;
     };
 
     const registry = new Registry({

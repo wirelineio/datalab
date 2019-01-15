@@ -1,13 +1,13 @@
 export const query = {
   async getAllContacts(obj, args, { store }) {
-    const contacts = await store.scan('contacts');
+    const contacts = await store.scan(null, { bucket: 'contacts' });
     return contacts;
   }
 };
 
 export const mutation = {
   async createContact(obj, { ref, data }, { store, orgs }) {
-    const contacts = await store.scan('contacts');
+    const contacts = await store.scan(null, { bucket: 'contacts' });
     let contact;
 
     if (ref.id) {
@@ -23,12 +23,12 @@ export const mutation = {
       return null;
     }
 
-    await store.set(`contacts/${contact.id}`, contact);
+    await store.set(contact.id, contact, { bucket: 'contacts' });
     return contact;
   },
   async updateContact(obj, { id, data }, { store, orgs }) {
-    let contact = await store.get(`contacts/${id}`);
-    let contacts = await store.scan(`contacts`);
+    let contact = await store.get(id, { bucket: 'contacts' });
+    let contacts = await store.scan(null, { bucket: 'contacts' });
 
     console.log({ contacts, contact });
 
@@ -42,11 +42,11 @@ export const mutation = {
       return null;
     }
 
-    await store.set(`contacts/${id}`, contact);
+    await store.set(id, contact, { bucket: 'contacts' });
     return contact;
   },
   async deleteContact(obj, { id }, { store }) {
-    await store.del(`contacts/${id}`);
+    await store.del(id, { bucket: 'contacts' });
     return id;
   }
 };

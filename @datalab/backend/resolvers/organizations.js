@@ -1,16 +1,16 @@
 export const query = {
   async getAllOrganizations(obj, args, { store, orgs }) {
-    const organizations = await store.scan('organizations');
+    const organizations = await store.scan(null, { bucket: 'organizations' });
     return orgs.addRelationsToOrganization(organizations);
   },
   async getAllStages(obj, args, { store }) {
-    return store.scan('stages');
+    return store.scan(null, { bucket: 'stages' });
   }
 };
 
 export const mutation = {
   async createOrganization(obj, { ref, data, stageId }, { orgs, store }) {
-    const organizations = await store.scan('organizations');
+    const organizations = await store.scan(null, { bucket: 'organizations' });
     let organization;
 
     if (ref.id) {
@@ -26,11 +26,11 @@ export const mutation = {
       return null;
     }
 
-    await store.set(`organizations/${organization.id}`, organization);
+    await store.set(organization.id, organization, { bucket: 'organizations' });
     return orgs.addRelationsToOrganization(organization);
   },
   async updateOrganization(obj, { id, data, stageId }, { store, orgs }) {
-    let organization = await store.get(`organizations/${id}`);
+    let organization = await store.get(id, { bucket: 'organizations' });
 
     if (!organization) {
       return null;
@@ -42,15 +42,15 @@ export const mutation = {
       return null;
     }
 
-    await store.set(`organizations/${id}`, organization);
+    await store.set(id, organization, { bucket: 'organizations' });
     return orgs.addRelationsToOrganization(organization);
   },
   async deleteOrganization(obj, { id }, { store }) {
-    await store.del(`organizations/${id}`);
+    await store.del(id, { bucket: 'organizations' });
     return id;
   },
   async addContactToOrganization(obj, { id, contactId }, { store, orgs }) {
-    const organization = await store.get(`organizations/${id}`);
+    const organization = await store.get(id, { bucket: 'organizations' });
 
     if (!organization) {
       return null;
@@ -60,11 +60,11 @@ export const mutation = {
       organization.contactIds.push(contactId);
     }
 
-    await store.set(`organizations/${id}`, organization);
+    await store.set(id, organization, { bucket: 'organizations' });
     return orgs.addRelationsToOrganization(organization);
   },
   async deleteContactFromOrganization(obj, { id, contactId }, { store, orgs }) {
-    const organization = await store.get(`organizations/${id}`);
+    const organization = await store.get(id, { bucket: 'organizations' });
 
     if (!organization) {
       return null;
@@ -72,13 +72,13 @@ export const mutation = {
 
     organization.contactIds = organization.contactIds.filter(id => id !== contactId);
 
-    await store.set(`organizations/${id}`, organization);
+    await store.set(id, organization, { bucket: 'organizations' });
     return orgs.addRelationsToOrganization(organization);
   },
   async moveContactToOrganization(obj, { id, toOrganization, contactId }, { store, orgs }) {
     const [organizationFrom, organizationTo] = await Promise.all([
-      store.get(`organizations/${id}`),
-      store.get(`organizations/${toOrganization}`)
+      store.get(id, { bucket: 'organizations' }),
+      store.get(toOrganization, { bucket: 'organizations' })
     ]);
 
     if (!organizationFrom || !organizationTo) {
@@ -91,29 +91,29 @@ export const mutation = {
     }
 
     await Promise.all([
-      store.set(`organizations/${id}`, organizationFrom),
-      store.set(`organizations/${toOrganization}`, organizationTo)
+      store.set(id, organizationFrom, { bucket: 'organizations' }),
+      store.set(toOrganization, organizationTo, { bucket: 'organizations' })
     ]);
     return orgs.addRelationsToOrganization([organizationFrom, organizationTo]);
   },
   async createStage(obj, { name }, { store, orgs }) {
     const stage = orgs.createStage({ name });
-    await store.set(`stages/${stage.id}`, stage);
+    await store.set(stage.id, stage, { bucket: 'stages' });
     return stage;
   },
   async updateStage(obj, { id, name }, { store }) {
-    let stage = await store.get(`stages/${id}`);
+    let stage = await store.get(id, { bucket: 'stages' });
 
     stage = {
       ...stage,
       name
     };
 
-    await store.set(`stages/${id}`, stage);
+    await store.set(id, stage, { bucket: 'stages' });
     return stage;
   },
   async deleteStage(obj, { id }, { store }) {
-    await store.del(`stages/${id}`);
+    await store.del(id, { bucket: 'stages' });
     return id;
   }
 };
