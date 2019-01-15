@@ -29,7 +29,9 @@ const schema = makeExecutableSchema({
 
         return file.messages.map(m => ({
           suggestions: m.expected,
-          word: m.actual
+          word: m.actual,
+          column: m.column,
+          line: m.line
         }));
       }
     }

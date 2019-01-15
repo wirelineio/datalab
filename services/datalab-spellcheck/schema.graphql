@@ -4,7 +4,9 @@
 type SpellcheckError {
   messages: [String!]
   suggestions: [String!]
-  word: String!
+  word: String!,
+  column: Int!,
+  line: Int!
 }
 
 #
