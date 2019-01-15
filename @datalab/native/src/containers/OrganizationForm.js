@@ -12,6 +12,7 @@ import {
   updateOrganizationOptimistic
 } from '../stores/organizations';
 import { GET_SERVICES } from '../stores/services';
+import { SPELLCHECK } from '../stores/spellcheck';
 
 class OrganizationsForm extends Component {
   handleOrganizationFormResult = async (result, serviceId) => {
@@ -43,17 +44,40 @@ class OrganizationsForm extends Component {
     navigation.navigate('OrganizationsList');
   };
 
-  handleSpellcheck = () => {
-    console.log('handleSpellcheck');
+  handleSpellCheck = async value => {
+    const { client } = this.props;
+
+    const {
+      data: { errors = [] }
+    } = await client.query({
+      query: SPELLCHECK,
+      context: {
+        serviceType: 'spellcheck',
+        useNetworkStatusNotifier: false
+      },
+      variables: { value },
+      fetchPolicy: 'network-only'
+    });
+
+    return errors;
   };
 
   render() {
-    const { navigation, stages = [], loadingStages = true, contactServices = [] } = this.props;
+    const {
+      navigation,
+      stages = [],
+      loadingStages = true,
+      contactServices = [],
+      services = [],
+      loadingServices = true
+    } = this.props;
     const organization = navigation.getParam('organization') || {};
 
-    const services = organization
+    const filteredContactservices = organization.id
       ? contactServices.filter(cs => cs.id === organization.ref.serviceId)
       : contactServices;
+
+    const spellCheckServiceReady = !loadingServices && services.find(s => s.type === 'spellcheck');
 
     return (
       <Screen>
@@ -63,8 +87,8 @@ class OrganizationsForm extends Component {
             organization={organization}
             stages={[{ id: '', name: 'Uncategorized' }, ...stages]}
             onResult={this.handleOrganizationFormResult}
-            onSpellcheck={this.handleSpellcheck}
-            services={services}
+            onSpellCheck={spellCheckServiceReady && this.handleSpellCheck}
+            services={filteredContactservices}
           />
         )}
       </Screen>
@@ -80,12 +104,13 @@ export default compose(
         useNetworkStatusNotifier: false
       }
     },
-    props({ data: { services = [] }, ownProps: { client } }) {
+    props({ data: { services = [], loading }, ownProps: { client } }) {
       client.updateServices(services);
       const servicesEnabled = services.filter(s => s.enabled);
       return {
         services: servicesEnabled,
-        contactServices: servicesEnabled.filter(s => s.type === 'contacts')
+        contactServices: servicesEnabled.filter(s => s.type === 'contacts'),
+        loadingServices: loading
       };
     }
   }),

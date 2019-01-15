@@ -1,12 +1,12 @@
 import { Formik, Field } from 'formik';
 import React, { Component, Fragment } from 'react';
 import { Keyboard } from 'react-native';
-import { Form, View, Text } from 'native-base';
+import { Form } from 'native-base';
 import * as Yup from 'yup';
-import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
 import Button from '../Button';
-import { TextField, PickerField, TextareaField } from '../Form';
+import { TextField, PickerField, TextareaField } from '../form';
+import Modal from '../Modal';
 
 const initialValues = organization => ({
   id: organization.id || null,
@@ -15,14 +15,6 @@ const initialValues = organization => ({
   url: organization.url || '',
   goals: organization.goals || ''
 });
-
-// const initialValues = organization => ({
-//   id: null,
-//   name: 'JCCC',
-//   stage: '',
-//   url: 'http://jc.com.ar',
-//   goals: 'Goltz Paolo'
-// });
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -34,21 +26,6 @@ const validationSchema = Yup.object().shape({
   goals: Yup.string(),
   stage: Yup.string()
 });
-
-const ModalContent = styled(View)`
-  background-color: white;
-  padding: 16px;
-  padding-bottom: 12px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  border-color: rgba(0, 0, 0, 0.1);
-`;
-
-const ModalTitle = styled(Text)`
-  font-weight: bold;
-  margin-bottom: 8px;
-`;
 
 const ServiceButton = styled(Button)`
   margin-bottom: 8px;
@@ -107,20 +84,15 @@ class SubmitButton extends Component {
             ? 'Saving...'
             : `Save in ${selectedService ? selectedService.name : '...'}`}
         </Button>
-        <Modal
-          isVisible={showServices}
-          onBackButtonPress={this.closeServicesModal}
-          onBackdropPress={this.closeServicesModal}
-        >
-          <ModalContent>
-            <ModalTitle>Pick a service to save the organization</ModalTitle>
+        {showServices && (
+          <Modal onClose={this.closeServicesModal} title="Pick a service to save the organization">
             {services.map((s, i) => (
               <ServiceButton key={i} block onPress={() => this.selectService(s.id)}>
                 {s.name}
               </ServiceButton>
             ))}
-          </ModalContent>
-        </Modal>
+          </Modal>
+        )}
       </Fragment>
     );
   }
@@ -142,7 +114,7 @@ class OrganizationsForm extends Component {
   };
 
   render() {
-    const { organization = {}, stages = [], services = [] } = this.props;
+    const { organization = {}, stages = [], services = [], onSpellCheck } = this.props;
 
     return (
       <Formik initialValues={initialValues(organization)} validationSchema={validationSchema} onSubmit={this.onSubmit}>
@@ -151,7 +123,7 @@ class OrganizationsForm extends Component {
             <Form>
               <Field name="name" label="Name" component={TextField} />
               <Field name="url" label="URL" component={TextField} />
-              <Field name="goals" label="Goals" component={TextareaField} />
+              <Field name="goals" label="Goals" component={TextareaField} onSpellCheck={onSpellCheck} />
               <Field
                 name="stage"
                 label="Stage"

@@ -12338,10 +12338,24 @@ react-native-modal@^7.0.2:
     prop-types "^15.6.1"
     react-native-animatable "^1.2.4"
 
+react-native-popover-view@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/react-native-popover-view/-/react-native-popover-view-1.0.16.tgz#ac0e1e673256bf463f57389b963e6e13f5d5e671"
+  integrity sha512-GubBm1KjCTLyPybgXYFpKy2vYg/iS+BWLFcszgK4+64azOVisIgqzZpFudNjm5+KUaeiRZ8LvS0XnsXv6jZ8Ug==
+  dependencies:
+    react-native-safe-area-view "^0.10.0"
+
 react-native-reanimated@1.0.0-alpha.11:
   version "1.0.0-alpha.11"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
   integrity sha512-lDakjY8CXmZiSN71hyc276b3d7M9mKV9ZyYw4W/rTnnJbgBFaqdIxSHq4S4LxSbVqpAoQMfUJqPTE0BKbAz7Aw==
+
+react-native-safe-area-view@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.10.0.tgz#e8e9228d22698c0f82ad1202d24a4e4977260489"
+  integrity sha512-Y70uGBxfB5E+ipf4QInBynSQbuWdCtC1roJqrW9HGwYCTMLy6+ZxyOxMTe07N9jXlPX+FKzxeoEK9k8U2Zi4Sw==
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
 
 react-native-safe-area-view@^0.11.0:
   version "0.11.0"
