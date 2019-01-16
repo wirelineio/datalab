@@ -15,7 +15,7 @@ class ApolloConfig {
 
   buildClient(localhostServiceHost = null) {
     const serviceLink = new ServiceLink({
-      fallback: new HttpLink({ uri: `${this.backendEndpoint}/gql` }),
+      fallback: new HttpLink({ uri: `${this.backendEndpoint}/gql`, credentials: 'include'  }),
       localhostServiceHost
     });
 

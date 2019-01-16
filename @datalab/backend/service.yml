@@ -11,3 +11,11 @@ functions:
           path: gql
           method: post
           cors: true
+  reset:
+    handler: handler.reset
+    description: Reset the storage.
+    events:
+      - http:
+          path: reset
+          method: get
+          cors: true

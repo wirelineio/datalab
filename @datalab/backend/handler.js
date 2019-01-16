@@ -6,12 +6,13 @@
 // https://github.com/evanw/node-source-map-support#programmatic-usage
 import 'source-map-support/register';
 
-import Wireline, { Registry, Compute } from '@wirelineio/sdk';
+import { Wireline, Registry, Compute, WalletAuthRequirement } from '@wirelineio/sdk';
 import Store from '@wirelineio/store-client';
 
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
 import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
+import { services, profiles } from './data';
 
 import SourceSchema from './schema.graphql';
 
@@ -55,28 +56,59 @@ const schema = makeExecutableSchema({
   }
 });
 
+const WALLET_CLAIM = [
+  {
+    publickey: {
+      attest: ['self'],
+      relationship: 'datalab',
+      required: true
+    }
+  }
+];
+
+const createStore = (context) => {
+  const store = new Store(context, {
+    useAccessKeyInStake: false,
+    useAccountIdInPartition: true,
+  });
+  
+  store.oldscan = store.scan;
+  store.scan = async key => {
+    const result = await store.oldscan(key);
+    return result.map(r => r.value);
+  };
+
+  store.oldget = store.get;
+  store.get = async (key, defaultTo) => {
+    const result = await store.oldget(key);
+
+    if (result[key] !== undefined) {
+      return result[key];
+    }
+
+    return defaultTo === undefined ? null : defaultTo;
+  };
+
+  return store;
+};
+
 module.exports = {
+  reset: Wireline.exec(async (event, context) => {
+    const store = createStore(context);
+    //TODO(telackey): This should be 'format' but we need an update
+    //to the client, which is mysteriously missing it.
+    await store.clear();
+    await Promise.all(profiles.map(p => store.set(`profiles/${p.id}`, p)));
+    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
+    return {};
+  }, [new WalletAuthRequirement(WALLET_CLAIM)]),
+
   gql: Wireline.exec(async (event, context, response) => {
     const { body } = event;
     const { query, variables } = typeof body === 'string' ? JSON.parse(body) : body;
     let queryRoot = {};
 
-    const store = new Store(context);
-    store.oldscan = store.scan;
-    store.scan = async key => {
-      const result = await store.oldscan(key);
-      return result.map(r => r.value);
-    };
-    store.oldget = store.get;
-    store.get = async (key, defaultTo) => {
-      const result = await store.oldget(key);
-
-      if (result[key] !== undefined) {
-        return result[key];
-      }
-
-      return defaultTo === undefined ? null : defaultTo;
-    };
+    const store = createStore(context);
 
     const registry = new Registry({
       endpoint: Registry.getEndpoint(),
@@ -109,5 +141,5 @@ module.exports = {
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
     response.send({ data, errors });
-  })
+  }, [new WalletAuthRequirement(WALLET_CLAIM)])
 };

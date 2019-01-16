@@ -46,7 +46,7 @@ export class ServiceLink extends ApolloLink {
           this.localhostServiceHost && process.env.NODE_ENV === 'development'
             ? s.url.replace('localhost', this.localhostServiceHost)
             : s.url;
-        return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql` }) };
+        return { id: s.id, type: s.type, link: new HttpLink({ uri: `${s.url}/gql`, credentials: 'include' }) };
       });
   }
 

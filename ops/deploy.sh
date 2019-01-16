@@ -8,7 +8,7 @@ _ENDPOINT_FAAS=https://core.wireline.ninja/svc/registry
 # aws | faas 
 PLATFORM="faas"
 ENDPOINT=
-DOMAIN=example.com
+DOMAIN=tel.example.com
 
 set -e
 
@@ -109,7 +109,9 @@ echo "DOMAIN: ${DOMAIN}"
 echo "ENDPOINT: ${ENDPOINT}"
 
 # Build
-yarn lerna run build --ignore="@datalab/native" --parallel
+if [ "1" -ne "$SKIP_BUILD" ]; then
+  yarn lerna run build --ignore="@datalab/native" --parallel
+fi
 
 # Register
 yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT

@@ -5,6 +5,7 @@ import url from 'url';
 import 'source-map-support/register';
 
 import Wireline from '@wirelineio/sdk';
+import { WireFetch } from '@wirelineio/sdk/dist/es/mesh/wirefetch';
 
 export const index = Wireline.exec(async (event, context, response) => {
   const PUBLIC_PATH = ensureNoEndSlash(process.env.WRL_PUBLIC_PATH) || '';
@@ -51,6 +52,26 @@ export const proxy = Wireline.exec(async (event, context, response) => {
     .set('Location', url.resolve(ensureEndSlash(static_assets_url), path))
     .status(301)
     .send('');
+});
+
+export const gql = Wireline.exec(async (event, context, response) => {
+  let fetch = new WireFetch();
+
+  let url = `${context.wireline.services.backend.endpoint}/gql`;
+  let opts = {
+    headers: event.headers
+  };
+
+  let result = await fetch.post(url, event.body, opts);
+
+  result.headers.forEach((v, k) => {
+    response.set(k, v);
+  });
+
+  response.status(result.status);
+  let json = await result.json();
+
+  response.send(json);
 });
 
 const ensureEndSlash = path => {
