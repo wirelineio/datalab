@@ -109,7 +109,7 @@ echo "DOMAIN: ${DOMAIN}"
 echo "ENDPOINT: ${ENDPOINT}"
 
 # Build
-if [ "1" -ne "$SKIP_BUILD" ]; then
+if [ "1" != "$SKIP_BUILD" ]; then
   yarn lerna run build --ignore="@datalab/native" --parallel
 fi
 

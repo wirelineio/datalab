@@ -14,7 +14,7 @@ stack:
       image: 'wrn::datalab-backend'
       version: 0.0.1
       environment:
-        WRL_ALLOW_DEMOCREDENTIALS: 0
+        WRL_ALLOW_DEMOCREDENTIALS: "0"
   datalab-spellcheck:
     deployment:
       image: 'wrn::datalab-spellcheck'
