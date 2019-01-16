@@ -17,6 +17,7 @@ import { services, profiles } from './data';
 import SourceSchema from './schema.graphql';
 
 import {
+  initProfile,
   mapProfiles,
   getAllServices,
   getAllEnabledServices,
@@ -95,11 +96,7 @@ const createStore = (context) => {
 module.exports = {
   reset: Wireline.exec(async (event, context) => {
     const store = createStore(context);
-    //TODO(telackey): This should be 'format' but we need an update
-    //to the client, which is mysteriously missing it.
-    await store.clear();
-    await Promise.all(profiles.map(p => store.set(`profiles/${p.id}`, p)));
-    await Promise.all(services.map(s => store.set(`services/${s.id}`, s)));
+    await store.format();
     return {};
   }, [new WalletAuthRequirement(WALLET_CLAIM)]),
 
@@ -119,13 +116,16 @@ module.exports = {
       accessKey: context.wireline.accessKey
     });
 
+    let profile = await initProfile(event, context, store);
+
     const wrnServices = context.wireline.services;
     const _getAllServices = getAllServices({ registry, compute, wrnServices });
-    const _getAllEnabledServices = getAllEnabledServices({ store, registry, compute, wrnServices });
+    const _getAllEnabledServices = getAllEnabledServices({ profile, store, registry, compute, wrnServices });
     const _executeInService = executeInService(_getAllEnabledServices);
 
     let queryContext = {
-      mapProfiles: mapProfiles(store),
+      profile: profile,
+      mapProfiles: mapProfiles(store, profile),
       orgs: new Organizations({
         store,
         executeInService: _executeInService
