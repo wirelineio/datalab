@@ -8,7 +8,7 @@ _ENDPOINT_FAAS=https://core.wireline.ninja/svc/registry
 # aws | faas 
 PLATFORM="faas"
 ENDPOINT=
-DOMAIN=tel.example.com
+DOMAIN=example.com
 
 set -e
 

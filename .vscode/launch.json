@@ -15,7 +15,7 @@
         "-d",
         "--stack", "${workspaceFolder}/ops/faas/stack.yml",
         "--services", "${workspaceFolder}",
-        "--endpoint", "https://faas-tel.wireline.ninja/svc/registry" 
+        "--endpoint", "https://dev.wireline.ninja/svc/registry" 
       ],
       "cwd": "${workspaceFolder}",
       "autoAttachChildProcesses": true,

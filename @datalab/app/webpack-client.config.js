@@ -38,7 +38,7 @@ module.exports = {
 
   devServer: {
     compress: true,
-    port: 18080
+    port: 8080
   },
 
   // https://www.npmjs.com/package/html-webpack-plugin

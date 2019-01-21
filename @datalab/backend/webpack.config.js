@@ -22,10 +22,6 @@ module.exports = {
     libraryTarget: 'commonjs2'
   },
 
-  resolve: {
-    symlinks: false
-  },
-
   // https://webpack.js.org/configuration/devtool/
   devtool: 'source-map',
 
@@ -44,19 +40,19 @@ module.exports = {
 
   module: {
     rules: [
-      //{
-      //  enforce: 'pre',
-      //  test: /\.js$/,
-      //  exclude: [/node_modules/, /darkstar/],
-      //  loader: 'eslint-loader',
-      //  options: {
-      //    emitError: true,
-      //    configFile: path.join(__dirname, '..', '..', '.eslintrc.json')
-      //  }
-      //},
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
+        options: {
+          emitError: true,
+          configFile: path.join(__dirname, '..', '..', '.eslintrc.json')
+        }
+      },
       {
         test: /\.js$/,
-        exclude: [/node_modules/, /darkstar/], // Don't transpile deps.
+        exclude: /node_modules/, // Don't transpile deps.
         use: {
           loader: 'babel-loader',
           options: {
