@@ -108,7 +108,7 @@ export class ServiceLink extends ApolloLink {
             });
             return { data };
           } catch (err) {
-            return {};
+            return { errors: [err] };
           }
         })
       );

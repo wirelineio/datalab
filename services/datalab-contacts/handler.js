@@ -28,26 +28,26 @@ const schema = makeExecutableSchema({
   resolvers: {
     Query: {
       async getAllRemoteOrganizations(obj, args, { store }) {
-        return store.scan('organizations');
+        return store.scan(null, { bucket: 'organizations' });
       },
       async getRemoteOrganization(obj, { id }, { store }) {
-        return store.get(`organizations/${id}`);
+        return store.get(id, { bucket: 'organizations' });
       },
       async getAllRemoteContacts(obj, args, { store }) {
-        return store.scan('contacts');
+        return store.scan(null, { bucket: 'contacts' });
       },
       async getRemoteContact(obj, { id }, { store }) {
-        return store.get(`contacts/${id}`);
+        return store.get(id, { bucket: 'contacts' });
       }
     },
     Mutation: {
       async createRemoteOrganization(obj, args, { store }) {
         const organization = Object.assign({}, args, { id: uuid() });
-        await store.set(`organizations/${organization.id}`, organization);
+        await store.set(organization.id, organization, { bucket: 'organizations' });
         return organization;
       },
       async updateRemoteOrganization(obj, { id, ...args }, { store }) {
-        let organization = await store.get(`organizations/${id}`);
+        let organization = await store.get(id, { bucket: 'organizations' });
 
         if (!organization) {
           return null;
@@ -58,16 +58,16 @@ const schema = makeExecutableSchema({
           ...args
         };
 
-        await store.set(`organizations/${id}`, organization);
+        await store.set(id, organization, { bucket: 'organizations' });
         return organization;
       },
       async createRemoteContact(obj, args, { store }) {
         const contact = Object.assign({}, args, { id: uuid() });
-        await store.set(`contacts/${contact.id}`, contact);
+        await store.set(contact.id, contact, { bucket: 'contacts' });
         return contact;
       },
       async updateRemoteContact(obj, { id, ...args }, { store }) {
-        let contact = await store.get(`contacts/${id}`);
+        let contact = await store.get(id, { bucket: 'contacts' });
 
         if (!contact) {
           return null;
@@ -78,7 +78,7 @@ const schema = makeExecutableSchema({
           ...args
         };
 
-        await store.set(`contacts/${contact.id}`, contact);
+        await store.set(contact.id, contact, { bucket: 'contacts' });
         return contact;
       },
       async resetStore(obj, args, { store }) {
@@ -95,24 +95,23 @@ const createStore = (context, opts) => {
   }, opts);
 
   const store = new Store(context, opts);
-  
+
   store.oldscan = store.scan;
-  store.scan = async key => {
-    const result = await store.oldscan(key);
+  store.scan = async (...args) => {
+    const result = await store.oldscan(...args);
     return result.map(r => r.value);
   };
-
   store.oldget = store.get;
-  store.get = async (key, defaultTo) => {
-    const result = await store.oldget(key);
+  store.get = async (key, ...args) => {
+    const result = await store.oldget(key, ...args);
 
     if (result[key] !== undefined) {
       return result[key];
     }
 
-    return defaultTo === undefined ? null : defaultTo;
+    return null;
   };
-
+  
   return store;
 };
 

@@ -57,6 +57,8 @@ const schema = makeExecutableSchema({
   }
 });
 
+//TODO(telackey):  This is just an example of a Wallet-style claim to be used for testing
+//and initial Wallet integration.
 const WALLET_CLAIM = [
   {
     publickey: {
@@ -74,20 +76,19 @@ const createStore = (context) => {
   });
   
   store.oldscan = store.scan;
-  store.scan = async key => {
-    const result = await store.oldscan(key);
+  store.scan = async (key, opts) => {
+    const result = await store.oldscan(key, opts);
     return result.map(r => r.value);
   };
-
   store.oldget = store.get;
-  store.get = async (key, defaultTo) => {
-    const result = await store.oldget(key);
+  store.get = async (key, opts) => {
+    const result = await store.oldget(key, opts);
 
     if (result[key] !== undefined) {
       return result[key];
     }
 
-    return defaultTo === undefined ? null : defaultTo;
+    return null;
   };
 
   return store;

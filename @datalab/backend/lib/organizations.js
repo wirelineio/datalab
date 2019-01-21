@@ -94,7 +94,10 @@ export default class Organizations {
   }
 
   async addRelationsToOrganization(organization) {
-    let [stages, contacts] = await Promise.all([this.store.scan('stages'), this.store.scan('contacts')]);
+    let [stages, contacts] = await Promise.all([
+      this.store.scan(null, { bucket: 'stages' }),
+      this.store.scan(null, { bucket: 'contacts' })
+    ]);
 
     if (Array.isArray(organization)) {
       return organization.map(r => {

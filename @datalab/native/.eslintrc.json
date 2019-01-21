@@ -25,7 +25,6 @@
         "printWidth": 120
       }
     ],
-    "react/prop-types": "off",
-    "no-console": "off"
+    "react/prop-types": "off"
   }
 }

@@ -1,14 +1,15 @@
 import React from 'react';
-// import Icon from './Icon';
 import { Button, Text } from 'native-base';
 import styled from 'styled-components/native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { material } from '../style/variables';
 import { prop } from 'styled-tools';
+import { marginTop } from '../lib/style';
+import { material } from '../style/variables';
 
 const StyledButton = styled(Button)`
   margin: ${prop('margin', 0)}px;
+  ${marginTop}
 `;
 
 export default ({ children, ...rest }) => {

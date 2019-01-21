@@ -199,7 +199,7 @@ export const mutation = {
       profile.services.push({ id, enabled: true });
     }
 
-    await store.set(`profiles/${profile.id}`, profile);
+    await store.set(profile.id, profile, { bucket: 'profiles' });
 
     return mapProfiles(services.find(s => s.id === id));
   }
