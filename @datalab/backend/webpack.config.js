@@ -26,7 +26,14 @@ module.exports = {
   devtool: 'source-map',
 
   plugins: [
-    new CopyWebpackPlugin(['wireline.yml', 'service.yml']),
+    new CopyWebpackPlugin([
+      {
+        from: 'config',
+        to: 'config'
+      },
+      'wireline.yml',
+      'service.yml'
+    ]),
     new ZipPlugin({
       path: '../',
       filename: 'webpack.zip'

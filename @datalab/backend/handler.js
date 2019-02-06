@@ -6,15 +6,16 @@
 // https://github.com/evanw/node-source-map-support#programmatic-usage
 import 'source-map-support/register';
 
-import Wireline, { Registry, Compute } from '@wirelineio/sdk';
+import Wireline, { Registry, Compute, ClaimHelper } from '@wirelineio/sdk';
 import Store from '@wirelineio/store-client';
 
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
 import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 
+import * as Config from './config';
 import SourceSchema from './schema.graphql';
-
+import { query as queryUsers } from './resolvers/user';
 import {
   mapProfiles,
   getAllServices,
@@ -34,7 +35,7 @@ const schema = makeExecutableSchema({
 
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   resolvers: {
-    Query: { ...queryServices, ...queryOrganizations, ...queryContacts },
+    Query: { ...queryUsers, ...queryServices, ...queryOrganizations, ...queryContacts },
     Mutation: { ...mutationServices, ...mutationOrganizations, ...mutationContacts },
     Date: new GraphQLScalarType({
       name: 'Date',
@@ -60,6 +61,8 @@ module.exports = {
     const { body } = event;
     const { query, variables } = typeof body === 'string' ? JSON.parse(body) : body;
     let queryRoot = {};
+
+    const claimHelper = new ClaimHelper(Config.IDM.resourceId, Config.IDM.attestUrl, Config.IDM.realm);
 
     const store = new Store(context);
     store.oldscan = store.scan;
@@ -101,6 +104,8 @@ module.exports = {
       getAllServices: _getAllServices,
       getAllEnabledServices: _getAllEnabledServices,
       executeInService: _executeInService,
+      claimHelper,
+      context, // Needed to call claimHelper methods inside resolvers.
       store,
       registry,
       compute,
@@ -108,6 +113,38 @@ module.exports = {
     };
 
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
+
+    if (errors) {
+      const claimError = errors.find(e => e.originalError && 'ClaimRequiredError' === e.originalError.constructor.name);
+      if (claimError) {
+        const claimReq = claimError.originalError;
+        claimReq.respond(event, context, response);
+      }
+    }
+
     response.send({ data, errors });
+  }),
+
+  claimEnrollment: Wireline.exec(async (event, context, response) => {
+    response.set('Content-Type', 'text/html');
+    return `<!DOCTYPE>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>DataLab Idm Enrollment</title>
+      <script id="wrn_resource_enrollment" type="application/json">
+      {
+        "resources": [{ 
+          "id": "${Config.IDM.resourceId}",
+          "claims": ${JSON.stringify(Object.values(Config.CLAIMS))}
+        }],
+        "idm": "${Config.IDM.attestUrl}"
+      }
+      </script>      
+    </head>
+    <body>
+    </body>
+    </html>
+  `;
   })
 };

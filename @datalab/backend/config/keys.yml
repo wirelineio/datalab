@@ -1,0 +1,41 @@
+#
+# CONFIDENTIAL: Key Store.
+#
+
+# TODO(egorgripasov): move to deployment config of each service.
+
+self:
+  public: |
+          -----BEGIN PUBLIC KEY-----
+          MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYhOrQtr0z8qHwGuDx7qLrVfIc
+          vhAqHZCntQhKppZTghmJKsoBTA7RDDasE71bjcXrME4mr16aqFdOyd5UBhaxrpKJ
+          r86Ug8ZMGRRKrN3z1c7qftCPTQxEzwuNwcPHXJFs7yJThn9xEdcV823li2fUk6yt
+          YEarDg2k4mJHiQ1nvQIDAQAB
+          -----END PUBLIC KEY-----
+  private: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIICXgIBAAKBgQCYhOrQtr0z8qHwGuDx7qLrVfIcvhAqHZCntQhKppZTghmJKsoB
+          TA7RDDasE71bjcXrME4mr16aqFdOyd5UBhaxrpKJr86Ug8ZMGRRKrN3z1c7qftCP
+          TQxEzwuNwcPHXJFs7yJThn9xEdcV823li2fUk6ytYEarDg2k4mJHiQ1nvQIDAQAB
+          AoGABFjliIVs5yonS3y4pKy0oBiXChKwy0KEeQND9TzCVCcFK0+46kiMs5Cxjj4R
+          y6ZC2e1KjPe6rpXVxz0hxStXQjX/vCz9m8Zy5hYgNR4vSTyJUxoI3fI0z4rcNqs8
+          Db2CVvImrKBG2Fnp5Io8/JiMNyyzZq/zBFWI3cmXgqnenVECQQDH5gOTdePzoUsZ
+          1Nj0fLKP+m+UHr8yW0FZ2uZoWYk0BNnm5u4VtT/7FlrDkpq22FvezIGHdg6NHFen
+          gfDwFufrAkEAw1LfXVXYBi9YkL/Sa5RQpWkWI7WnHiah7UZfEK6htoRKDpaPy0/c
+          kLB/atnOuzujVsiu83Ewb8jUSyTTZLXs9wJBALXSvy/yzHv/GwuM8iY4Akc52SHW
+          cbzBColLtcX2ovjg7L69EJRIP8EITViU0gs8cxwN0ke/l2689/HSHLCVdS8CQQCu
+          jz/EIFYBoQqbwnMBZfl0+qeonk2OaqRIc52+QPORNEUjKHe2EddjD/mvupxBRJlD
+          k/KW6k+Jd4gS6ARsexIdAkEAsvMSI7ODdyO7wdNKAHMpmVvJ+FmShbQkah2JtZp8
+          KA6grVSqg32hHucnZXVNZ0nA02fE3Jf4nav05n3ICzkVgw==
+          -----END RSA PRIVATE KEY-----
+
+# TODO(egorgripasov): proper url.
+localhost9008:
+  public: |
+          -----BEGIN PUBLIC KEY-----
+          MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcK6HVI7dKaderFSRLKPWmfIQ9
+          OqA4Rz9afvUavrjh67fKTDsiYBIzAstakzwO9Euk0m5UIyX1sl/r8gm0uXnLOd3z
+          eR+qQSHz1E1ltpCMwUjCv8gWDyGfBzSssEneTMAkmIqL7hIKfAOUeE6tzQwBO/Uz
+          05UbD0K4+KqYvGnTXwIDAQAB
+          -----END PUBLIC KEY-----
+

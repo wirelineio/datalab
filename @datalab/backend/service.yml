@@ -11,3 +11,10 @@ functions:
           path: gql
           method: post
           cors: true
+  enrollment:
+    handler: handler.claimEnrollment
+    events:
+      - http:
+          path: /.well-known/idm/enrollment
+          method: get
+          cors: true

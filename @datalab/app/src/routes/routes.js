@@ -1,10 +1,12 @@
-import Organizations from './containers/Organizations';
-import Contacts from './containers/Contacts';
-import Services from './containers/Services';
-
 import ContactsIcon from '@material-ui/icons/Contacts';
 import OrganizationsIcon from '@material-ui/icons/GroupWork';
 import ServicesIcon from '@material-ui/icons/Share';
+
+import Organizations from '../containers/Organizations';
+import Contacts from '../containers/Contacts';
+import Services from '../containers/Services';
+
+import { CLAIMS } from '../constants';
 
 export const routes = [
   {
@@ -30,7 +32,8 @@ export const routes = [
     title: 'Services',
     component: Services,
     icon: ServicesIcon,
-    sidebar: true
+    sidebar: true,
+    claims: [CLAIMS.ADMIN]
   }
 ];
 

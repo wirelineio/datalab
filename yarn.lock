@@ -2039,7 +2039,40 @@
     yamljs "^0.3.0"
     yargs "^11.0.0"
 
-"@wirelineio/sdk@^0.1.12", "@wirelineio/sdk@^0.1.16", "@wirelineio/sdk@^0.1.4":
+"@wirelineio/cli@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/cli/-/cli-0.1.21.tgz#fce3b97a7c5f797daaeac11a91c5359e8c3b771e"
+  integrity sha512-Z0mdwvQDCbcjQT1jFaelRvajdUrM5DU466kTZbE4y9l/I0Q9orrKSEPra/EzkVnAD5I86GA8sP1HSBVNlPFtrg==
+  dependencies:
+    "@wirelineio/sdk" "^0.1.21"
+    "@wirelineio/util" "^0.1.21"
+    "@wirelineio/util-node" "^0.1.21"
+    babel-runtime "^6.26.0"
+    body-parser "^1.18.3"
+    cors "^2.8.5"
+    download "^7.0.0"
+    express "^4.16.3"
+    find-root "^1.1.0"
+    fs-extra "^6.0.0"
+    glob "^7.1.2"
+    jsonschema "^1.2.4"
+    key-fingerprint "^1.1.0"
+    lodash "^4.17.10"
+    mkdirp "^0.5.1"
+    moment "^2.22.2"
+    node-fetch "^2.3.0"
+    node-yaml "^3.1.0"
+    ora "^3.0.0"
+    promisepipe "^3.0.0"
+    read-pkg-up "^4.0.0"
+    webpack "^4.17.1"
+    webpack-dev-middleware "^3.4.0"
+    webpack-dev-server "^3.1.10"
+    webpack-hot-middleware "^2.24.3"
+    yamljs "^0.3.0"
+    yargs "^11.0.0"
+
+"@wirelineio/sdk@^0.1.16", "@wirelineio/sdk@^0.1.4":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@wirelineio/sdk/-/sdk-0.1.16.tgz#8698a89fb90986ade5929cf74513d88ada8a7f96"
   integrity sha512-HEYeZYlZC+yg8NluL0qKX6sI5V1YPd3Q1vb0BYEcCKcnfaNAUy8ztP4mQf24x60te+W3GLsQxMi/QUWkO1VMFA==
@@ -2060,7 +2093,30 @@
     r2 "^2.0.1"
     url "^0.11.0"
 
-"@wirelineio/store-client@^0.1.12", "@wirelineio/store-client@^0.1.7":
+"@wirelineio/sdk@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/sdk/-/sdk-0.1.21.tgz#b53359770b4dd5295251a2d673f9691f094bfbd5"
+  integrity sha512-P07x5ZXx10SLt4SniCFE+M/n1hC1b9S4/uwLKub8T///+tiGLXz41WpQ5uO/tGkGRDq8inX5p+Pr1r2kUj5edw==
+  dependencies:
+    "@wirelineio/util" "^0.1.21"
+    "@wirelineio/util-node" "^0.1.21"
+    atob "^2.1.2"
+    babel-runtime "^6.26.0"
+    continuation-local-storage "^3.2.1"
+    glob "^7.1.2"
+    graphql "^0.13.2"
+    graphql-tools "^2.24.0"
+    key-fingerprint "^1.1.0"
+    lodash "^4.17.10"
+    nconf "^0.10.0"
+    nconf-yaml "^1.0.2"
+    node-fetch "^2.2.1"
+    node-yaml "^3.1.1"
+    popsicle "^9.2.0"
+    r2 "^2.0.1"
+    url "^0.11.0"
+
+"@wirelineio/store-client@^0.1.12":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@wirelineio/store-client/-/store-client-0.1.16.tgz#2ce8132d406bf0721b770e0538656633d6da582d"
   integrity sha512-MBN99/a7fTdCbxr72szqiNqrVv44CbRT6F6dZv0cOwuJw8FkoqoSvzbVkhF+5u6rLddMWU5UIyruv/thYidCPA==
@@ -2068,6 +2124,20 @@
     "@wirelineio/sdk" "^0.1.16"
     "@wirelineio/util" "^0.1.16"
     "@wirelineio/util-node" "^0.1.16"
+    babel-runtime "^6.26.0"
+    jsonwebtoken "^8.3.0"
+    lodash "^4.17.10"
+    moment "^2.22.1"
+    source-map-support "^0.5.6"
+
+"@wirelineio/store-client@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/store-client/-/store-client-0.1.21.tgz#587729db800ae9abd56bfbbeacb5b2c528712d97"
+  integrity sha512-t5OpEYvGUFF1UuPKS7dYNfgJFP5NC7cFst4lhKxljhQBR8481KyISfhdkL18p58V1YYys2dcvp8k5IvTBrQhrw==
+  dependencies:
+    "@wirelineio/sdk" "^0.1.21"
+    "@wirelineio/util" "^0.1.21"
+    "@wirelineio/util-node" "^0.1.21"
     babel-runtime "^6.26.0"
     jsonwebtoken "^8.3.0"
     lodash "^4.17.10"
@@ -2099,6 +2169,32 @@
     superagent "^3.8.3"
     uuid "^3.3.2"
 
+"@wirelineio/util-node@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/util-node/-/util-node-0.1.21.tgz#ee2d90cac92ebaeaa79bb0f045166984299586aa"
+  integrity sha512-RqMuAvHz7k96RaFm2Qpzwi9k3ykebOIJ3nytAoYUyPOBIj9Tzq7J+7fRYkeA4bvkSD9LSFY9KYbjkm03jW3+uw==
+  dependencies:
+    "@wirelineio/util" "^0.1.21"
+    aws-sdk "^2.233.1"
+    babel-runtime "^6.26.0"
+    download "^7.0.0"
+    fs-extra "^6.0.0"
+    glob "^7.1.2"
+    hashids "^1.2.2"
+    jsonwebtoken "^8.2.1"
+    lodash "^4.17.10"
+    mime "^2.3.1"
+    moment "^2.22.1"
+    multihashes "^0.4.14"
+    node-yaml "^3.1.1"
+    nodemailer "5.1.1"
+    pem-jwk "1.5.1"
+    pg "^7.4.3"
+    request "^2.85.0"
+    short-uuid "^3.0.1"
+    superagent "^3.8.3"
+    uuid "^3.3.2"
+
 "@wirelineio/util@^0.1.16":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@wirelineio/util/-/util-0.1.16.tgz#6792afea22ac7dbdac59e3a1d8d29f63e9634f60"
@@ -2112,12 +2208,25 @@
     popsicle "^9.2.0"
     uuid "^3.2.1"
 
-"@wirelineio/ux@^0.1.12":
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/@wirelineio/ux/-/ux-0.1.16.tgz#f42973d0ef86a3a5b5850b5c147a810475607a62"
-  integrity sha512-pmsPsach7V+gDBgfsznZQDZ0ALUqkUbnqyvwX6SBvoVqulMK0jigUb9krBv68abnPl+caY9GnZew2j/JM5YwjQ==
+"@wirelineio/util@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/util/-/util-0.1.21.tgz#20413b9bfbe91a75b34d3ed3f8864e4cfcb0d027"
+  integrity sha512-QObo4GP+lRBNL5oznBw9W3rbrNmKzVTr1ooYE9UFAk7oaTf+cPv+dFqIEbIAPvXXcL1EuJ0Br6dxuiw1tIPxzA==
   dependencies:
-    "@wirelineio/util" "^0.1.16"
+    babel-runtime "^6.26.0"
+    jwt-simple "0.5.1"
+    keypair "1.0.1"
+    lodash "^4.17.10"
+    moment "^2.22.1"
+    popsicle "^9.2.0"
+    uuid "^3.2.1"
+
+"@wirelineio/ux@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@wirelineio/ux/-/ux-0.1.21.tgz#b49c8d5482aa630a44bc65ab5820c1acccdb5afa"
+  integrity sha512-ruRw4BTfxn0xUAKlhuYzzko8C3nsp62uJ9oX4Zu/YVyoHzvQXV+5IVljSEEusevfDaa0wr3ypivIFe6MrKyH2g==
+  dependencies:
+    "@wirelineio/util" "^0.1.21"
     babel-runtime "^6.26.0"
     d3 "^5.1.0"
     history "^4.7.2"
@@ -2731,7 +2840,7 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-atob@^2.1.1:
+atob@^2.1.1, atob@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
@@ -4123,7 +4232,7 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
-cli-spinners@^1.0.1:
+cli-spinners@^1.0.1, cli-spinners@^1.1.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-1.3.1.tgz#002c1990912d0d59580c93bd36c056de99e4259a"
   integrity sha512-1QL4544moEsDVH9T/l6Cemov/37iv1RtoKf7NJ04A60+4MREXNfx/QvavbH6QoGdsD4N4Mwy49cmaINR/o2mdg==
@@ -9448,7 +9557,7 @@ lodash@4.x, lodash@^4.0.0, lodash@^4.10.1, lodash@^4.11.1, lodash@^4.13.1, lodas
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
 
-log-symbols@^2.1.0:
+log-symbols@^2.1.0, log-symbols@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-2.2.0.tgz#5740e1c5d6f0dfda4ad9323b5332107ef6b4c40a"
   integrity sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==
@@ -10522,6 +10631,11 @@ node-yaml@^3.1.0, node-yaml@^3.1.1:
     junk "2.1.0"
     promise-fs "1.2.3"
 
+nodemailer@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-5.1.1.tgz#0c48d1ecab02e86d9ff6c620ee75ed944b763505"
+  integrity sha512-hKGCoeNdFL2W7S76J/Oucbw0/qRlfG815tENdhzcqTpSjKgAN91mFOqU2lQUflRRxFM7iZvCyaFcAR9noc/CqQ==
+
 noop-fn@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/noop-fn/-/noop-fn-1.0.0.tgz#5f33d47f13d2150df93e0cb036699e982f78ffbf"
@@ -10873,6 +10987,18 @@ ora@1.4.0:
     cli-cursor "^2.1.0"
     cli-spinners "^1.0.1"
     log-symbols "^2.1.0"
+
+ora@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-3.0.0.tgz#8179e3525b9aafd99242d63cc206fd64732741d0"
+  integrity sha512-LBS97LFe2RV6GJmXBi6OKcETKyklHNMV0xw7BtsVn2MlsgsydyZetSCbCANr+PFLmDyv4KV88nn0eCKza665Mg==
+  dependencies:
+    chalk "^2.3.1"
+    cli-cursor "^2.1.0"
+    cli-spinners "^1.1.0"
+    log-symbols "^2.2.0"
+    strip-ansi "^4.0.0"
+    wcwidth "^1.0.1"
 
 original@^1.0.0:
   version "1.0.2"
@@ -15012,7 +15138,7 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   dependencies:
     minimalistic-assert "^1.0.0"
 
-wcwidth@^1.0.0:
+wcwidth@^1.0.0, wcwidth@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/wcwidth/-/wcwidth-1.0.1.tgz#f0b0dcf915bc5ff1528afadb2c0e17b532da2fe8"
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=

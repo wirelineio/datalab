@@ -4,10 +4,11 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import Login from './containers/Login';
 import ScreenLoader from './components/ScreenLoader';
 import Layout from './components/Layout';
 import Sidebar from './components/Sidebar';
-import { routes } from './routes';
+import { routes, PrivateRoute } from './routes';
 
 const theme = createMuiTheme({
   typography: {
@@ -24,19 +25,25 @@ class App extends Component {
           <CssBaseline />
           <NetworkStatusNotifier render={({ loading }) => <ScreenLoader open={loading} />} />
           <Switch>
-            {routes
-              .filter(r => r.sidebar)
-              .map(({ component: Main, title, ...rest }, key) => (
-                <Route
+            <Route key="login" path="/login" component={Login} />
+            {routes.map(({ component: Main, title, restricted = true, ...rest }, key) => {
+              const RouteType = restricted ? PrivateRoute : Route;
+              return (
+                <RouteType
                   key={key}
                   {...rest}
                   render={props => (
-                    <Layout title={title} sidebar={<Sidebar routes={routes} {...props} />}>
+                    <Layout
+                      title={title}
+                      {...props}
+                      sidebar={<Sidebar routes={routes.filter(r => r.sidebar)} {...props} />}
+                    >
                       <Main {...props} />
                     </Layout>
                   )}
                 />
-              ))}
+              );
+            })}
             {routes
               .filter(r => r.default)
               .map(({ path }, key) => (

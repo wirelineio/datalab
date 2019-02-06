@@ -17,10 +17,13 @@ const styles = theme => ({
 class Sidebar extends Component {
   render() {
     const {
-      classes,
-      routes,
-      match: { path: pathname }
+      checkClaims,
+      routes: allRoutes,
+      match: { path: pathname },
+      classes
     } = this.props;
+
+    const routes = allRoutes.filter(r => !r.claims || checkClaims(r.claims));
 
     return (
       <List component="nav">

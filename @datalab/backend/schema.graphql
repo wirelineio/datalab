@@ -3,6 +3,19 @@
 #
 scalar Date
 
+### USER
+
+type User {
+  userId: String!
+  claims: [Claim]
+}
+
+
+type Claim {
+  resource: String
+  name: String
+}
+
 ### SERVICES
 
 type Service {
@@ -67,6 +80,8 @@ input InputRemoteContact {
 #
 
 type Query {
+  ### CurrentUser
+  getCurrentUser: User
 
   ### SERVICES
 
