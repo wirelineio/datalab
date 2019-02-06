@@ -13,7 +13,7 @@
         "dev",
         "stack",
         "-d",
-        "--stack", "${workspaceFolder}/ops/fass/stack.yml",
+        "--stack", "${workspaceFolder}/ops/faas/stack.yml",
         "--services", "${workspaceFolder}",
         "--endpoint", "https://dev.wireline.ninja/svc/registry" 
       ],
