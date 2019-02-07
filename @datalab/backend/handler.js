@@ -119,10 +119,12 @@ module.exports = {
       if (claimError) {
         const claimReq = claimError.originalError;
         claimReq.respond(event, context, response);
+      } else {
+        response.send({ errors });
       }
+    } else {
+      response.send({ data });
     }
-
-    response.send({ data, errors });
   }),
 
   claimEnrollment: Wireline.exec(async (event, context, response) => {
