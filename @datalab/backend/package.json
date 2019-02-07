@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.5",
-    "@wirelineio/sdk": "^0.1.21",
-    "@wirelineio/store-client": "^0.1.21",
+    "@wirelineio/sdk": "^0.1.22",
+    "@wirelineio/store-client": "^0.1.22",
     "graphql": "^14.0.2",
     "graphql-request": "^1.8.2",
     "graphql-server-express": "^1.3.5",

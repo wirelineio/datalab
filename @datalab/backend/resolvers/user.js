@@ -6,7 +6,7 @@ export const query = {
     console.log(JSON.stringify(context.wireline.identity));
     console.log('---------');
 
-    claimHelper.testFor(CLAIMS.IS_USER, CLAIMS.IS_ADMIN, context);
+    claimHelper.testFor(claimHelper.createClaimSet(CLAIMS.IS_USER, CLAIMS.IS_ADMIN), context);
 
     const userId = context.wireline.identity.accountId;
 
