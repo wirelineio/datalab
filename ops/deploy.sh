@@ -109,7 +109,9 @@ echo "DOMAIN: ${DOMAIN}"
 echo "ENDPOINT: ${ENDPOINT}"
 
 # Build
-yarn lerna run build --ignore="@datalab/native" --parallel
+if [ "1" != "$SKIP_BUILD" ]; then
+  yarn lerna run build --ignore="@datalab/native" --parallel
+fi
 
 # Register
 yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT

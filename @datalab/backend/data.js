@@ -11,5 +11,18 @@ export const profiles = [
   {
     id: 'admin',
     services: []
+  },
+  {
+    id: 'template',
+    services: [
+      {
+        id: 'example.com/datalab-spellcheck',
+        enabled: true
+      },
+      {
+        id: 'example.com/datalab-contacts',
+        enabled: true
+      },
+    ]
   }
 ];

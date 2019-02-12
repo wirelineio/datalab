@@ -49,7 +49,7 @@ module.exports = {
       {
         enforce: 'pre',
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /darkstar/],
         loader: 'eslint-loader',
         options: {
           emitError: true,

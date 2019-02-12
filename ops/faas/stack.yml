@@ -14,7 +14,7 @@ stack:
       image: 'wrn::datalab-backend'
       version: 0.0.1
       environment:
-        WRL_IDM_URL: https://dev.wireline.ninja/svc/idm
+        WRL_IDM_URL: 'https://dev.wireline.ninja/svc/idm'
         NODE_OPTIONS: '--inspect=0.0.0.0:9229'
   datalab-spellcheck:
     deployment:

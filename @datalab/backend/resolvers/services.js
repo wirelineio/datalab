@@ -1,3 +1,6 @@
+import _ from 'lodash';
+import assert from 'assert';
+
 import { request } from 'graphql-request';
 import { services, profiles } from '../data';
 
@@ -9,9 +12,27 @@ const serviceTypeByLabel = label => {
   return SERVICE_TYPES.find(t => t === type);
 };
 
-export const mapProfiles = store => async services => {
-  const profile = await store.get('admin', { bucket: 'profiles' });
+const getProfileId = (context) => {
+  return _.get(context, 'wireline.identity.accountId', null);
+};
 
+export const initProfile = async (event, context, store) => {
+  const profileId = getProfileId(context);
+  assert(profileId, 'Unable to locate profile / identity!');
+
+  const profileKey = `profiles/${profileId}`;
+  let profile = await store.get(profileKey);
+
+  if (!profile) {
+    profile = _.cloneDeep(_.find(profiles, e => e.id === 'template'));
+    profile.id = profileId;
+    await store.set(profileKey, profile);
+  }
+
+  return profile;
+};
+
+export const mapProfiles = (store, profile) => async services => {
   let onlyFirst = false;
 
   if (!Array.isArray(services)) {
@@ -138,9 +159,9 @@ export const getAllServices = ({ registry, compute, wrnServices }) => async ({ c
   return services;
 };
 
-export const getAllEnabledServices = ({ store, registry, compute, wrnServices }) => async (...args) => {
+export const getAllEnabledServices = ({ store, profile, registry, compute, wrnServices }) => async (...args) => {
   const services = await getAllServices({ registry, compute, wrnServices })(...args);
-  return (await mapProfiles(store)(services)).filter(s => s.enabled);
+  return (await mapProfiles(store, profile)(services)).filter(s => s.enabled);
 };
 
 export const executeInService = getAllEnabledServices => async ({ query, variables, serviceId }) => {
@@ -164,12 +185,11 @@ export const query = {
 
 export const mutation = {
   async resetStore(obj, args, { store }) {
-    await store.clear();
-    await store.set('admin', profiles[0], { bucket: 'profiles' });
-    await Promise.all(services.map(s => store.set(s.id, s, { bucket: 'services' })));
+    await store.format();
   },
-  async switchService(obj, { id }, { store, mapProfiles, getAllServices }) {
-    const [services, profile] = await Promise.all([getAllServices(), store.get('admin', { bucket: 'profiles' })]);
+
+  async switchService(obj, { id }, { profile, store, mapProfiles, getAllServices }) {
+    const services = await getAllServices();
 
     const service = profile.services.find(s => s.id === id);
 
@@ -179,7 +199,7 @@ export const mutation = {
       profile.services.push({ id, enabled: true });
     }
 
-    await store.set('admin', profile, { bucket: 'profiles' });
+    await store.set(profile.id, profile, { bucket: 'profiles' });
 
     return mapProfiles(services.find(s => s.id === id));
   }

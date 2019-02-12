@@ -12,11 +12,13 @@ import Store from '@wirelineio/store-client';
 import { concatenateTypeDefs, makeExecutableSchema } from 'graphql-tools';
 import { graphql, GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
+import { services, profiles } from './data';
 
 import * as Config from './config';
 import SourceSchema from './schema.graphql';
 import { query as queryUsers } from './resolvers/user';
 import {
+  initProfile,
   mapProfiles,
   getAllServices,
   getAllEnabledServices,
@@ -56,6 +58,31 @@ const schema = makeExecutableSchema({
   }
 });
 
+const createStore = (context) => {
+  const store = new Store(context, {
+    useAccessKeyInStake: false,
+    useAccountIdInPartition: true,
+  });
+  
+  store.oldscan = store.scan;
+  store.scan = async (key, opts) => {
+    const result = await store.oldscan(key, opts);
+    return result.map(r => r.value);
+  };
+  store.oldget = store.get;
+  store.get = async (key, opts) => {
+    const result = await store.oldget(key, opts);
+
+    if (result[key] !== undefined) {
+      return result[key];
+    }
+
+    return null;
+  };
+
+  return store;
+};
+
 module.exports = {
   gql: Wireline.exec(async (event, context, response) => {
     const { body } = event;
@@ -63,23 +90,7 @@ module.exports = {
     let queryRoot = {};
 
     const claimHelper = new ClaimHelper(Config.IDM.resourceId, Config.IDM.attestUrl, Config.IDM.realm);
-
-    const store = new Store(context);
-    store.oldscan = store.scan;
-    store.scan = async (key, opts) => {
-      const result = await store.oldscan(key, opts);
-      return result.map(r => r.value);
-    };
-    store.oldget = store.get;
-    store.get = async (key, opts) => {
-      const result = await store.oldget(key, opts);
-
-      if (result[key] !== undefined) {
-        return result[key];
-      }
-
-      return null;
-    };
+    const store = createStore(context);
 
     const registry = new Registry({
       endpoint: Registry.getEndpoint(),
@@ -90,13 +101,16 @@ module.exports = {
       accessKey: context.wireline.accessKey
     });
 
+    let profile = await initProfile(event, context, store);
+
     const wrnServices = context.wireline.services;
     const _getAllServices = getAllServices({ registry, compute, wrnServices });
-    const _getAllEnabledServices = getAllEnabledServices({ store, registry, compute, wrnServices });
+    const _getAllEnabledServices = getAllEnabledServices({ profile, store, registry, compute, wrnServices });
     const _executeInService = executeInService(_getAllEnabledServices);
 
     let queryContext = {
-      mapProfiles: mapProfiles(store),
+      profile: profile,
+      mapProfiles: mapProfiles(store, profile),
       orgs: new Organizations({
         store,
         executeInService: _executeInService

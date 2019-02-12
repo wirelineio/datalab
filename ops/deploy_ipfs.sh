@@ -112,13 +112,39 @@ echo "ENDPOINT: ${ENDPOINT}"
 yarn lerna run build --ignore="@datalab/native" --parallel
 
 # Register
-yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire crypt --domain $DOMAIN --endpoint $ENDPOINT
-yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire-ipfs --domain $DOMAIN --endpoint $ENDPOINT
+yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire crypt --endpoint $ENDPOINT
+yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire-ipfs --endpoint $ENDPOINT
 yarn lerna exec -- --ignore="@datalab/{native,apollo-config}" -- wire service register --domain $DOMAIN --endpoint $ENDPOINT
 
 # Deploy
 
 pushd "${__DIRNAME}/${PLATFORM}"
-yarn exec --cwd .  wire -- stack undeploy --endpoint $ENDPOINT
-yarn exec --cwd .  wire -- stack deploy --endpoint $ENDPOINT
+echo `pwd`
+echo "Undeploying old stack..."
+
+DONE=0
+i=0
+while [ $i -lt 10 ] && [ $DONE -eq 0 ]; do
+  wire stack undeploy --endpoint $ENDPOINT --domain $DOMAIN 2>&1 | grep -i 'Error'
+  if [ $? -eq 0 ]; then
+    DONE=1
+  else
+    i=$((i + 1))
+  fi
+done
+
+echo "Waiting..."
+sleep 15
+
+echo "Deploying new stack..."
+DONE=0
+i=0
+while [ $i -lt 10 ] && [ $DONE -eq 0 ]; do
+  wire stack deploy --endpoint $ENDPOINT --domain $DOMAIN | grep 'DONE'
+  if [ $? -eq 0 ]; then
+    DONE=1
+  else
+    i=$((i + 1))
+  fi
+done
 popd

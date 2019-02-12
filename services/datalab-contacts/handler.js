@@ -88,28 +88,40 @@ const schema = makeExecutableSchema({
   }
 });
 
+const createStore = (context, opts) => {
+  opts = _.assign({
+    useAccessKeyInStake: false,
+    useAccountIdInPartition: true,
+  }, opts);
+
+  const store = new Store(context, opts);
+
+  store.oldscan = store.scan;
+  store.scan = async (...args) => {
+    const result = await store.oldscan(...args);
+    return result.map(r => r.value);
+  };
+  store.oldget = store.get;
+  store.get = async (key, ...args) => {
+    const result = await store.oldget(key, ...args);
+
+    if (result[key] !== undefined) {
+      return result[key];
+    }
+
+    return null;
+  };
+  
+  return store;
+};
+
 module.exports = {
   gql: Wireline.exec(async (event, context, response) => {
     const { body } = event;
     const { query, variables } = typeof body === 'string' ? JSON.parse(body) : body;
 
     let queryRoot = {};
-    const store = new Store(context);
-    store.oldscan = store.scan;
-    store.scan = async (...args) => {
-      const result = await store.oldscan(...args);
-      return result.map(r => r.value);
-    };
-    store.oldget = store.get;
-    store.get = async (key, ...args) => {
-      const result = await store.oldget(key, ...args);
-
-      if (result[key] !== undefined) {
-        return result[key];
-      }
-
-      return null;
-    };
+    const store = createStore(context, { bucket: 'datalab-contacts' });
 
     let queryContext = {
       store
