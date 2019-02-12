@@ -115,7 +115,7 @@ module.exports = {
     const { errors, data } = await graphql(schema, query, queryRoot, queryContext, variables);
 
     if (errors) {
-      const claimError = errors.find(e => e.originalError && 'ClaimRequiredError' === e.originalError.constructor.name);
+      const claimError = errors.find(e => e.originalError && 'ClaimRequiredError' === e.originalError.name);
       if (claimError) {
         const claimReq = claimError.originalError;
         claimReq.respond(event, context, response);
